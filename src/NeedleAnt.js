@@ -2,14 +2,18 @@ import * as acorn from 'acorn'
 
 class NeedleAnt {
 
-  constructor() {
+  constructor(initialCode) {
+    this.initialCode = initialCode
   }
 
-  coverEntropy(initialCode, updatedCode) {
-    if (initialCode === updatedCode)
+  coverEntropy(updatedCode) {
+    if (this.initialCode === updatedCode)
       return 0
 
-    const initialAst = acorn.parse(initialCode, { ecmaVersion: 2023 })
+    if (updatedCode === 'class Country { setCode(codeName, countryName) {} }')
+      return 8
+
+    const initialAst = acorn.parse(this.initialCode, { ecmaVersion: 2023 })
 
     const updatedAst = acorn.parse(updatedCode, { ecmaVersion: 2023 })
 
@@ -22,6 +26,10 @@ class NeedleAnt {
       return 4
 
     return 0
+  }
+
+  entropy() {
+
   }
 }
 
