@@ -5,12 +5,14 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine",
+    "lint": "eslint --fix src/**/*.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "acorn": "^8.11.3",
+    "eslint": "^8.56.0",
     "jasmine": "^5.1.0"
   }
 }
