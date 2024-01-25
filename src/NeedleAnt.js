@@ -1,10 +1,32 @@
 import * as acorn from 'acorn'
 import { DependencyEntropy, DeclarationEntropy } from './Entropy.js'
+import { ExpressionEntropy } from './Entropy.js'
 
 class NeedleAnt {
   constructor(initialCode) {
+    this.scope = []
     this.initialCode = initialCode
     this.initialAst = acorn.parse(this.initialCode, { ecmaVersion: 2023, sourceType: 'module' })
+
+    if (this.initialAst?.body[0]?.expression?.type === 'ArrowFunctionExpression') {
+      this.initialAst = this.initialAst?.body[0]?.expression.body
+    }
+  }
+
+  addToScope(scope) {
+    this.scope = [...this.scope, ...scope]
+  }
+
+  entropy() {
+    let elements = []
+    if (this.initialAst.type === 'Program') {
+      this.initialAst = this.initialAst.body[0].expression
+      elements = [this.initialAst.left, this.initialAst.right].filter(e => !!e)
+    } else if (this.initialAst.type === 'Literal') {
+      elements = [this.initialAst]
+    }
+
+    return new ExpressionEntropy(elements, this.scope).calculate()
   }
 
   coverEntropy(updatedCode) {

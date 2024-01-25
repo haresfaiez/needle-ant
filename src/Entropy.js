@@ -42,3 +42,48 @@ export class DeclarationEntropy extends Entropy {
     return kindProbability * possibleKinds * Math.log2(numberOfKinds)
   }
 }
+
+export class ExpressionEntropy {
+  constructor(elements, scope) {
+    this.identifiers = elements.filter(eachElement => eachElement.type === 'Identifier')
+    this.literalsWeight = elements.find(eachElement => eachElement.type === 'Literal') ? 1 : 0
+    this.scope = scope
+  }
+
+  calculate() {
+    return 1 / this.possibilities()
+  }
+
+  possibilities() {
+    return this.identifiers.length
+      + this.literalsWeight
+      + this.combination(this.scope.length + this.literalsWeight, this.identifiers.length || 1)
+  }
+
+  permutation(n, k) {
+    if (n < 0 || k < 0)
+      throw new RangeError(`${n < 0 ? n : k} is out of range`)
+
+    if (0 == k)
+      return 1
+
+    if (n < k)
+      return 0
+
+    let [bn, bk, bp] = [n, k, 1]
+    while (bk--)
+      bp *= bn--
+
+    return bp
+  }
+
+  combination(n, k) {
+    if ((0 == k) || (n == k))
+      return 1
+
+    if (n < k)
+      return 0
+
+    return this.permutation(n, k) / this.permutation(k, k)
+  }
+}

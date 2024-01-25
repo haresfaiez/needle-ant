@@ -1,5 +1,58 @@
 import NeedleAnt from './NeedleAnt.js'
 
+// TODO: entropy("sum(a(),b())")=e(calling-sum)+e(calling-a)+e(calling-b) === entropy("const h=b(); sum(a(),h)")
+// TODO: entropy("f.c()")=entropy(calling-c-in-f)
+// TODO: entropy("f.c()")=entropy(calling-c-in-f)+entropy(using-f)
+describe('Scope entropy', () => {
+  describe('where references are similarely likely', () => {
+    it('of function that returns a constant is .5', () => {
+      const ant = new NeedleAnt('() => 2')
+      expect(ant.entropy()).toBe(0.5)
+    })
+
+    it('of function that takes an argument and returns a constant is 1', () => {
+      const ant = new NeedleAnt('2')
+      ant.addToScope(['a'])
+      expect(ant.entropy()).toBeCloseTo(1, 2)
+    })
+
+    it('of function that increments a number is .25', () => {
+      const ant = new NeedleAnt('a + 1')
+      ant.addToScope(['a'])
+      expect(ant.entropy()).toBeCloseTo(.25, 2)
+    })
+
+    it('of function that pre-increments a number is .25', () => {
+      const ant = new NeedleAnt('1 + a')
+      ant.addToScope(['a'])
+      expect(ant.entropy()).toBeCloseTo(.25, 2)
+    })
+
+    it('of function that sums two numbers is .33', () => {
+      const ant = new NeedleAnt('a + b')
+      ant.addToScope(['a', 'b'])
+      expect(ant.entropy()).toBeCloseTo(.33, 2)
+    })
+
+    it('of function call is the entropy of that function', () => {
+    })
+
+    it('of function call with two arguments sums the three elements entropies', () => {
+    })
+  })
+})
+
+// TODO: more variables -> more entropy
+// TODO: more state space for variable -> more entropy
+// TODO: `f(b){x(),b(),y()}, f(z)` -> higher entropy than `x(), z(), y()`, but same entropy as `f(){x(),z(),y()}, f()`
+// TODO: entropy(pull request with another if) >>> entropy(pull request that parses config and dispatch)
+// TODO: entropy(a=1, b=2, c=3) > entropy(obj = {a: 1, b: 2, c: 3})
+
+// TODO: no effects on entropy: names/length/lines count
+// TODO: refactoring should not change entropy
+
+// TODO: create graph of entropy changes by commit for open-source projects
+
 describe('Dependencies entropy', () => {
   it('equals 0 when an imported file changes', () => {
     const initialCode = 'import A from "./a"'
