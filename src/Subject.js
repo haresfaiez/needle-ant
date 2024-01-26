@@ -3,6 +3,14 @@ class Subject {
     this.ast = ast
   }
 
+  identifiers() {
+    return this.factor().filter(eachElement => eachElement.type === 'Identifier')
+  }
+
+  literalsWeight() {
+    return this.factor().find(eachElement => eachElement.type === 'Literal') ? 1 : 0
+  }
+
   factor() {
     let elements = []
 

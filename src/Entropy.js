@@ -47,9 +47,7 @@ export class DeclarationEntropy extends Entropy {
 
 export class ExpressionEntropy {
   constructor(ast, scope) {
-    this.elements = new Subject(ast).factor()
-    this.identifiers = this.elements.filter(eachElement => eachElement.type === 'Identifier')
-    this.literalsWeight = this.elements.find(eachElement => eachElement.type === 'Literal') ? 1 : 0
+    this.subject = new Subject(ast)
     this.scope = scope
   }
 
@@ -64,11 +62,14 @@ export class ExpressionEntropy {
   possibilitiesCount() {
     const primitiveAndGlobalsCount = 1
     let combinationsCount = 0
-    if (this.identifiers.length > 0) {
-      combinationsCount = this.combination(this.scope.length + primitiveAndGlobalsCount, this.elements.length)
+    if (this.subject.identifiers().length > 0) {
+      combinationsCount = this.combination(
+        this.scope.length + primitiveAndGlobalsCount, // TODO: Move to `Scope` class
+        this.subject.factor().length
+      )
     }
 
-    return this.identifiers.length + this.literalsWeight + combinationsCount
+    return this.subject.identifiers().length + this.subject.literalsWeight() + combinationsCount
   }
 
   permutation(n, k) {
