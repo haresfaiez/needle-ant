@@ -21,8 +21,17 @@ class NeedleAnt {
     let elements = []
     if (this.initialAst.type === 'Program') {
       this.initialAst = this.initialAst.body[0].expression
-      elements = [this.initialAst.left, this.initialAst.right].filter(e => !!e)
-    } else if (this.initialAst.type === 'Literal') {
+    }
+
+    if (this.initialAst.type === 'BinaryExpression') {
+      let left = [this.initialAst.left]
+      if (left[0].type === 'BinaryExpression') {
+        left = [left[0].left, left[0].right]
+      }
+      elements = [...left, this.initialAst.right].filter(e => !!e)
+    }
+
+    if (this.initialAst.type === 'Literal') {
       elements = [this.initialAst]
     }
 

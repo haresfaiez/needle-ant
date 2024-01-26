@@ -5,33 +5,33 @@ import NeedleAnt from './NeedleAnt.js'
 // TODO: entropy("f.c()")=entropy(calling-c-in-f)+entropy(using-f)
 describe('Scope entropy', () => {
   describe('where references are similarely likely', () => {
-    it('of function that returns a constant is .5', () => {
+    it('of function that returns a constant is null', () => {
       const ant = new NeedleAnt('() => 2')
-      expect(ant.entropy()).toBe(0.5)
+      expect(ant.entropy()).toBe(0)
     })
 
-    it('of function that takes an argument and returns a constant is 1', () => {
+    it('of function that takes an argument and returns a constant', () => {
       const ant = new NeedleAnt('2')
       ant.addToScope(['a'])
-      expect(ant.entropy()).toBeCloseTo(1, 2)
+      expect(ant.entropy()).toBeCloseTo(0, 2)
     })
 
-    it('of function that increments a number is .25', () => {
+    it('of function that increments a number', () => {
       const ant = new NeedleAnt('a + 1')
       ant.addToScope(['a'])
-      expect(ant.entropy()).toBeCloseTo(.25, 2)
+      expect(ant.entropy()).toBeCloseTo(.528, 2)
     })
 
-    it('of function that pre-increments a number is .25', () => {
+    it('of function that pre-increments a number', () => {
       const ant = new NeedleAnt('1 + a')
       ant.addToScope(['a'])
-      expect(ant.entropy()).toBeCloseTo(.25, 2)
+      expect(ant.entropy()).toBeCloseTo(.528, 2)
     })
 
-    it('of function that sums two numbers is .33', () => {
+    it('of function that sums two numbers', () => {
       const ant = new NeedleAnt('a + b')
       ant.addToScope(['a', 'b'])
-      expect(ant.entropy()).toBeCloseTo(.33, 2)
+      expect(ant.entropy()).toBeCloseTo(.464, 2)
     })
 
     it('of function call is the entropy of that function', () => {

@@ -45,19 +45,28 @@ export class DeclarationEntropy extends Entropy {
 
 export class ExpressionEntropy {
   constructor(elements, scope) {
+    this.elements = elements
     this.identifiers = elements.filter(eachElement => eachElement.type === 'Identifier')
     this.literalsWeight = elements.find(eachElement => eachElement.type === 'Literal') ? 1 : 0
     this.scope = scope
   }
 
   calculate() {
-    return 1 / this.possibilities()
+    return this.probability() * Math.log2(this.probability()) * (-1)
   }
 
-  possibilities() {
-    return this.identifiers.length
-      + this.literalsWeight
-      + this.combination(this.scope.length + this.literalsWeight, this.identifiers.length || 1)
+  probability() {
+    return 1 / this.possibilitiesCount()
+  }
+
+  possibilitiesCount() {
+    const primitiveAndGlobalsCount = 1
+    let combinationsCount = 0
+    if (this.identifiers.length > 0) {
+      combinationsCount = this.combination(this.scope.length + primitiveAndGlobalsCount, this.elements.length)
+    }
+
+    return this.identifiers.length + this.literalsWeight + combinationsCount
   }
 
   permutation(n, k) {
