@@ -1,3 +1,5 @@
+import Subject from './Subject.js'
+
 class Entropy {
   constructor(expression) {
     this.expression = expression.body[0]
@@ -44,10 +46,10 @@ export class DeclarationEntropy extends Entropy {
 }
 
 export class ExpressionEntropy {
-  constructor(elements, scope) {
-    this.elements = elements
-    this.identifiers = elements.filter(eachElement => eachElement.type === 'Identifier')
-    this.literalsWeight = elements.find(eachElement => eachElement.type === 'Literal') ? 1 : 0
+  constructor(ast, scope) {
+    this.elements = new Subject(ast).factor()
+    this.identifiers = this.elements.filter(eachElement => eachElement.type === 'Identifier')
+    this.literalsWeight = this.elements.find(eachElement => eachElement.type === 'Literal') ? 1 : 0
     this.scope = scope
   }
 

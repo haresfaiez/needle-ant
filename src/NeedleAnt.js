@@ -18,24 +18,11 @@ class NeedleAnt {
   }
 
   entropy() {
-    let elements = []
     if (this.initialAst.type === 'Program') {
       this.initialAst = this.initialAst.body[0].expression
     }
 
-    if (this.initialAst.type === 'BinaryExpression') {
-      let left = [this.initialAst.left]
-      if (left[0].type === 'BinaryExpression') {
-        left = [left[0].left, left[0].right]
-      }
-      elements = [...left, this.initialAst.right].filter(e => !!e)
-    }
-
-    if (this.initialAst.type === 'Literal') {
-      elements = [this.initialAst]
-    }
-
-    return new ExpressionEntropy(elements, this.scope).calculate()
+    return new ExpressionEntropy(this.initialAst, this.scope).calculate()
   }
 
   coverEntropy(updatedCode) {

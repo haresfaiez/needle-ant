@@ -33,12 +33,6 @@ describe('Scope entropy', () => {
       ant.addToScope(['a', 'b'])
       expect(ant.entropy()).toBeCloseTo(.464, 2)
     })
-
-    it('of function call is the entropy of that function', () => {
-    })
-
-    it('of function call with two arguments sums the three elements entropies', () => {
-    })
   })
 })
 
