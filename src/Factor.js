@@ -1,8 +1,7 @@
 import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
 
-
-class Subject {
+class Factor {
   constructor(ast) {
     this.ast = ast
   }
@@ -27,7 +26,7 @@ class Subject {
     return result.length ? 1 : 0
   }
 
-  factor() {
+  factorize() {
     let result = []
     AcornWalk.simple(this.ast, {
       Identifier(node) {
@@ -41,8 +40,8 @@ class Subject {
   }
 
   static parse(sourceCode) {
-    return new Subject(Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' }))
+    return new Factor(Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' }))
   }
 }
 
-export default Subject
+export default Factor
