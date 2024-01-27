@@ -1,32 +1,47 @@
+import * as Acorn from 'acorn'
+import * as AcornWalk from 'acorn-walk'
+
+
 class Subject {
   constructor(ast) {
     this.ast = ast
   }
 
   identifiers() {
-    return this.factor().filter(eachElement => eachElement.type === 'Identifier')
+    let result = []
+    AcornWalk.simple(this.ast, {
+      Identifier(node) {
+        result.push(node.name)
+      }
+    })
+    return result
   }
 
   literalsWeight() {
-    return this.factor().find(eachElement => eachElement.type === 'Literal') ? 1 : 0
+    let result = []
+    AcornWalk.simple(this.ast, {
+      Literal(node) {
+        result.push(node.value)
+      }
+    })
+    return result.length ? 1 : 0
   }
 
   factor() {
-    let elements = []
-
-    if (this.ast.type === 'BinaryExpression') {
-      let left = [this.ast.left]
-      if (left[0].type === 'BinaryExpression') {
-        left = [left[0].left, left[0].right]
+    let result = []
+    AcornWalk.simple(this.ast, {
+      Identifier(node) {
+        result.push(node)
+      },
+      Literal(node) {
+        result.push(node)
       }
-      elements = [...left, this.ast.right].filter(e => !!e)
-    }
-  
-    if (this.ast.type === 'Literal') {
-      elements = [this.ast]
-    }
+    })
+    return result
+  }
 
-    return elements
+  static parse(sourceCode) {
+    return new Subject(Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' }))
   }
 }
 
