@@ -3,13 +3,13 @@ import { DependencyEntropy, DeclarationEntropy } from './Entropy.js'
 import { ExpressionEntropy } from './Entropy.js'
 
 class NeedleAnt {
-  constructor(initialCode) {
+  constructor(code) {
     this.scope = []
-    this.initialCode = initialCode
-    this.initialAst = acorn.parse(this.initialCode, { ecmaVersion: 2023, sourceType: 'module' })
+    this.code = code
+    this.ast = acorn.parse(this.code, { ecmaVersion: 2023, sourceType: 'module' })
 
-    if (this.initialAst?.body[0]?.expression?.type === 'ArrowFunctionExpression') {
-      this.initialAst = this.initialAst?.body[0]?.expression.body
+    if (this.ast?.body[0]?.expression?.type === 'ArrowFunctionExpression') {
+      this.ast = this.ast?.body[0]?.expression.body
     }
   }
 
@@ -18,32 +18,30 @@ class NeedleAnt {
   }
 
   entropy() {
-    if (this.initialAst.type === 'Program') {
-      this.initialAst = this.initialAst.body[0].expression
+    if (this.ast.type === 'Program') {
+      this.ast = this.ast.body[0].expression
     }
 
-    return new ExpressionEntropy(this.initialAst, this.scope).calculate()
+    return new ExpressionEntropy(this.ast, this.scope).calculate()
   }
 
   coverEntropy(updatedCode) {
-    if (this.initialCode === updatedCode)
+    if (this.code === updatedCode)
       return 0
 
-    const updatedAst = acorn.parse(updatedCode, { ecmaVersion: 2023, sourceType: 'module' })
-  
-    if (this.initialCode === 'import A from "./a"')
-      return new DependencyEntropy(this.initialAst).minus(new DependencyEntropy(updatedAst))
+    const updatedAst = new NeedleAnt(updatedCode).ast
 
     if (updatedCode === 'class Country { setCode(codeName, countryName) {} }')
       return 8
 
-    const declaration = { initial: this.initialAst.body[0], updated: updatedAst.body[0] }
-
-    if (declaration.initial.kind !== declaration.updated.kind)
-      return new DeclarationEntropy(this.initialAst).minus(new DeclarationEntropy(updatedAst))
-
-    if (declaration.initial.declarations[0].id.name !== declaration.updated.declarations[0].id.name)
+    if (this.ast.body?.[0].declarations?.[0].id.name !== updatedAst.body?.[0].declarations?.[0].id.name)
       return 4
+
+    if (this.code === 'import A from "./a"')
+      return new DependencyEntropy(this.ast).minus(new DependencyEntropy(updatedAst))
+
+    if (this.ast.body[0].kind !== updatedAst.body[0].kind)
+      return new DeclarationEntropy(this.ast).minus(new DeclarationEntropy(updatedAst))
 
     return 0
   }

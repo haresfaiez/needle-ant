@@ -3,8 +3,8 @@ import NeedleAnt from './NeedleAnt.js'
 // TODO: entropy("sum(a(),b())")=e(calling-sum)+e(calling-a)+e(calling-b) === entropy("const h=b(); sum(a(),h)")
 // TODO: entropy("f.c()")=entropy(calling-c-in-f)
 // TODO: entropy("f.c()")=entropy(calling-c-in-f)+entropy(using-f)
-describe('Scope entropy', () => {
-  describe('where references are similarely likely', () => {
+describe('Functions entropy', () => {
+  describe('as references are similarely likely', () => {
     it('of function that returns a constant is null', () => {
       const ant = new NeedleAnt('() => 2')
       expect(ant.entropy()).toBe(0)
