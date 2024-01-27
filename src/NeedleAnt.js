@@ -1,16 +1,13 @@
 import * as acorn from 'acorn'
 import { DependencyEntropy, DeclarationEntropy } from './Entropy.js'
-import { ExpressionEntropy } from './Entropy.js'
+import { Entropy } from './Entropy.js'
+import { AntTrail } from './AntTrail.js'
 
 class NeedleAnt {
   constructor(code) {
     this.scope = []
     this.code = code
     this.ast = acorn.parse(this.code, { ecmaVersion: 2023, sourceType: 'module' })
-
-    if (this.ast?.body[0]?.expression?.type === 'ArrowFunctionExpression') {
-      this.ast = this.ast?.body[0]?.expression.body
-    }
   }
 
   addToScope(scope) {
@@ -18,11 +15,9 @@ class NeedleAnt {
   }
 
   entropy() {
-    if (this.ast.type === 'Program') {
-      this.ast = this.ast.body[0].expression
-    }
-
-    return new ExpressionEntropy(this.ast, this.scope).calculate()
+    const trail = new AntTrail(this.ast)
+    this.addToScope(trail.scope())
+    return Entropy.of(trail.steps(), this.scope).calculate()
   }
 
   coverEntropy(updatedCode) {

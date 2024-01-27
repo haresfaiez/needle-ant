@@ -1,8 +1,9 @@
 import Factor from './Factor.js'
 
-class Entropy {
-  constructor(ast) {
+export class Entropy {
+  constructor(ast, scope) {
     this.subject = new Factor(ast)
+    this.scope = scope
   }
 
   calculate() {
@@ -39,6 +40,31 @@ class Entropy {
 
     return this.permutation(n, k) / this.permutation(k, k)
   }
+
+  static of(ast, scope) {
+    if (Array.isArray(ast)) {
+      return new JointEntropy(ast, scope)
+    }
+
+    if (ast.type === 'IfStatement') {
+      return Entropy.of(ast.test, scope)
+    }
+
+    return new ExpressionEntropy(ast, scope)
+  }
+}
+
+export class JointEntropy extends Entropy {
+  constructor(ast, scope) {
+    super(ast, scope)
+  }
+
+  calculate() {
+    return this.subject
+      .entropies(this.scope)
+      .map(e => e.calculate())
+      .reduce((a, b) => a + b, 0)
+  }
 }
   
 export class DependencyEntropy extends Entropy {
@@ -52,13 +78,13 @@ export class DependencyEntropy extends Entropy {
   
 export class DeclarationEntropy extends Entropy {
   kindProbability() {
-    if (this.subject.ast.body?.[0].kind === 'let')
+    if (this.subject.trees[0].body?.[0].kind === 'let')
       return 2/6
   
-    if (this.subject.ast.body?.[0].kind === 'var')
+    if (this.subject.trees[0].body?.[0].kind === 'var')
       return 1/6
   
-    if (this.subject.ast.body?.[0].kind === 'const')
+    if (this.subject.trees[0].body?.[0].kind === 'const')
       return 3/6
   
     throw new Error('Unknown declaration kind')
@@ -74,8 +100,7 @@ export class DeclarationEntropy extends Entropy {
 
 export class ExpressionEntropy extends Entropy {
   constructor(ast, scope) {
-    super(ast)
-    this.scope = scope
+    super(ast, scope)
   }
 
   calculate() {

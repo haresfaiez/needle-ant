@@ -1,9 +1,26 @@
 import NeedleAnt from './NeedleAnt.js'
 
+describe('Successive statements entropy', () => {
+  it('is the sum of each statement entropy', () => {
+    const ant = new NeedleAnt('(a) => { if (a > 0) { return true; } return a + 1; }')
+    expect(ant.entropy()).toBeCloseTo(1.056, 2)
+  })
+})
+
+describe('Function body entropy', () => {
+  it('with simple conditional', () => {
+    const ant = new NeedleAnt('(a) => { if (a > 0) { return true; } else { return false; } }')
+    expect(ant.entropy()).toBeCloseTo(.528, 2)
+  })
+  // TOOD: if - else
+  // TODO: if - return - else
+  // TODO: loops
+})
+
 // TODO: entropy("sum(a(),b())")=e(calling-sum)+e(calling-a)+e(calling-b) === entropy("const h=b(); sum(a(),h)")
 // TODO: entropy("f.c()")=entropy(calling-c-in-f)
 // TODO: entropy("f.c()")=entropy(calling-c-in-f)+entropy(using-f)
-describe('Functions entropy', () => {
+describe('Function entropy', () => {
   describe('as references are similarely likely', () => {
     it('of function that returns a constant is null', () => {
       const ant = new NeedleAnt('() => 2')
