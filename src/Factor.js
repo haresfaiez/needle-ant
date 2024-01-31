@@ -3,8 +3,9 @@ import * as AcornWalk from 'acorn-walk'
 import { Entropy } from './Entropy.js'
 
 class Factor {
-  constructor(trees) {
+  constructor(trees, footsteps) {
     this.trees = Array.isArray(trees) ? trees : [trees]
+    this.footsteps = footsteps || []
   }
 
   entropies(scope) {
@@ -13,13 +14,16 @@ class Factor {
 
   identifiers() {
     let result = []
+    const footsteps = this.footsteps
     this.trees.forEach(eachAst => {
       AcornWalk.simple(eachAst, {
         Identifier(node) {
+          footsteps.push(`Factor/identifiers/Identifier/${node.name}`)
           result.push(node.name)
         }
       })
     })
+    this.footsteps.push(`Factor/identifiers/result/${result}`)
     return result
   }
 

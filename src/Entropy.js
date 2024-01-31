@@ -41,15 +41,18 @@ export class Entropy {
     return this.permutation(n, k) / this.permutation(k, k)
   }
 
-  static of(ast, scope) {
+  static of(ast, scope, footsteps = []) {
     if (Array.isArray(ast)) {
+      footsteps.push(`Entropy/of/Array/${ast.length}`)
       return new JointEntropy(ast, scope)
     }
 
     if (ast.type === 'IfStatement') {
-      return Entropy.of(ast.test, scope)
+      footsteps.push(`Entropy/of/IfStatement/${ast}`)
+      return Entropy.of(ast.test, scope, footsteps)
     }
 
+    footsteps.push(`Entropy/of/ExpressionEntropy/${ast}`)
     return new ExpressionEntropy(ast, scope)
   }
 }
