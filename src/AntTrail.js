@@ -3,14 +3,22 @@ import * as AcornWalk from 'acorn-walk'
 import { ExpressionEntropy } from './Entropy.js'
 
 class AntTrail {
-  constructor(trees, footsteps) {
-    this.trees = Array.isArray(trees) ? trees : [trees]
+  constructor(sources, footsteps) {
+    this.sources = Array.isArray(sources) ? sources : [sources]
     this.footsteps = footsteps || []
+  }
+
+  entropies(scope) {
+    return this.sources.map(eachSource => new ExpressionEntropy(new AntTrail(eachSource), scope))
+  }
+
+  paint() {
+    this.sources = this.steps()
   }
 
   factorize() {
     let result = new Set()
-    this.trees.forEach(eachAst => {
+    this.sources.forEach(eachAst => {
       AcornWalk.simple(eachAst, {
         Identifier(node) {
           result.add(node)
@@ -24,7 +32,7 @@ class AntTrail {
   }
 
   steps() {
-    const ast = this.trees[0]
+    const ast = this.sources[0]
 
     let eachAst = ast
 
@@ -58,10 +66,6 @@ class AntTrail {
     return eachAst
   }
 
-  entropies(scope) {
-    return this.trees.map(e => new ExpressionEntropy(new AntTrail(e), scope))
-  }
-
   scope() {
     return this.identifiers()
   }
@@ -69,7 +73,7 @@ class AntTrail {
   identifiers() {
     let result = new Set()
     const footsteps = this.footsteps
-    this.trees.forEach(eachAst => {
+    this.sources.forEach(eachAst => {
       AcornWalk.simple(eachAst, {
         Identifier(node) {
           footsteps.push(`AntTrail/identifiers/Identifier/${node.name}`)
@@ -83,7 +87,7 @@ class AntTrail {
 
   literalsWeight() {
     let result = []
-    this.trees.forEach(eachAst => {
+    this.sources.forEach(eachAst => {
       AcornWalk.simple(eachAst, {
         Literal(node) {
           result.push(node.value)

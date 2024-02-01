@@ -64,13 +64,13 @@ export class DependencyEntropy extends Entropy {
   
 export class DeclarationEntropy extends Entropy {
   kindProbability() {
-    if (this.subject.trees[0].body?.[0].kind === 'let')
+    if (this.subject.sources[0].body?.[0].kind === 'let')
       return 2/6
   
-    if (this.subject.trees[0].body?.[0].kind === 'var')
+    if (this.subject.sources[0].body?.[0].kind === 'var')
       return 1/6
   
-    if (this.subject.trees[0].body?.[0].kind === 'const')
+    if (this.subject.sources[0].body?.[0].kind === 'const')
       return 3/6
   
     throw new Error('Unknown declaration kind')
