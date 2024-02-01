@@ -47,11 +47,6 @@ export class Entropy {
       return new JointEntropy(ast, scope)
     }
 
-    if (ast.type === 'IfStatement') {
-      footsteps.push(`Entropy/of/IfStatement/${ast}`)
-      return Entropy.of(ast.test, scope, footsteps)
-    }
-
     footsteps.push(`Entropy/of/ExpressionEntropy/${ast}`)
     return new ExpressionEntropy(ast, scope)
   }

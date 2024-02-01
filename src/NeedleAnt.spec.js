@@ -12,8 +12,11 @@ describe('Function body entropy', () => {
     const ant = new NeedleAnt('(a) => { if (a > 0) { return true; } else { return false; } }')
     expect(ant.entropy()).toBeCloseTo(.528, 2)
   })
-  // TOOD: if - else
-  // TODO: if - return - else
+
+  it('with simple conditional and sum return', () => {
+    const ant = new NeedleAnt('(a) => { if (a > 0) { return a + 2; } else { return a + 4; } }')
+    expect(ant.entropy()).toBeCloseTo(1.584, 2)
+  })
   // TODO: loops
 })
 

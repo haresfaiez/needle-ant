@@ -31,6 +31,20 @@ export class AntTrail {
 
     result = Array.isArray(result.body) ? result.body : [result]
 
+    result = result.reduce((acc, each) => {
+      if (each.type === 'IfStatement') {
+        this.footsteps.push(`AntTrail/steps/IfStatement/${JSON.stringify(each)}`)
+        return [
+          ...acc,
+          each.test,
+          ...(each.consequent?.body || []),
+          ...(each.alternate?.body || [])
+        ]
+      }
+
+      return [...acc, each]
+    }, [])
+
     this.footsteps.push(`AntTrail/steps/result/${result.length}`)
     return result
   }
