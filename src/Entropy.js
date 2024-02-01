@@ -1,8 +1,8 @@
-import Factor from './Factor.js'
+import AntTrail from './AntTrail.js'
 
 export class Entropy {
   constructor(ast, scope) {
-    this.subject = new Factor(ast)
+    this.subject = new AntTrail(ast)
     this.scope = scope
   }
 

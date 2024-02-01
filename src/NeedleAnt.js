@@ -1,7 +1,7 @@
 import * as acorn from 'acorn'
 import { DependencyEntropy, DeclarationEntropy } from './Entropy.js'
 import { Entropy } from './Entropy.js'
-import { AntTrail } from './AntTrail.js'
+import AntTrail from './AntTrail.js'
 
 class NeedleAnt {
   constructor(code) {
