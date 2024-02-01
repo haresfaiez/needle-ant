@@ -11,13 +11,9 @@ class NeedleAnt {
     this.ast = acorn.parse(this.code, { ecmaVersion: 2023, sourceType: 'module' })
   }
 
-  addToScope(scope) {
-    this.scope = [...this.scope, ...scope]
-  }
-
   entropy() {
     const trail = new AntTrail(this.ast, this.footsteps)
-    this.addToScope(trail.scope())
+    this.scope = [...this.scope, ...trail.scope()]
     this.footsteps.push(`NeedleAnt/entropy/scope/${this.scope}`)
     return Entropy.of(trail.steps(), this.scope, this.footsteps).calculate()
   }

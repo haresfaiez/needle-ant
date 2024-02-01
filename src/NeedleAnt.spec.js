@@ -32,25 +32,21 @@ describe('Function entropy', () => {
 
     it('of function that takes an argument and returns a constant', () => {
       const ant = new NeedleAnt('2')
-      ant.addToScope(['a'])
       expect(ant.entropy()).toBeCloseTo(0, 2)
     })
 
     it('of function that increments a number', () => {
       const ant = new NeedleAnt('a + 1')
-      ant.addToScope(['a'])
       expect(ant.entropy()).toBeCloseTo(.528, 2)
     })
 
     it('of function that pre-increments a number', () => {
       const ant = new NeedleAnt('1 + a')
-      ant.addToScope(['a'])
       expect(ant.entropy()).toBeCloseTo(.528, 2)
     })
 
     it('of function that sums two numbers', () => {
       const ant = new NeedleAnt('a + b')
-      ant.addToScope(['a', 'b'])
       expect(ant.entropy()).toBeCloseTo(.464, 2)
     })
   })

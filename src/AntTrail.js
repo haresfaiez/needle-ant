@@ -8,83 +8,6 @@ class AntTrail {
     this.footsteps = footsteps || []
   }
 
-  scope() {
-    const ast = this.trees[0]
-    if (ast?.body[0]?.expression?.type === 'ArrowFunctionExpression') {
-      const functionParams = ast.body[0].expression.params
-      this.footsteps.push(`AntTrail/scope/functionParams/${functionParams.length}`)
-      return new AntTrail(functionParams, this.footsteps).identifiers()
-    }
-
-    return []
-  }
-
-  steps() {
-    const ast = this.trees[0]
-
-    let result = ast
-
-    if (result?.body[0]?.expression?.type === 'ArrowFunctionExpression') {
-      result = result?.body[0]?.expression.body
-      this.footsteps.push(`AntTrail/steps/ArrowFunctionExpression/${result}`)
-    }
-
-    if (result.type === 'Program') {
-      result = result.body[0].expression
-      this.footsteps.push(`AntTrail/steps/Program/${result}`)
-    }
-
-    result = Array.isArray(result.body) ? result.body : [result]
-
-    result = result.reduce((acc, each) => {
-      if (each.type === 'IfStatement') {
-        this.footsteps.push(`AntTrail/steps/IfStatement/${JSON.stringify(each)}`)
-        return [
-          ...acc,
-          each.test,
-          ...(each.consequent?.body || []),
-          ...(each.alternate?.body || [])
-        ]
-      }
-
-      return [...acc, each]
-    }, [])
-
-    this.footsteps.push(`AntTrail/steps/result/${result.length}`)
-    return result
-  }
-
-  entropies(scope) {
-    return this.trees.map(e => Entropy.of(e, scope))
-  }
-
-  identifiers() {
-    let result = []
-    const footsteps = this.footsteps
-    this.trees.forEach(eachAst => {
-      AcornWalk.simple(eachAst, {
-        Identifier(node) {
-          footsteps.push(`AntTrail/identifiers/Identifier/${node.name}`)
-          result.push(node.name)
-        }
-      })
-    })
-    this.footsteps.push(`AntTrail/identifiers/result/${result}`)
-    return result
-  }
-
-  literalsWeight() {
-    let result = []
-    this.trees.forEach(eachAst => {
-      AcornWalk.simple(eachAst, {
-        Literal(node) {
-          result.push(node.value)
-        }
-      })
-    })
-    return result.length ? 1 : 0
-  }
-
   factorize() {
     let result = []
     this.trees.forEach(eachAst => {
@@ -98,6 +21,76 @@ class AntTrail {
       })
     })
     return result
+  }
+
+  steps() {
+    const ast = this.trees[0]
+
+    let eachAst = ast
+
+    if (eachAst?.body[0]?.expression?.type === 'ArrowFunctionExpression') {
+      eachAst = eachAst?.body[0]?.expression.body
+      this.footsteps.push(`AntTrail/steps/ArrowFunctionExpression/${eachAst}`)
+    }
+
+    if (eachAst.type === 'Program') {
+      eachAst = eachAst.body[0].expression
+      this.footsteps.push(`AntTrail/steps/Program/${eachAst}`)
+    }
+
+    eachAst = Array.isArray(eachAst.body) ? eachAst.body : [eachAst]
+
+    eachAst = eachAst.reduce((acc, each) => {
+      if (each.type === 'IfStatement') {
+        this.footsteps.push(`AntTrail/steps/IfStatement/${JSON.stringify(each)}`)
+        return [
+          ...acc,
+          each.test,
+          ...(each.consequent?.body || []),
+          ...(each.alternate?.body || [])
+        ]
+      }
+
+      return [...acc, each]
+    }, [])
+
+    this.footsteps.push(`AntTrail/steps/result/${eachAst.length}`)
+    return eachAst
+  }
+
+  entropies(scope) {
+    return this.trees.map(e => Entropy.of(e, scope))
+  }
+
+  scope() {
+    return this.identifiers()
+  }
+
+  identifiers() {
+    let result = new Set()
+    const footsteps = this.footsteps
+    this.trees.forEach(eachAst => {
+      AcornWalk.simple(eachAst, {
+        Identifier(node) {
+          footsteps.push(`AntTrail/identifiers/Identifier/${node.name}`)
+          result.add(node.name)
+        }
+      })
+    })
+    this.footsteps.push(`AntTrail/identifiers/result/${result}`)
+    return [...result]
+  }
+
+  literalsWeight() {
+    let result = []
+    this.trees.forEach(eachAst => {
+      AcornWalk.simple(eachAst, {
+        Literal(node) {
+          result.push(node.value)
+        }
+      })
+    })
+    return result.length ? 1 : 0
   }
 
   static parse(sourceCode) {
