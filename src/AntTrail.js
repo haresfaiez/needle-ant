@@ -1,6 +1,6 @@
 import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
-import { Entropy } from './Entropy.js'
+import { ExpressionEntropy } from './Entropy.js'
 
 class AntTrail {
   constructor(trees, footsteps) {
@@ -9,18 +9,18 @@ class AntTrail {
   }
 
   factorize() {
-    let result = []
+    let result = new Set()
     this.trees.forEach(eachAst => {
       AcornWalk.simple(eachAst, {
         Identifier(node) {
-          result.push(node)
+          result.add(node)
         },
         Literal(node) {
-          result.push(node)
+          result.add(node)
         }
       })
     })
-    return result
+    return [...result]
   }
 
   steps() {
@@ -59,7 +59,7 @@ class AntTrail {
   }
 
   entropies(scope) {
-    return this.trees.map(e => Entropy.of(e, scope))
+    return this.trees.map(e => new ExpressionEntropy(new AntTrail(e), scope))
   }
 
   scope() {

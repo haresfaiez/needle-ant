@@ -1,8 +1,6 @@
-import AntTrail from './AntTrail.js'
-
 export class Entropy {
   constructor(ast, scope) {
-    this.subject = new AntTrail(ast)
+    this.subject = ast
     this.scope = scope
   }
 
@@ -39,16 +37,6 @@ export class Entropy {
       return 0
 
     return this.permutation(n, k) / this.permutation(k, k)
-  }
-
-  static of(ast, scope, footsteps = []) {
-    if (Array.isArray(ast)) {
-      footsteps.push(`Entropy/of/Array/${ast.length}`)
-      return new JointEntropy(ast, scope)
-    }
-
-    footsteps.push(`Entropy/of/ExpressionEntropy/${ast}`)
-    return new ExpressionEntropy(ast, scope)
   }
 }
 
