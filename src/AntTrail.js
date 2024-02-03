@@ -16,34 +16,29 @@ class AntTrail {
     this.sources = this.steps()
   }
 
-  factorize() {
-    let result = new Set()
-    this.sources.forEach(eachAst => {
-      AcornWalk.simple(eachAst, {
-        Identifier(node) {
-          result.add(node)
-        },
-        Literal(node) {
-          result.add(node)
-        }
+  steps(isLowLevel) {
+    if (isLowLevel) {
+      let result = new Set()
+      this.sources.forEach(eachAst => {
+        AcornWalk.simple(eachAst, {
+          Identifier(node) {
+            result.add(node)
+          },
+          Literal(node) {
+            result.add(node)
+          }
+        })
       })
-    })
-    return [...result]
-  }
+      return [...result]
+    }
 
-  steps() {
     const ast = this.sources[0]
 
     let eachAst = ast
 
-    if (eachAst?.body[0]?.expression?.type === 'ArrowFunctionExpression') {
+    if (eachAst.body[0]?.expression?.type === 'ArrowFunctionExpression') {
       eachAst = eachAst?.body[0]?.expression.body
       this.footsteps.push(`AntTrail/steps/ArrowFunctionExpression/${eachAst}`)
-    }
-
-    if (eachAst.type === 'Program') {
-      eachAst = eachAst.body[0].expression
-      this.footsteps.push(`AntTrail/steps/Program/${eachAst}`)
     }
 
     eachAst = Array.isArray(eachAst.body) ? eachAst.body : [eachAst]
