@@ -1,6 +1,6 @@
 import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
-import { JointGround } from './Ground.js'
+import { Ground } from './Ground.js'
 
 export class AntTrail {
   constructor(sources, footsteps) {
@@ -13,7 +13,7 @@ export class AntTrail {
   }
 
   steps() {
-    return new JointGround(this.sources).factorize()
+    return Ground.create(this.sources).factorize()
   }
 
   scope() {

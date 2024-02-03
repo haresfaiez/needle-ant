@@ -10,6 +10,10 @@ export class Ground {
   }
 
   static create(ast) {
+    if (Array.isArray(ast)) {
+      return new JointGround(ast)
+    }
+
     if (ast.type === 'Program') {
       return new ProgramGround(ast)
     }
@@ -25,7 +29,7 @@ export class Ground {
   }
 }
 
-export class JointGround extends Ground {
+class JointGround extends Ground {
   constructor(sources) {
     super(null)
     this.sources = sources
@@ -56,13 +60,13 @@ export class JointGround extends Ground {
   }
 }
 
-export class ProgramGround extends Ground {
+class ProgramGround extends Ground {
   factorize() {
     return new JointGround(this.ast.body).factorizeOnly(['ArrowFunctionExpression'])
   }
 }
 
-export class FunctionGround extends Ground {
+class FunctionGround extends Ground {
   factorize() {
     if (!Array.isArray(this.ast.body.body)) {
       return [this.ast.body] // function without brackets.
@@ -72,7 +76,7 @@ export class FunctionGround extends Ground {
   }
 }
 
-export class ExpressionGround extends Ground {
+class ExpressionGround extends Ground {
   factorize() {
     const result = new Set()
     AcornWalk.simple(this.ast, {
@@ -87,7 +91,7 @@ export class ExpressionGround extends Ground {
   }
 }
 
-export class ConditionalGround extends Ground {
+class ConditionalGround extends Ground {
   factorize() {
     return [
       this.ast.test,
