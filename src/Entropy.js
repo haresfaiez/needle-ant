@@ -102,7 +102,7 @@ export class ExpressionEntropy extends Entropy {
     let combinationsCount = 0
     if (this.subject.identifiers().length > 0) {
       combinationsCount = this.combination(
-        this.scope.length + primitiveAndGlobalsCount, // TODO: Move to `Scope` class
+        this.scope.length + primitiveAndGlobalsCount,
         this.subject.steps(true).length
       )
     }

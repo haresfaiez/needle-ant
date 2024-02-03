@@ -1,6 +1,7 @@
 import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
 import { ExpressionEntropy } from './Entropy.js'
+import { ConditionalGround, ExpressionGround, FunctionGround } from './Ground.js'
 
 class AntTrail {
   constructor(sources, footsteps) {
@@ -19,16 +20,9 @@ class AntTrail {
   steps(isLowLevel) {
     if (isLowLevel) {
       let result = new Set()
-      this.sources.forEach(eachAst => {
-        AcornWalk.simple(eachAst, {
-          Identifier(node) {
-            result.add(node)
-          },
-          Literal(node) {
-            result.add(node)
-          }
-        })
-      })
+      this.sources
+        .map(source => new ExpressionGround(source).factorize())
+        .forEach(eachAst => [...eachAst].forEach(result.add.bind(result)))
       return [...result]
     }
 
@@ -37,27 +31,22 @@ class AntTrail {
     let eachAst = ast
 
     if (eachAst.body[0]?.expression?.type === 'ArrowFunctionExpression') {
-      eachAst = eachAst?.body[0]?.expression.body
-      this.footsteps.push(`AntTrail/steps/ArrowFunctionExpression/${eachAst}`)
+      eachAst = new FunctionGround(eachAst.body[0]?.expression).factorize()
     }
 
     eachAst = Array.isArray(eachAst.body) ? eachAst.body : [eachAst]
 
     eachAst = eachAst.reduce((acc, each) => {
       if (each.type === 'IfStatement') {
-        this.footsteps.push(`AntTrail/steps/IfStatement/${JSON.stringify(each)}`)
         return [
           ...acc,
-          each.test,
-          ...(each.consequent?.body || []),
-          ...(each.alternate?.body || [])
+          ...new ConditionalGround(each).factorize()
         ]
       }
 
       return [...acc, each]
     }, [])
 
-    this.footsteps.push(`AntTrail/steps/result/${eachAst.length}`)
     return eachAst
   }
 
