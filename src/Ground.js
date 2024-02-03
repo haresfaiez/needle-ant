@@ -4,7 +4,33 @@ export class Ground {
   constructor(ast) {
     this.ast = ast
   }
-  
+
+  factorize() {
+    throw new Error('Not implemented yet!')
+  }
+
+  static create(ast) {
+    return ast.type === 'Program' ? new ProgramGround(ast) : new ExpressionGround(ast)
+  }
+}
+
+export class JointGround extends Ground {
+  constructor(sources) {
+    super(null)
+    this.sources = sources
+  }
+
+  factorize() {
+    let result = new Set()
+    this.sources
+      .map(Ground.create)
+      .map(ground => ground.factorize())
+      .forEach(ast => ast.forEach(result.add.bind(result)))
+    return [...result]
+  }
+}
+
+export class ProgramGround extends Ground {
   factorize() {
     let _result  = this.ast
 
@@ -23,17 +49,9 @@ export class Ground {
     }, [])
     return _result
   }
-
-  static create(ast) {
-    return ast.type === 'Program' ? new Ground(ast) : new ExpressionGround(ast)
-  }
 }
 
-export class ExpressionGround {
-  constructor(ast) {
-    this.ast = ast
-  }
-
+export class ExpressionGround extends Ground {
   factorize() {
     const result = new Set()
     AcornWalk.simple(this.ast, {
@@ -48,11 +66,7 @@ export class ExpressionGround {
   }
 }
 
-export class ConditionalGround {
-  constructor(ast) {
-    this.ast = ast
-  }
-
+export class ConditionalGround extends Ground {
   factorize() {
     return [
       this.ast.test,
@@ -62,11 +76,7 @@ export class ConditionalGround {
   }
 }
 
-export class FunctionGround {
-  constructor(ast) {
-    this.ast = ast
-  }
-  
+export class FunctionGround extends Ground {
   factorize() {
     return this.ast.body
   }
