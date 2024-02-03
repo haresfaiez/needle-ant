@@ -1,16 +1,11 @@
 import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
-import { ExpressionEntropy } from './Entropy.js'
 import { Ground } from './Ground.js'
 
-class AntTrail {
+export class AntTrail {
   constructor(sources, footsteps) {
     this.sources = Array.isArray(sources) ? sources : [sources]
     this.footsteps = footsteps || []
-  }
-
-  entropies(scope) {
-    return this.sources.map(eachSource => new ExpressionEntropy(new AntTrail(eachSource), scope))
   }
 
   paint() {

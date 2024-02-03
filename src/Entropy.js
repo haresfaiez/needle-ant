@@ -1,3 +1,5 @@
+import { AntTrail } from './AntTrail.js'
+
 export class Entropy {
   constructor(ast, scope) {
     this.subject = ast
@@ -46,8 +48,8 @@ export class JointEntropy extends Entropy {
   }
 
   calculate() {
-    return this.subject
-      .entropies(this.scope)
+    return this.subject.sources
+      .map(eachSource => new ExpressionEntropy(new AntTrail(eachSource), this.scope))
       .map(e => e.calculate())
       .reduce((a, b) => a + b, 0)
   }
