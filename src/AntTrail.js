@@ -1,7 +1,7 @@
 import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
 import { ExpressionEntropy } from './Entropy.js'
-import { ConditionalGround, ExpressionGround, FunctionGround } from './Ground.js'
+import { Ground } from './Ground.js'
 
 class AntTrail {
   constructor(sources, footsteps) {
@@ -17,37 +17,13 @@ class AntTrail {
     this.sources = this.steps()
   }
 
-  steps(isLowLevel) {
-    if (isLowLevel) {
-      let result = new Set()
-      this.sources
-        .map(source => new ExpressionGround(source).factorize())
-        .forEach(eachAst => [...eachAst].forEach(result.add.bind(result)))
-      return [...result]
-    }
-
-    const ast = this.sources[0]
-
-    let eachAst = ast
-
-    if (eachAst.body[0]?.expression?.type === 'ArrowFunctionExpression') {
-      eachAst = new FunctionGround(eachAst.body[0]?.expression).factorize()
-    }
-
-    eachAst = Array.isArray(eachAst.body) ? eachAst.body : [eachAst]
-
-    eachAst = eachAst.reduce((acc, each) => {
-      if (each.type === 'IfStatement') {
-        return [
-          ...acc,
-          ...new ConditionalGround(each).factorize()
-        ]
-      }
-
-      return [...acc, each]
-    }, [])
-
-    return eachAst
+  steps() {
+    let result = new Set()
+    this.sources
+      .map(Ground.create)
+      .map(ground => ground.factorize())
+      .forEach(ast => ast.forEach(result.add.bind(result)))
+    return [...result]
   }
 
   scope() {
