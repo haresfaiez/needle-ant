@@ -10,7 +10,18 @@ export class Ground {
   }
 
   static create(ast) {
-    return ast.type === 'Program' ? new ProgramGround(ast) : new ExpressionGround(ast)
+    if (ast.type === 'Program') {
+      return new ProgramGround(ast)
+    }
+    if (ast.type === 'IfStatement') {
+      return new ConditionalGround(ast)
+    }
+
+    if (ast.type === 'ArrowFunctionExpression') {
+      return new FunctionGround(ast)
+    }
+
+    return new ExpressionGround(ast)
   }
 }
 
@@ -23,8 +34,23 @@ export class JointGround extends Ground {
   factorize() {
     let result = new Set()
     this.sources
-      .map(Ground.create)
-      .map(ground => ground.factorize())
+      .map(source => Ground.create(source).factorize())
+      .forEach(ast => ast.forEach(result.add.bind(result)))
+    return [...result]
+  }
+
+  _factorizeOnly(expanded) {
+    let result = new Set()
+    this.sources
+      .map(source => !expanded.includes(source.type) ? [source] : Ground.create(source).factorize())
+      .forEach(ast => ast.forEach(result.add.bind(result)))
+    return [...result]
+  }
+
+  factorizeOnly(expanded) {
+    let result = new Set()
+    this.sources
+      .map(source => !expanded.includes(source.expression.type) ? [source] : Ground.create(source.expression).factorize())
       .forEach(ast => ast.forEach(result.add.bind(result)))
     return [...result]
   }
@@ -32,22 +58,17 @@ export class JointGround extends Ground {
 
 export class ProgramGround extends Ground {
   factorize() {
-    let _result  = this.ast
+    return new JointGround(this.ast.body).factorizeOnly(['ArrowFunctionExpression'])
+  }
+}
 
-    if (this.ast.body[0]?.expression?.type === 'ArrowFunctionExpression') {
-      _result = new FunctionGround(this.ast.body[0]?.expression).factorize()
+export class FunctionGround extends Ground {
+  factorize() {
+    if (!Array.isArray(this.ast.body.body)) {
+      return [this.ast.body] // function without brackets.
     }
 
-    _result = Array.isArray(_result.body) ? _result.body : [_result]
-
-    _result = _result.reduce((acc, each) => {
-      if (each.type === 'IfStatement') {
-        return [...acc, ...new ConditionalGround(each).factorize()]
-      }
-
-      return [...acc, each]
-    }, [])
-    return _result
+    return new JointGround(this.ast.body.body)._factorizeOnly(['IfStatement'])
   }
 }
 
@@ -73,11 +94,5 @@ export class ConditionalGround extends Ground {
       ...(this.ast.consequent?.body || []),
       ...(this.ast.alternate?.body || [])
     ]
-  }
-}
-
-export class FunctionGround extends Ground {
-  factorize() {
-    return this.ast.body
   }
 }
