@@ -25,7 +25,13 @@ export class Ground {
       return new FunctionGround(ast)
     }
 
-    return new ExpressionGround(ast)
+    if (ast.type === 'ReturnStatement'
+      || ast.type === 'BinaryExpression'
+      || ast.type === 'ExpressionStatement') {
+      return new ExpressionGround(ast)
+    }
+
+    throw new Error(`Ast type "${ast.type}" not handeled yet!`)
   }
 }
 
