@@ -101,8 +101,8 @@ class ConditionalGround extends Ground {
   factorize() {
     return [
       this.ast.test,
-      ...(this.ast.consequent?.body || []),
-      ...(this.ast.alternate?.body || [])
+      ...new JointGround(this.ast.consequent?.body || [])._factorizeOnly(['IfStatement']),
+      ...new JointGround(this.ast.alternate?.body || [])._factorizeOnly(['IfStatement']),
     ]
   }
 }
