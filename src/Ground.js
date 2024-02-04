@@ -99,10 +99,13 @@ class ExpressionGround extends Ground {
 
 class ConditionalGround extends Ground {
   factorize() {
+    const test = this.ast.test
+    const consequent = this.ast.consequent?.body || []
+    const alternate = this.ast.alternate?.body || []
     return [
-      this.ast.test,
-      ...new JointGround(this.ast.consequent?.body || [])._factorizeOnly(['IfStatement']),
-      ...new JointGround(this.ast.alternate?.body || [])._factorizeOnly(['IfStatement']),
+      test,
+      ...new JointGround(consequent)._factorizeOnly(['IfStatement']),
+      ...new JointGround(alternate)._factorizeOnly(['IfStatement']),
     ]
   }
 }

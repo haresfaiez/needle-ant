@@ -1,64 +1,44 @@
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: variable defintion
-// TODO: dependencies
-
-describe('Nested expressions entropy', () => {
-  it('is the sum of each statement entropy', () => {
-    const code = `(a) => {
-      if (a > 0) {
-        if (a === 1) {
-          return false;
-        } else {
-          return true;
-        }
-      }
-    }`
-    const ant = new NeedleAnt(code)
-    expect(ant.entropy()).toBeCloseTo(1.056, 2)
-  })
-
-  it('twice is the sum of each statement entropy', () => {
-    const code = `(a) => {
-      if (a > 5) {
-        if (a < 0) {
-          if (a === 1) {
-            return false;
-          } else {
-            return true;
-          }
-        }
-      }
-    }`
-    const ant = new NeedleAnt(code)
-    expect(ant.entropy()).toBeCloseTo(1.584, 2)
-  })
-})
-
-describe('Successive statements entropy', () => {
-  it('is the sum of each statement entropy', () => {
-    const ant = new NeedleAnt('(a) => { if (a > 0) { return true; } return a + 1; }')
-    expect(ant.entropy()).toBeCloseTo(1.056, 2)
-  })
-})
-
-describe('Function body entropy', () => {
-  it('with simple conditional', () => {
-    const ant = new NeedleAnt('(a) => { if (a > 0) { return true; } else { return false; } }')
-    expect(ant.entropy()).toBeCloseTo(.528, 2)
-  })
-
-  it('with simple conditional and sum return', () => {
-    const ant = new NeedleAnt('(a) => { if (a > 0) { return a + 2; } else { return a + 4; } }')
-    expect(ant.entropy()).toBeCloseTo(1.584, 2)
-  })
-  // TODO: loops
-})
-
 // TODO: entropy("sum(a(),b())")=e(calling-sum)+e(calling-a)+e(calling-b) === entropy("const h=b(); sum(a(),h)")
 // TODO: entropy("f.c()")=entropy(calling-c-in-f)
 // TODO: entropy("f.c()")=entropy(calling-c-in-f)+entropy(using-f)
-describe('Function entropy', () => {
+
+// TODO: more variables -> more entropy
+// TODO: more state space for variable -> more entropy
+// TODO: `f(b){x(),b(),y()}, f(z)` -> higher entropy than `x(), z(), y()`, but same entropy as `f(){x(),z(),y()}, f()`
+// TODO: entropy(pull request with another if) >>> entropy(pull request that parses config and dispatch)
+// TODO: entropy(a=1, b=2, c=3) > entropy(obj = {a: 1, b: 2, c: 3})
+
+// TODO: no effects on entropy: names/length/lines count
+// TODO: refactoring should not change entropy
+
+// TODO: create graph of entropy changes by commit for open-source projects
+
+// constant name change but all others stay the same
+
+// a, a
+// ab, ac
+// abc, xyw
+// var/const
+// let/var
+// const a = 5, const a = 'Hello'
+// const -> let
+// let -> const
+
+describe('Function', () => {
+  describe('body entropy', () => {
+    it('with simple conditional', () => {
+      const ant = new NeedleAnt('(a) => { if (a > 0) { return true; } else { return false; } }')
+      expect(ant.entropy()).toBeCloseTo(.528, 2)
+    })
+
+    it('with simple conditional and sum return', () => {
+      const ant = new NeedleAnt('(a) => { if (a > 0) { return a + 2; } else { return a + 4; } }')
+      expect(ant.entropy()).toBeCloseTo(1.584, 2)
+    })
+  })
+
   describe('as references are similarely likely', () => {
     it('of function that returns a constant is null', () => {
       const ant = new NeedleAnt('() => 2')
@@ -85,49 +65,6 @@ describe('Function entropy', () => {
       expect(ant.entropy()).toBeCloseTo(.464, 2)
     })
   })
-})
-
-// TODO: more variables -> more entropy
-// TODO: more state space for variable -> more entropy
-// TODO: `f(b){x(),b(),y()}, f(z)` -> higher entropy than `x(), z(), y()`, but same entropy as `f(){x(),z(),y()}, f()`
-// TODO: entropy(pull request with another if) >>> entropy(pull request that parses config and dispatch)
-// TODO: entropy(a=1, b=2, c=3) > entropy(obj = {a: 1, b: 2, c: 3})
-
-// TODO: no effects on entropy: names/length/lines count
-// TODO: refactoring should not change entropy
-
-// TODO: create graph of entropy changes by commit for open-source projects
-
-describe('Dependencies entropy', () => {
-  it('equals 0 when an imported file changes', () => {
-    const initialCode = 'import A from "./a"'
-    const updatedCode = 'import B from "./b"'
-    const ant = new NeedleAnt(initialCode)
-    expect(ant.coverEntropy(updatedCode)).toBe(0)
-  })
-
-  // it('equals new file unit when an import stays but a new file is added in the file system', () => {
-  //   const initialCode = 'import A from "./a"'
-  //   const updatedCode = 'import B from "./b"'
-  //   const ant = new NeedleAnt(initialCode)
-  //   ant.notice('./c')
-  //   expect(ant.coverEntropy(updatedCode)).toBe(100)
-  // })
-
-  // it('favours change that adds less dependencies', () => {
-  //   const initialCode = ''
-  //   const firstUpdatedCode = `
-  //     import A from './a';
-  //     import B from './b';
-  //   `
-  //   const secondUpdatedCode = 'import C from "./c"'
-
-  //   const ant = new NeedleAnt(initialCode)
-  //   const firstEntropy = ant.coverEntropy(firstUpdatedCode)
-  //   const secondEntropy = ant.coverEntropy(secondUpdatedCode)
-
-  //   expect(firstEntropy).toBeGreaterThan(secondEntropy)
-  // })
 })
 
 describe('Declarations entropy', () => {
@@ -175,17 +112,6 @@ describe('Declarations entropy', () => {
     const ant = new NeedleAnt(initialCode)
     expect(ant.coverEntropy(updatedCode)).toBe(4)
   })
-
-  // constant name change but all others stay the same
-
-  // a, a
-  // ab, ac
-  // abc, xyw
-  // var/const
-  // let/var
-  // const a = 5, const a = 'Hello'
-  // const -> let
-  // let -> const
 })
 
 describe('Api change entropy', () => {
