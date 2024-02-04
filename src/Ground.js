@@ -1,6 +1,6 @@
 import * as AcornWalk from 'acorn-walk'
 
-export class Ground {
+class Ground {
   constructor(ast) {
     this.ast = ast
   }
@@ -8,43 +8,58 @@ export class Ground {
   factorize() {
     throw new Error('Not implemented yet!')
   }
+}
 
-  static create(ast) {
-    if (Array.isArray(ast)) {
-      return new JointGround(ast)
+export class AstGround extends Ground {
+  constructor(ast) {
+    super(ast)
+    this.delegate = this.createDelegate()
+  }
+
+  createDelegate() {
+    if (this.ast.type === 'Program') {
+      return new ProgramGround(this.ast)
+    }
+    if (this.ast.type === 'IfStatement') {
+      return new ConditionalGround(this.ast)
     }
 
-    if (ast.type === 'Program') {
-      return new ProgramGround(ast)
-    }
-    if (ast.type === 'IfStatement') {
-      return new ConditionalGround(ast)
+    if (this.ast.type === 'ArrowFunctionExpression') {
+      return new FunctionGround(this.ast)
     }
 
-    if (ast.type === 'ArrowFunctionExpression') {
-      return new FunctionGround(ast)
+    if (this.ast.type === 'ReturnStatement'
+      || this.ast.type === 'BinaryExpression'
+      || this.ast.type === 'ExpressionStatement') {
+      return new ExpressionGround(this.ast)
     }
 
-    if (ast.type === 'ReturnStatement'
-      || ast.type === 'BinaryExpression'
-      || ast.type === 'ExpressionStatement') {
-      return new ExpressionGround(ast)
-    }
+    throw new Error(`Ast type "${this.ast.type}" not handeled yet!`)
+  }
 
-    throw new Error(`Ast type "${ast.type}" not handeled yet!`)
+  factorize() {
+    return this.delegate.factorize()
   }
 }
 
-class JointGround extends Ground {
+export class JointGround extends Ground {
   constructor(sources) {
     super(null)
     this.sources = sources
   }
 
+  ground(ast) {
+    if (Array.isArray(ast)) {
+      return new JointGround(ast)
+    }
+
+    return new AstGround(ast)
+  }
+
   factorize() {
     let result = new Set()
     this.sources
-      .map(source => Ground.create(source).factorize())
+      .map(source => this.ground(source).factorize())
       .forEach(ast => ast.forEach(result.add.bind(result)))
     return [...result]
   }
@@ -52,7 +67,7 @@ class JointGround extends Ground {
   _factorizeOnly(expanded) {
     let result = new Set()
     this.sources
-      .map(source => !expanded.includes(source.type) ? [source] : Ground.create(source).factorize())
+      .map(source => !expanded.includes(source.type) ? [source] : this.ground(source).factorize())
       .forEach(ast => ast.forEach(result.add.bind(result)))
     return [...result]
   }
@@ -60,7 +75,7 @@ class JointGround extends Ground {
   factorizeOnly(expanded) {
     let result = new Set()
     this.sources
-      .map(source => !expanded.includes(source.expression.type) ? [source] : Ground.create(source.expression).factorize())
+      .map(source => !expanded.includes(source.expression.type) ? [source] : this.ground(source.expression).factorize())
       .forEach(ast => ast.forEach(result.add.bind(result)))
     return [...result]
   }

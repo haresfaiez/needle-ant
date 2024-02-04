@@ -1,5 +1,13 @@
 import NeedleAnt from './NeedleAnt.js'
 
+describe('', () => {
+  it('', () => {
+    // const ground = new DependencyGround('export function a() {}')
+    // const ground = new DependencyGround('export function a() {}; export function b() {};')
+
+  })
+})
+
 describe('Dependencies entropy', () => {
   it('equals 0 when an imported file changes', () => {
     const initialCode = 'import A from "./a"'

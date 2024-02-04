@@ -15,17 +15,6 @@ import NeedleAnt from './NeedleAnt.js'
 
 // TODO: create graph of entropy changes by commit for open-source projects
 
-// constant name change but all others stay the same
-
-// a, a
-// ab, ac
-// abc, xyw
-// var/const
-// let/var
-// const a = 5, const a = 'Hello'
-// const -> let
-// let -> const
-
 describe('Function', () => {
   describe('body entropy', () => {
     it('with simple conditional', () => {
