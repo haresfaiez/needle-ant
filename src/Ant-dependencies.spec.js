@@ -1,10 +1,40 @@
 import NeedleAnt from './NeedleAnt.js'
 
-describe('', () => {
-  it('', () => {
-    // const ground = new DependencyGround('export function a() {}')
-    // const ground = new DependencyGround('export function a() {}; export function b() {};')
+import AntTrail from './AntTrail.js'
+import { DependencyEntropy } from './Entropy.js'
 
+describe('Dependency entropy', () => {
+  // it('is null when a module imports the only exported function', () => {
+  //   const code = 'import { a } from "./a"'
+  //   const dependencyCode = 'export function a() {}'
+  //   const entropy = new DependencyEntropy(
+  //     AntTrail.parse(code, (ast) => ast.body),
+  //     AntTrail.parse(dependencyCode)
+  //   )
+
+  //   expect(entropy.calculate()).toBe(0)
+  // })
+
+  // it('is null when a module imports one of three exported functions', () => {
+  //   const code = 'import { a } from "./a"'
+  //   const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
+  //   const entropy = new DependencyEntropy(
+  //     AntTrail.parse(code, (ast) => ast.body),
+  //     AntTrail.parse(dependencyCode)
+  //   )
+
+  //   expect(entropy.calculate()).toBe(.5)
+  // })
+
+  it('is null when a module imports all exported functions', () => {
+    const code = 'import { a, b } from "./a"'
+    const dependencyCode = 'export function a() {}; export function b() {};'
+    const entropy = new DependencyEntropy(
+      AntTrail.parse(code, (ast) => ast.body),
+      AntTrail.parse(dependencyCode)
+    )
+
+    expect(entropy.calculate()).toBe(0)
   })
 })
 
@@ -20,7 +50,7 @@ describe('Dependencies entropy', () => {
   //   const initialCode = 'import A from "./a"'
   //   const updatedCode = 'import B from "./b"'
   //   const ant = new NeedleAnt(initialCode)
-  //   ant.notice('./c')
+  //   ant.notice('./c']
   //   expect(ant.coverEntropy(updatedCode)).toBe(100)
   // })
   

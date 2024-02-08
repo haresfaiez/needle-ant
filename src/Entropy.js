@@ -1,4 +1,5 @@
 import { AntTrail } from './AntTrail.js'
+import { Evaluation } from './Evalution.js'
 
 export class Entropy {
   constructor(ast, scope) {
@@ -13,40 +14,9 @@ export class Entropy {
   minus(dependency) {
     return this.calculate() - dependency.calculate()
   }
-
-  permutation(n, k) {
-    if (n < 0 || k < 0)
-      throw new RangeError(`${n < 0 ? n : k} is out of range`)
-
-    if (0 == k)
-      return 1
-
-    if (n < k)
-      return 0
-
-    let [bn, bk, bp] = [n, k, 1]
-    while (bk--)
-      bp *= bn--
-
-    return bp
-  }
-
-  combination(n, k) {
-    if ((0 == k) || (n == k))
-      return 1
-
-    if (n < k)
-      return 0
-
-    return this.permutation(n, k) / this.permutation(k, k)
-  }
 }
 
 export class JointEntropy extends Entropy {
-  constructor(ast, scope) {
-    super(ast, scope)
-  }
-
   calculate() {
     return this.subject.sources
       .map(eachSource => new ExpressionEntropy(new AntTrail(eachSource), this.scope))
@@ -57,6 +27,13 @@ export class JointEntropy extends Entropy {
   
 export class DependencyEntropy extends Entropy {
   calculate() {
+    if (this.scope) {
+      const actualCount = this.subject.steps().length
+      const allPossibilitiesCount = this.scope.exports().length
+      return new Evaluation(actualCount, allPossibilitiesCount)
+        .calculate()
+    }
+
     const numberOfFiles = 2
     const possibleFiles = 2
     const fileProbabilty = 1/numberOfFiles
@@ -87,28 +64,12 @@ export class DeclarationEntropy extends Entropy {
 }
 
 export class ExpressionEntropy extends Entropy {
-  constructor(ast, scope) {
-    super(ast, scope)
-  }
-
   calculate() {
-    return this.probability() * Math.log2(this.probability()) * (-1)
-  }
-
-  probability() {
-    return 1 / this.possibilitiesCount()
-  }
-
-  possibilitiesCount() {
-    const primitiveAndGlobalsCount = 1
-    let combinationsCount = 0
-    if (this.subject.identifiers().length > 0) {
-      combinationsCount = this.combination(
-        this.scope.length + primitiveAndGlobalsCount,
-        this.subject.steps().length
-      )
-    }
-
-    return this.subject.identifiers().length + this.subject.literalsWeight() + combinationsCount
+    const actualCount = this.subject.identifiers().length > 0 ? this.subject.steps().length : 0
+    const allPossibilitiesCount = this.scope.length
+    const localPossibilities = this.subject.identifiers().length + this.subject.literalsWeight()
+    return new Evaluation(actualCount, allPossibilitiesCount)
+      .withLocalPossibilities(localPossibilities)
+      .calculate()
   }
 }

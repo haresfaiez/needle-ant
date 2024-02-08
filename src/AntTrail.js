@@ -20,6 +20,18 @@ export class AntTrail {
     return this.identifiers()
   }
 
+  exports() {
+    let result = new Set()
+    this.sources.forEach(eachAst => {
+      AcornWalk.simple(eachAst, {
+        ExportNamedDeclaration(node) {
+          result.add(node)
+        }
+      })
+    })
+    return [...result]
+  }
+
   identifiers() {
     let result = new Set()
     const footsteps = this.footsteps
@@ -47,8 +59,9 @@ export class AntTrail {
     return result.length ? 1 : 0
   }
 
-  static parse(sourceCode) {
-    return new AntTrail(Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' }))
+  static parse(sourceCode, transformer) {
+    const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
+    return new AntTrail(transformer ? transformer(ast) : ast)
   }
 }
 

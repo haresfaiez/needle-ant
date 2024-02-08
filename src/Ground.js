@@ -34,6 +34,10 @@ export class AstGround extends Ground {
       return new ExpressionGround(this.ast)
     }
 
+    if (this.ast.type === 'ImportDeclaration') {
+      return new DependencyGround(this.ast)
+    }
+
     throw new Error(`Ast type "${this.ast.type}" not handeled yet!`)
   }
 
@@ -121,6 +125,15 @@ class ConditionalGround extends Ground {
       test,
       ...new JointGround(consequent)._factorizeOnly(['IfStatement']),
       ...new JointGround(alternate)._factorizeOnly(['IfStatement']),
+    ]
+  }
+}
+
+class DependencyGround extends Ground {
+  factorize() {
+    // console.log('ast/', this.ast.specifiers)
+    return [
+      ...this.ast.specifiers
     ]
   }
 }
