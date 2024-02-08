@@ -10,29 +10,22 @@ export class Evaluation {
     return this
   }
 
-  __possibilitiesCount(primitiveAndGlobalsCount = 1) {
-    let combinationsCount = 0
-    if (this.actualCount > 0) {
-      combinationsCount = this.combination(this.possibleCount + primitiveAndGlobalsCount, this.actualCount)
-    }
-
-    return this.localPossibilitiesCount + combinationsCount
-  }
-
-  possibilitiesCount() {
+  possibilitiesCount(primitiveAndGlobalsCount = 0) {
     if (this.localPossibilitiesCount) {
-      return this.__possibilitiesCount(1)
+      primitiveAndGlobalsCount = 1
     }
+
     const combinationsCount =
       this.actualCount > 1
-        ? this.combination(this.possibleCount, this.actualCount)
+        ? this.combination(this.possibleCount + primitiveAndGlobalsCount, this.actualCount)
         : 0
   
     const possibilitiesWeight =
       this.actualCount < this.possibleCount
         ? this.possibleCount
         : 0
-    return possibilitiesWeight + combinationsCount
+
+    return (this.localPossibilitiesCount || possibilitiesWeight) + combinationsCount
   }
 
   probability() {
@@ -42,7 +35,7 @@ export class Evaluation {
   calculate() {
     if (this.probability() === 1)
       return 0
-    // console.log('count/', this.probability() * Math.log2(this.probability()) * (-1))
+
     return this.probability() * Math.log2(this.probability()) * (-1)
   }
 
