@@ -8,6 +8,10 @@ export class Entropy {
   }
 
   calculate() {
+    return this.evaluate().calculate()
+  }
+
+  evaluate() {
     throw new Error('Non implemented yet')
   }
 
@@ -26,18 +30,10 @@ export class JointEntropy extends Entropy {
 }
   
 export class DependencyEntropy extends Entropy {
-  calculate() {
-    if (this.scope) {
-      const actualCount = this.subject.steps().length
-      const allPossibilitiesCount = this.scope.exports().length
-      return new Evaluation(actualCount, allPossibilitiesCount)
-        .calculate()
-    }
-
-    const numberOfFiles = 2
-    const possibleFiles = 2
-    const fileProbabilty = 1/numberOfFiles
-    return fileProbabilty * possibleFiles * Math.log2(numberOfFiles)
+  evaluate() {
+    const actualCount = this.subject.steps().length
+    const allPossibilitiesCount = this.scope.exports().length
+    return new Evaluation(actualCount, allPossibilitiesCount)
   }
 }
   
@@ -64,12 +60,11 @@ export class DeclarationEntropy extends Entropy {
 }
 
 export class ExpressionEntropy extends Entropy {
-  calculate() {
+  evaluate() {
     const actualCount = this.subject.identifiers().length > 0 ? this.subject.steps().length : 0
     const allPossibilitiesCount = this.scope.length
     const localPossibilities = this.subject.identifiers().length + this.subject.literalsWeight()
     return new Evaluation(actualCount, allPossibilitiesCount)
       .withLocalPossibilities(localPossibilities)
-      .calculate()
   }
 }
