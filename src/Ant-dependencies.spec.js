@@ -1,5 +1,18 @@
-import AntTrail from './AntTrail.js'
+import { AntTrail } from './AntTrail.js'
 import { DependencyEntropy } from './Entropy.js'
+import { Evaluation } from './Evalution.js'
+
+describe('Module dependency entropy', () => {
+  it('of wildecard checks files available for import', () => {
+    const code = 'import * as A from "./a"'
+    const entropy = new DependencyEntropy(
+      AntTrail.parse(code, (ast) => ast.body),
+      AntTrail.create().add('./B.js').add('./C.js')
+    )
+
+    expect(entropy.evaluate()).toEqual(new Evaluation(1, 2))
+  })
+})
 
 describe('Dependency entropy', () => {
   // it('is null when a module imports the only exported function', () => {

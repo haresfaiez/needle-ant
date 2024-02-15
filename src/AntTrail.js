@@ -12,6 +12,29 @@ export class AntTrail {
     this.sources = this.steps()
   }
 
+  odds() {
+    throw new Error('Not implemented yet!')
+  }
+
+  add() {
+    throw new Error('Not implemented yet!')
+  }
+
+  static parse(sourceCode, transformer) {
+    const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
+    return new AstStructure(transformer ? transformer(ast) : ast)
+  }
+
+  static from(ast, footsteps) {
+    return new AstStructure(ast, footsteps)
+  }
+
+  static create() {
+    return new DependenciesStructure()
+  }
+}
+
+class AstStructure extends AntTrail {
   steps() {
     return new JointGround(this.sources).factorize()
   }
@@ -20,7 +43,7 @@ export class AntTrail {
     return this.identifiers()
   }
 
-  exports() {
+  odds() {
     let result = new Set()
     this.sources.forEach(eachAst => {
       AcornWalk.simple(eachAst, {
@@ -58,11 +81,18 @@ export class AntTrail {
     })
     return result.length ? 1 : 0
   }
+}
 
-  static parse(sourceCode, transformer) {
-    const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
-    return new AntTrail(transformer ? transformer(ast) : ast)
+class DependenciesStructure extends AntTrail {
+  files = []
+
+  add(file) {
+    this.files.push(file)
+    return this
+  }
+
+  odds() {
+    return this.files
   }
 }
 
-export default AntTrail

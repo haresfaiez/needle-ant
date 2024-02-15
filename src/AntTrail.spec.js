@@ -1,4 +1,4 @@
-import AntTrail from './AntTrail.js'
+import { AntTrail } from './AntTrail.js'
 
 describe('Expresson factors', () => {
   it('of "a + b + c" are a, b, and c', () => {

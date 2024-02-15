@@ -23,7 +23,7 @@ export class Entropy {
 export class JointEntropy extends Entropy {
   calculate() {
     return this.subject.sources
-      .map(eachSource => new ExpressionEntropy(new AntTrail(eachSource), this.scope))
+      .map(eachSource => new ExpressionEntropy(AntTrail.from(eachSource), this.scope))
       .map(e => e.calculate())
       .reduce((a, b) => a + b, 0)
   }
@@ -32,7 +32,7 @@ export class JointEntropy extends Entropy {
 export class DependencyEntropy extends Entropy {
   evaluate() {
     const actualCount = this.subject.steps().length
-    const allPossibilitiesCount = this.scope.exports().length
+    const allPossibilitiesCount = this.scope.odds().length
     return new Evaluation(actualCount, allPossibilitiesCount)
   }
 }
