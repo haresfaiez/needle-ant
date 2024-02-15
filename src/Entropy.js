@@ -2,9 +2,9 @@ import { AntTrail } from './AntTrail.js'
 import { Evaluation } from './Evalution.js'
 
 export class Entropy {
-  constructor(ast, scope) {
-    this.subject = ast
-    this.scope = scope
+  constructor(dividend, divisor) {
+    this.dividend = dividend
+    this.divisor = divisor
   }
 
   calculate() {
@@ -15,15 +15,15 @@ export class Entropy {
     throw new Error('Non implemented yet')
   }
 
-  minus(dependency) {
-    return this.calculate() - dependency.calculate()
+  minus(other) {
+    return this.calculate() - other.calculate()
   }
 }
 
 export class JointEntropy extends Entropy {
   calculate() {
-    return this.subject.sources
-      .map(eachSource => new ExpressionEntropy(AntTrail.from(eachSource), this.scope))
+    return this.dividend.sources
+      .map(eachSource => new ExpressionEntropy(AntTrail.from(eachSource), this.divisor))
       .map(e => e.calculate())
       .reduce((a, b) => a + b, 0)
   }
@@ -31,21 +31,21 @@ export class JointEntropy extends Entropy {
   
 export class DependencyEntropy extends Entropy {
   evaluate() {
-    const actualCount = this.subject.steps().length
-    const allPossibilitiesCount = this.scope.odds().length
+    const actualCount = this.dividend.steps().length
+    const allPossibilitiesCount = this.divisor.odds().length
     return new Evaluation(actualCount, allPossibilitiesCount)
   }
 }
   
 export class DeclarationEntropy extends Entropy {
   kindProbability() {
-    if (this.subject.sources[0].body?.[0].kind === 'let')
+    if (this.dividend.sources[0].body?.[0].kind === 'let')
       return 2/6
   
-    if (this.subject.sources[0].body?.[0].kind === 'var')
+    if (this.dividend.sources[0].body?.[0].kind === 'var')
       return 1/6
   
-    if (this.subject.sources[0].body?.[0].kind === 'const')
+    if (this.dividend.sources[0].body?.[0].kind === 'const')
       return 3/6
   
     throw new Error('Unknown declaration kind')
@@ -61,9 +61,9 @@ export class DeclarationEntropy extends Entropy {
 
 export class ExpressionEntropy extends Entropy {
   evaluate() {
-    const actualCount = this.subject.identifiers().length > 0 ? this.subject.steps().length : 0
-    const allPossibilitiesCount = this.scope.length
-    const localPossibilities = this.subject.identifiers().length + this.subject.literalsWeight()
+    const actualCount = this.dividend.identifiers().length > 0 ? this.dividend.steps().length : 0
+    const allPossibilitiesCount = this.divisor.length
+    const localPossibilities = this.dividend.identifiers().length + this.dividend.literalsWeight()
     return new Evaluation(actualCount, allPossibilitiesCount)
       .withLocalPossibilities(localPossibilities)
   }
