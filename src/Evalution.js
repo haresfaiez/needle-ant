@@ -5,6 +5,10 @@ export class Evaluation {
     this.possibleCount = possibleCount
   }
 
+  plus(otherEvaluation) {
+    return new JointEvaluation([this, otherEvaluation])
+  }
+
   withLocalPossibilities(localPossibilitiesCount) {
     this.localPossibilitiesCount = localPossibilitiesCount
     return this
@@ -64,5 +68,27 @@ export class Evaluation {
       return 0
 
     return this.permutation(n, k) / this.permutation(k, k)
+  }
+}
+
+export class JointEvaluation extends Evaluation {
+  constructor(evaluations) {
+    super()
+    this.evaluations = evaluations
+  }
+
+  plus(otherEvaluation) {
+    this.evaluations.push(otherEvaluation)
+    return this
+  }
+
+  calculate() {
+    return this.evaluations.reduce((acc, eachEntropy) => acc + eachEntropy.calculate(), 0)
+  }
+}
+
+export class NullEvaluation extends Evaluation {
+  calculate() {
+    return 0
   }
 }

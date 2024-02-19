@@ -1,5 +1,5 @@
 import { AntTrail } from './AntTrail.js'
-import { Evaluation } from './Evalution.js'
+import { Evaluation, NullEvaluation } from './Evalution.js'
 
 export class Entropy {
   constructor(dividend, divisor) {
@@ -21,11 +21,10 @@ export class Entropy {
 }
 
 export class JointEntropy extends Entropy {
-  calculate() {
+  evaluate() {
     return this.dividend.sources
       .map(eachSource => new ExpressionEntropy(AntTrail.from(eachSource), this.divisor))
-      .map(e => e.calculate())
-      .reduce((a, b) => a + b, 0)
+      .reduce((acc, eachEntropy) => acc.plus(eachEntropy.evaluate()), new NullEvaluation())
   }
 }
   
