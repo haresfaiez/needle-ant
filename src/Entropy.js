@@ -30,7 +30,7 @@ export class JointEntropy extends Entropy {
   
 export class DependencyEntropy extends Entropy {
   evaluate() {
-    const actualCount = this.dividend.steps().length
+    const actualCount = this.dividend.odds().length
     const allPossibilitiesCount = this.divisor.odds().length
     return new Evaluation(actualCount, allPossibilitiesCount)
   }
@@ -60,7 +60,7 @@ export class DeclarationEntropy extends Entropy {
 
 export class ExpressionEntropy extends Entropy {
   evaluate() {
-    const actualCount = this.dividend.identifiers().length > 0 ? this.dividend.steps().length : 0
+    const actualCount = this.dividend.identifiers().length > 0 ? this.dividend.odds().length : 0
     const allPossibilitiesCount = this.divisor.length
     const localPossibilities = this.dividend.identifiers().length + this.dividend.literalsWeight()
     return new Evaluation(actualCount, allPossibilitiesCount)

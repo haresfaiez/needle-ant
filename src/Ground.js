@@ -38,6 +38,10 @@ export class AstGround extends Ground {
       return new DependencyGround(this.ast)
     }
 
+    if (this.ast.type === 'ExportNamedDeclaration') {
+      return new ExpressionGround(this.ast)
+    }
+
     throw new Error(`Ast type "${this.ast.type}" not handeled yet!`)
   }
 
@@ -71,14 +75,20 @@ export class JointGround extends Ground {
   _factorizeOnly(expanded) {
     let result = new Set()
     this.sources
+      .filter(source => source.type !== 'EmptyStatement')
       .map(source => !expanded.includes(source.type) ? [source] : this.ground(source).factorize())
       .forEach(ast => ast.forEach(result.add.bind(result)))
     return [...result]
   }
 
   factorizeOnly(expanded) {
+    if (this.sources[0].type === 'ExportNamedDeclaration') {
+      return this._factorizeOnly(['ExportNamedDeclaration'])
+    }
+
     let result = new Set()
     this.sources
+      .filter(e => e.type !== 'EmptyStatement')
       .map(source => !expanded.includes(source.expression.type) ? [source] : this.ground(source.expression).factorize())
       .forEach(ast => ast.forEach(result.add.bind(result)))
     return [...result]
@@ -110,6 +120,9 @@ class ExpressionGround extends Ground {
       },
       Literal(node) {
         result.add(node)
+      },
+      ExportNamedDeclaration(node) {
+        result.add(node)
       }
     })
     return result
@@ -131,7 +144,6 @@ class ConditionalGround extends Ground {
 
 class DependencyGround extends Ground {
   factorize() {
-    // console.log('ast/', this.ast.specifiers)
     return [
       ...this.ast.specifiers
     ]

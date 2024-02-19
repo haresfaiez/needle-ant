@@ -8,8 +8,9 @@ export class AntTrail {
     this.footsteps = footsteps || []
   }
 
+  // TODO: remove this
   paint() {
-    this.sources = this.steps()
+    this.sources = this.odds()
   }
 
   odds() {
@@ -35,24 +36,12 @@ export class AntTrail {
 }
 
 class AstStructure extends AntTrail {
-  steps() {
+  odds() {
     return new JointGround(this.sources).factorize()
   }
 
   scope() {
     return this.identifiers()
-  }
-
-  odds() {
-    let result = new Set()
-    this.sources.forEach(eachAst => {
-      AcornWalk.simple(eachAst, {
-        ExportNamedDeclaration(node) {
-          result.add(node)
-        }
-      })
-    })
-    return [...result]
   }
 
   identifiers() {
