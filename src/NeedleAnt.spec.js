@@ -36,7 +36,7 @@ describe('Function', () => {
 
     it('of function that takes an argument and returns a constant', () => {
       const ant = new NeedleAnt('2')
-      expect(ant.entropy()).toBeCloseTo(0, 2)
+      expect(ant.entropy()).toBe(0)
     })
 
     it('of function that increments a number', () => {
@@ -49,9 +49,9 @@ describe('Function', () => {
       expect(ant.entropy()).toBeCloseTo(.528, 2)
     })
 
-    it('of function that sums two numbers', () => {
+    it('of function that sums all available variables', () => {
       const ant = new NeedleAnt('a + b')
-      expect(ant.entropy()).toBeCloseTo(.464, 2)
+      expect(ant.entropy()).toBe(0)
     })
   })
 })

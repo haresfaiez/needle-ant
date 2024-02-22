@@ -37,6 +37,9 @@ export class Evaluation {
   }
 
   calculate() {
+    if (this.actualCount === this.possibleCount)
+      return 0
+
     if (this.probability() === 1)
       return 0
 

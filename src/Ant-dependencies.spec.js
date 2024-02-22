@@ -15,7 +15,19 @@ describe('Module dependency entropy', () => {
 })
 
 describe('Dependency entropy', () => {
-  // it('is null when a module imports the only exported function', () => {
+  it('is null when a module imports the only exported function', () => {
+    const code = 'import { a } from "./a"'
+    const dependencyCode = 'export function a() {}'
+    const entropy = new DependencyEntropy(
+      AntTrail.parse(code, (ast) => ast.body),
+      AntTrail.parse(dependencyCode)
+    )
+
+    expect(entropy.evaluate()).toEqual(new Evaluation(1, 1))
+    expect(entropy.calculate()).toBe(0)
+  })
+
+  // it('is null when a module imports one of three exported functions', () => {
   //   const code = 'import { a } from "./a"'
   //   const dependencyCode = 'export function a() {}'
   //   const entropy = new DependencyEntropy(
