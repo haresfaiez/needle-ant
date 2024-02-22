@@ -27,16 +27,27 @@ describe('Dependency entropy', () => {
     expect(entropy.calculate()).toBe(0)
   })
 
-  // it('is null when a module imports one of three exported functions', () => {
-  //   const code = 'import { a } from "./a"'
-  //   const dependencyCode = 'export function a() {}'
-  //   const entropy = new DependencyEntropy(
-  //     AntTrail.parse(code, (ast) => ast.body),
-  //     AntTrail.parse(dependencyCode)
-  //   )
+  it('is null when a module imports one of three exported functions', () => {
+    const code = 'import { a } from "./a"'
+    const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
+    const entropy = new DependencyEntropy(
+      AntTrail.parse(code, (ast) => ast.body),
+      AntTrail.parse(dependencyCode)
+    )
 
-  //   expect(entropy.calculate()).toBe(0)
-  // })
+    expect(entropy.evaluate()).toEqual(new Evaluation(1, 3))
+  })
+
+  it('is not null when a module imports two of three exported functions', () => {
+    const code = 'import { a, b } from "./a"'
+    const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
+    const entropy = new DependencyEntropy(
+      AntTrail.parse(code, (ast) => ast.body),
+      AntTrail.parse(dependencyCode)
+    )
+
+    expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
+  })
 
   // it('is null when a module imports one of three exported functions', () => {
   //   const code = 'import { a } from "./a"'
