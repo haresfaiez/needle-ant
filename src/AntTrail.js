@@ -1,11 +1,20 @@
 import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
-import { JointGround } from './Ground.js'
 
-export class AntTrail {
+
+class Reflexion {
   constructor(sources, footsteps) {
     this.sources = Array.isArray(sources) ? sources : [sources]
     this.footsteps = footsteps || []
+  }
+
+  // TODO: Rename this
+  ground(ast) {
+    if (Array.isArray(ast)) {
+      return new JointGround(ast)
+    }
+
+    return new AstGround(ast)
   }
 
   // TODO: remove this
@@ -21,6 +30,146 @@ export class AntTrail {
     throw new Error('Not implemented yet!')
   }
 
+  factorize() {
+    throw new Error('Not implemented yet!')
+  }
+}
+
+class Ground {
+  constructor(ast) {
+    this.ast = ast
+  }
+
+  factorize() {
+    throw new Error('Not implemented yet!')
+  }
+}
+
+export class AstGround extends Ground {
+  constructor(ast) {
+    super(ast)
+    this.delegate = this.createDelegate()
+  }
+
+  createDelegate() {
+    if (this.ast.type === 'Program') {
+      return new ProgramGround(this.ast)
+    }
+    if (this.ast.type === 'IfStatement') {
+      return new ConditionalGround(this.ast)
+    }
+
+    if (this.ast.type === 'ArrowFunctionExpression') {
+      return new FunctionGround(this.ast)
+    }
+
+    if (this.ast.type === 'ReturnStatement'
+      || this.ast.type === 'BinaryExpression'
+      || this.ast.type === 'ExpressionStatement'
+      || this.ast.type === 'ImportSpecifier') {
+      return new ExpressionGround(this.ast)
+    }
+
+    if (this.ast.type === 'ImportDeclaration') {
+      return new DependenciesStructure(this.ast)
+    }
+
+    if (this.ast.type === 'ExportNamedDeclaration') {
+      return new ExpressionGround(this.ast)
+    }
+
+    throw new Error(`Ast type "${this.ast.type}" not handeled yet!`)
+  }
+
+  factorize() {
+    return this.delegate.factorize()
+  }
+}
+
+class JointGround extends Reflexion {
+  // TODO: keep only one factorize()
+  factorize() {
+    let result = new Set()
+    this.sources
+      .map(source => this.ground(source).factorize())
+      .forEach(ast => ast.forEach(result.add.bind(result)))
+    return [...result]
+  }
+
+  _factorizeOnly(expanded) {
+    let result = new Set()
+    this.sources
+      .filter(source => source.type !== 'EmptyStatement')
+      .map(source => !expanded.includes(source.type) ? [source] : this.ground(source).factorize())
+      .forEach(ast => ast.forEach(result.add.bind(result)))
+    return [...result]
+  }
+
+  factorizeOnly(expanded) {
+    if (this.sources[0].type === 'ExportNamedDeclaration') {
+      return this._factorizeOnly(['ExportNamedDeclaration'])
+    }
+
+    let result = new Set()
+    this.sources
+      .filter(e => e.type !== 'EmptyStatement')
+      .map(source => !expanded.includes(source.expression.type) ? [source] : this.ground(source.expression).factorize())
+      .forEach(ast => ast.forEach(result.add.bind(result)))
+    return [...result]
+  }
+}
+
+class ProgramGround extends Ground {
+  factorize() {
+    return new JointGround(this.ast.body).factorizeOnly(['ArrowFunctionExpression'])
+  }
+}
+
+class FunctionGround extends Ground {
+  factorize() {
+    if (!Array.isArray(this.ast.body.body)) {
+      return [this.ast.body] // function without brackets.
+    }
+
+    return new JointGround(this.ast.body.body)._factorizeOnly(['IfStatement'])
+  }
+}
+
+class ExpressionGround extends Ground {
+  factorize() {
+    const result = new Set()
+    AcornWalk.simple(this.ast, {
+      Identifier(node) {
+        result.add(node)
+      },
+      Literal(node) {
+        result.add(node)
+      },
+      ExportNamedDeclaration(node) {
+        result.add(node)
+      },
+      ImportSpecifier(node) {
+        result.add(node.imported.name)
+      }
+    })
+    return result
+  }
+}
+
+class ConditionalGround extends Ground {
+  factorize() {
+    const test = this.ast.test
+    const consequent = this.ast.consequent?.body || []
+    const alternate = this.ast.alternate?.body || []
+    return [
+      test,
+      ...new JointGround(consequent)._factorizeOnly(['IfStatement']),
+      ...new JointGround(alternate)._factorizeOnly(['IfStatement']),
+    ]
+  }
+}
+
+export class AntTrail extends Reflexion {
   static parse(sourceCode, transformer) {
     const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
     return new AstStructure(transformer ? transformer(ast) : ast)
@@ -41,7 +190,7 @@ export class AntTrail {
   }
 }
 
-class AstStructure extends AntTrail {
+class AstStructure extends Reflexion {
   odds() {
     return new JointGround(this.sources).factorize()
   }
@@ -99,7 +248,7 @@ class AstStructure extends AntTrail {
   }
 }
 
-class DependenciesStructure extends AntTrail {
+class DependenciesStructure extends Reflexion {
   files = []
 
   add(file) {
@@ -109,6 +258,20 @@ class DependenciesStructure extends AntTrail {
 
   odds() {
     return this.files
+  }
+
+  // TODO: keep only one factorize()
+  __factorize() {
+    return [
+      this.sources[0].specifiers,
+      this.sources[0].source
+    ]
+  }
+
+  factorize() {
+    return [
+      ...this.sources[0].specifiers
+    ]
   }
 }
 

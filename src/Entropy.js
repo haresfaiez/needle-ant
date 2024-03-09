@@ -1,7 +1,7 @@
-import { AntTrail } from './AntTrail.js'
+import { AntTrail, AstGround } from './AntTrail.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
-import { AstGround } from './Ground.js'
 
+// TODO: Merge all in one class
 export class Entropy {
   constructor(dividend, divisor) {
     this.dividend = dividend
