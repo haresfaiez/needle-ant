@@ -17,6 +17,36 @@ class Reflexion {
     return new AstGround(ast)
   }
 
+  createDelegate(ast) {
+    if (ast.type === 'Program') {
+      return new ProgramGround(ast)
+    }
+    if (ast.type === 'IfStatement') {
+      return new ConditionalGround(ast)
+    }
+
+    if (ast.type === 'ArrowFunctionExpression') {
+      return new FunctionGround(ast)
+    }
+
+    if (ast.type === 'ReturnStatement'
+      || ast.type === 'BinaryExpression'
+      || ast.type === 'ExpressionStatement'
+      || ast.type === 'ImportSpecifier') {
+      return new ExpressionGround(ast)
+    }
+
+    if (ast.type === 'ImportDeclaration') {
+      return new DependenciesStructure(ast)
+    }
+
+    if (ast.type === 'ExportNamedDeclaration') {
+      return new ExpressionGround(ast)
+    }
+
+    throw new Error(`Ast type "${ast.type}" not handeled yet!`)
+  }
+
   // TODO: remove this
   paint() {
     this.sources = this.odds()
@@ -45,40 +75,11 @@ class Ground {
   }
 }
 
-export class AstGround extends Ground {
+export class AstGround extends Reflexion {
+  // TODO: Merge this with Reflexion
   constructor(ast) {
     super(ast)
-    this.delegate = this.createDelegate()
-  }
-
-  createDelegate() {
-    if (this.ast.type === 'Program') {
-      return new ProgramGround(this.ast)
-    }
-    if (this.ast.type === 'IfStatement') {
-      return new ConditionalGround(this.ast)
-    }
-
-    if (this.ast.type === 'ArrowFunctionExpression') {
-      return new FunctionGround(this.ast)
-    }
-
-    if (this.ast.type === 'ReturnStatement'
-      || this.ast.type === 'BinaryExpression'
-      || this.ast.type === 'ExpressionStatement'
-      || this.ast.type === 'ImportSpecifier') {
-      return new ExpressionGround(this.ast)
-    }
-
-    if (this.ast.type === 'ImportDeclaration') {
-      return new DependenciesStructure(this.ast)
-    }
-
-    if (this.ast.type === 'ExportNamedDeclaration') {
-      return new ExpressionGround(this.ast)
-    }
-
-    throw new Error(`Ast type "${this.ast.type}" not handeled yet!`)
+    this.delegate = this.sources.map(e => this.createDelegate(e))[0]
   }
 
   factorize() {
