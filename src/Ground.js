@@ -30,7 +30,8 @@ export class AstGround extends Ground {
 
     if (this.ast.type === 'ReturnStatement'
       || this.ast.type === 'BinaryExpression'
-      || this.ast.type === 'ExpressionStatement') {
+      || this.ast.type === 'ExpressionStatement'
+      || this.ast.type === 'ImportSpecifier') {
       return new ExpressionGround(this.ast)
     }
 
@@ -64,6 +65,7 @@ export class JointGround extends Ground {
     return new AstGround(ast)
   }
 
+  // TODO: keep only one factorize()
   factorize() {
     let result = new Set()
     this.sources
@@ -123,6 +125,9 @@ class ExpressionGround extends Ground {
       },
       ExportNamedDeclaration(node) {
         result.add(node)
+      },
+      ImportSpecifier(node) {
+        result.add(node.imported.name)
       }
     })
     return result
@@ -143,6 +148,14 @@ class ConditionalGround extends Ground {
 }
 
 class DependencyGround extends Ground {
+  // TODO: keep only one factorize()
+  __factorize() {
+    return [
+      this.ast.specifiers,
+      this.ast.source
+    ]
+  }
+
   factorize() {
     return [
       ...this.ast.specifiers

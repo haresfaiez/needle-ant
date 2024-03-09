@@ -3,6 +3,7 @@ export class Evaluation {
   constructor(actualCount, possibleCount) {
     this.actualCount = actualCount
     this.possibleCount = possibleCount
+    this.localPossibilitiesCount = 0
   }
 
   plus(otherEvaluation) {

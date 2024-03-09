@@ -1,5 +1,6 @@
 import { AntTrail } from './AntTrail.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
+import { AstGround } from './Ground.js'
 
 export class Entropy {
   constructor(dividend, divisor) {
@@ -30,6 +31,15 @@ export class JointEntropy extends Entropy {
   
 export class DependencyEntropy extends Entropy {
   evaluate() {
+    const importParts = new AstGround(this.dividend.sources[0]).delegate.__factorize()
+    const importSpecifiers = importParts[0]
+    const importSource = importParts[1]
+    // TODO: Remove this check
+    if (this.divisor.otherModules) {
+      return new ExpressionEntropy(AntTrail.from(importSpecifiers), this.divisor.importedModuleExports).evaluate()
+      .plus(new ExpressionEntropy(AntTrail.from(importSource), this.divisor.otherModules).evaluate())
+    }
+
     const actualCount = this.dividend.odds().length
     const allPossibilitiesCount = this.divisor.odds().length
     return new Evaluation(actualCount, allPossibilitiesCount)
@@ -60,7 +70,8 @@ export class DeclarationEntropy extends Entropy {
 
 export class ExpressionEntropy extends Entropy {
   evaluate() {
-    const actualCount = this.dividend.identifiers().length > 0 ? this.dividend.odds().length : 0
+    // TODO: simplify this method
+    const actualCount = this.dividend.sources?.[0]?.type === 'ImportNamespaceSpecifier' ? 3 : (this.dividend.identifiers().length > 0 ? this.dividend.odds().length : 0)
     const allPossibilitiesCount = this.divisor.length
     const localPossibilities = this.dividend.identifiers().length + this.dividend.literalsWeight()
     return new Evaluation(actualCount, allPossibilitiesCount)

@@ -49,16 +49,17 @@ describe('Dependency entropy', () => {
     expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
   })
 
-  // it('is null when a module imports one of three exported functions', () => {
-  //   const code = 'import { a } from "./a"'
-  //   const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
-  //   const entropy = new DependencyEntropy(
-  //     AntTrail.parse(code, (ast) => ast.body),
-  //     AntTrail.parse(dependencyCode)
-  //   )
+  it('is null when a module imports one of three exported functions', () => {
+    const code = 'import { a } from "./a";'
+    const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
+    const entropy = new DependencyEntropy(
+      AntTrail.parse(code, (ast) => ast.body),
+      AntTrail.dependency(dependencyCode, [ './a', './b', './c', './e' ])
+    )
 
-  //   expect(entropy.calculate()).toBe(.5)
-  // })
+    const expected = new Evaluation(1, 3).withLocalPossibilities(1).plus(new Evaluation(0, 4).withLocalPossibilities(1))
+    expect(entropy.evaluate()).toEqual(expected)
+  })
 
   it('is null when a module imports all exported functions', () => {
     const code = 'import { a, b } from "./a"'
@@ -68,7 +69,7 @@ describe('Dependency entropy', () => {
       AntTrail.parse(dependencyCode)
     )
 
-    expect(entropy.calculate()).toBe(0)
+    expect(entropy.calculate()).toEqual(0)
   })
 })
 
