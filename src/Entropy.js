@@ -37,7 +37,7 @@ export class DependencyEntropy extends Entropy {
     // TODO: Remove this check
     if (this.divisor.otherModules) {
       return new ExpressionEntropy(AntTrail.from(importSpecifiers), this.divisor.importedModuleExports).evaluate()
-      .plus(new ExpressionEntropy(AntTrail.from(importSource), this.divisor.otherModules).evaluate())
+        .plus(new ExpressionEntropy(AntTrail.from(importSource), this.divisor.otherModules).evaluate())
     }
 
     const actualCount = this.dividend.odds().length
