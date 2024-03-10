@@ -59,14 +59,17 @@ class Reflexion {
   add() {
     throw new Error('Not implemented yet!')
   }
-
   factorize() {
-    throw new Error('Not implemented yet!')
+    let result = new Set()
+    this.sources
+      .map(source => this.factorizeEach(source))
+      .forEach(ast => ast.forEach(result.add.bind(result)))
+    return [...result]
   }
 }
 
 export class AstGround extends Reflexion {
-  // TODO: Merge this with Reflexion
+  // TODO: Merge this with Reflexion...
   constructor(ast) {
     super(ast)
     this.delegate = this.sources.map(e => this.createDelegate(e))[0]
@@ -79,12 +82,8 @@ export class AstGround extends Reflexion {
 
 class JointGround extends Reflexion {
   // TODO: keep only one factorize()
-  factorize() {
-    let result = new Set()
-    this.sources
-      .map(source => this.ground(source).factorize())
-      .forEach(ast => ast.forEach(result.add.bind(result)))
-    return [...result]
+  factorizeEach(ast) {
+    return this.ground(ast).factorize()
   }
 
   _factorizeOnly(expanded) {
@@ -111,25 +110,25 @@ class JointGround extends Reflexion {
 }
 
 class ProgramGround extends Reflexion {
-  factorize() {
-    return new JointGround(this.sources[0].body).factorizeOnly(['ArrowFunctionExpression'])
+  factorizeEach(ast) {
+    return new JointGround(ast.body).factorizeOnly(['ArrowFunctionExpression'])
   }
 }
 
 class FunctionGround extends Reflexion {
-  factorize() {
-    if (!Array.isArray(this.sources[0].body.body)) {
-      return [this.sources[0].body] // function without brackets.
+  factorizeEach(ast) {
+    if (!Array.isArray(ast.body.body)) {
+      return [ast.body] // function without brackets.
     }
 
-    return new JointGround(this.sources[0].body.body)._factorizeOnly(['IfStatement'])
+    return new JointGround(ast.body.body)._factorizeOnly(['IfStatement'])
   }
 }
 
 class ExpressionGround extends Reflexion {
-  factorize() {
+  factorizeEach(ast) {
     const result = new Set()
-    AcornWalk.simple(this.sources[0], {
+    AcornWalk.simple(ast, {
       Identifier(node) {
         result.add(node)
       },
@@ -148,10 +147,10 @@ class ExpressionGround extends Reflexion {
 }
 
 class ConditionalGround extends Reflexion {
-  factorize() {
-    const test = this.sources[0].test
-    const consequent = this.sources[0].consequent?.body || []
-    const alternate = this.sources[0].alternate?.body || []
+  factorizeEach(ast) {
+    const test = ast.test
+    const consequent = ast.consequent?.body || []
+    const alternate = ast.alternate?.body || []
     return [
       test,
       ...new JointGround(consequent)._factorizeOnly(['IfStatement']),
