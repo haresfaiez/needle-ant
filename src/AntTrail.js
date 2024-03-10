@@ -65,16 +65,6 @@ class Reflexion {
   }
 }
 
-class Ground {
-  constructor(ast) {
-    this.ast = ast
-  }
-
-  factorize() {
-    throw new Error('Not implemented yet!')
-  }
-}
-
 export class AstGround extends Reflexion {
   // TODO: Merge this with Reflexion
   constructor(ast) {
@@ -120,26 +110,26 @@ class JointGround extends Reflexion {
   }
 }
 
-class ProgramGround extends Ground {
+class ProgramGround extends Reflexion {
   factorize() {
-    return new JointGround(this.ast.body).factorizeOnly(['ArrowFunctionExpression'])
+    return new JointGround(this.sources[0].body).factorizeOnly(['ArrowFunctionExpression'])
   }
 }
 
-class FunctionGround extends Ground {
+class FunctionGround extends Reflexion {
   factorize() {
-    if (!Array.isArray(this.ast.body.body)) {
-      return [this.ast.body] // function without brackets.
+    if (!Array.isArray(this.sources[0].body.body)) {
+      return [this.sources[0].body] // function without brackets.
     }
 
-    return new JointGround(this.ast.body.body)._factorizeOnly(['IfStatement'])
+    return new JointGround(this.sources[0].body.body)._factorizeOnly(['IfStatement'])
   }
 }
 
-class ExpressionGround extends Ground {
+class ExpressionGround extends Reflexion {
   factorize() {
     const result = new Set()
-    AcornWalk.simple(this.ast, {
+    AcornWalk.simple(this.sources[0], {
       Identifier(node) {
         result.add(node)
       },
@@ -157,11 +147,11 @@ class ExpressionGround extends Ground {
   }
 }
 
-class ConditionalGround extends Ground {
+class ConditionalGround extends Reflexion {
   factorize() {
-    const test = this.ast.test
-    const consequent = this.ast.consequent?.body || []
-    const alternate = this.ast.alternate?.body || []
+    const test = this.sources[0].test
+    const consequent = this.sources[0].consequent?.body || []
+    const alternate = this.sources[0].alternate?.body || []
     return [
       test,
       ...new JointGround(consequent)._factorizeOnly(['IfStatement']),
