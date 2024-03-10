@@ -32,14 +32,13 @@ export class Reflexion {
 }
 
 class HorizontalReflexion extends Reflexion {
-  constructor(source, typesToExpand, checkExp) {
+  constructor(source, typesToExpand) {
     super(source)
     this.typesToExpand = typesToExpand
-    this.checkExp = checkExp
   }
 
   factorizeEach(ast) {
-    if (this.checkExp) {
+    if (ast.type === 'ExpressionStatement') {
       if (!this.typesToExpand.includes(ast.expression.type)) {
         return [ast]
       }
@@ -52,16 +51,6 @@ class HorizontalReflexion extends Reflexion {
     }
 
     return new JointGround(ast).factorize()
-  }
-}
-
-class ProgramGround extends Reflexion {
-  factorizeEach(ast) {
-    if (ast.body[0].type === 'ExportNamedDeclaration') {
-      return new HorizontalReflexion(ast.body, ['ExportNamedDeclaration']).factorize()
-    }
-
-    return new HorizontalReflexion(ast.body, ['ArrowFunctionExpression'], true).factorize()
   }
 }
 
@@ -91,7 +80,7 @@ export class JointGround extends Reflexion {
     }
 
     if (ast.type === 'ImportDeclaration') {
-      return new DependenciesStructure(ast)
+      return new DependenciesGround(ast)
     }
 
     if (ast.type === 'ExportNamedDeclaration') {
@@ -99,6 +88,13 @@ export class JointGround extends Reflexion {
     }
 
     throw new Error(`Ast type "${ast.type}" not handeled yet!`)
+  }
+}
+
+class ProgramGround extends Reflexion {
+  factorizeEach(ast) {
+    const typesToExpand = ['ExportNamedDeclaration', 'ArrowFunctionExpression']
+    return new HorizontalReflexion(ast.body, typesToExpand).factorize()
   }
 }
 
@@ -146,6 +142,31 @@ class ExpressionGround extends Reflexion {
   }
 }
 
+class DependenciesGround extends Reflexion {
+  files = []
+
+  add(file) {
+    this.files.push(file)
+    return this
+  }
+
+  odds() {
+    return this.files
+  }
+
+  // TODO: keep only one factorize()
+  __factorize() {
+    return [
+      this.sources[0].specifiers,
+      this.sources[0].source
+    ]
+  }
+
+  factorizeEach(ast) {
+    return ast.specifiers
+  }
+}
+
 export class AntTrail extends Reflexion {
   static parse(sourceCode, transformer) {
     const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
@@ -163,7 +184,7 @@ export class AntTrail extends Reflexion {
   }
 
   static create() {
-    return new DependenciesStructure()
+    return new DependenciesGround()
   }
 }
 
@@ -222,33 +243,6 @@ class AstStructure extends Reflexion {
       })
     })
     return result.length ? 1 : 0
-  }
-}
-
-class DependenciesStructure extends Reflexion {
-  files = []
-
-  add(file) {
-    this.files.push(file)
-    return this
-  }
-
-  odds() {
-    return this.files
-  }
-
-  // TODO: keep only one factorize()
-  __factorize() {
-    return [
-      this.sources[0].specifiers,
-      this.sources[0].source
-    ]
-  }
-
-  factorize() {
-    return [
-      ...this.sources[0].specifiers
-    ]
   }
 }
 
