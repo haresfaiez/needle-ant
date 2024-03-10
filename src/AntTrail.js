@@ -8,19 +8,11 @@ class Reflexion {
     this.footsteps = footsteps || []
   }
 
-  // TODO: Rename this
-  ground(ast) {
-    if (Array.isArray(ast)) {
-      return new JointGround(ast)
-    }
-
-    return new AstGround(ast)
-  }
-
   createDelegate(ast) {
     if (ast.type === 'Program') {
       return new ProgramGround(ast)
     }
+
     if (ast.type === 'IfStatement') {
       return new ConditionalGround(ast)
     }
@@ -59,12 +51,29 @@ class Reflexion {
   add() {
     throw new Error('Not implemented yet!')
   }
+
   factorize() {
     let result = new Set()
     this.sources
+      .filter(source => source.type !== 'EmptyStatement')
       .map(source => this.factorizeEach(source))
       .forEach(ast => ast.forEach(result.add.bind(result)))
     return [...result]
+  }
+}
+
+class HorizontalReflexion extends Reflexion {
+  constructor(source, typesToExpand) {
+    super(source)
+    this.typesToExpand = typesToExpand
+  }
+
+  factorizeEach(ast) {
+    if (!this.typesToExpand.includes(ast.type)) {
+      return [ast]
+    }
+
+    return new AstGround(ast).factorize()
   }
 }
 
@@ -83,27 +92,18 @@ export class AstGround extends Reflexion {
 class JointGround extends Reflexion {
   // TODO: keep only one factorize()
   factorizeEach(ast) {
-    return this.ground(ast).factorize()
-  }
-
-  _factorizeOnly(expanded) {
-    let result = new Set()
-    this.sources
-      .filter(source => source.type !== 'EmptyStatement')
-      .map(source => !expanded.includes(source.type) ? [source] : this.ground(source).factorize())
-      .forEach(ast => ast.forEach(result.add.bind(result)))
-    return [...result]
+    return new AstGround(ast).factorize()
   }
 
   factorizeOnly(expanded) {
     if (this.sources[0].type === 'ExportNamedDeclaration') {
-      return this._factorizeOnly(['ExportNamedDeclaration'])
+      return new HorizontalReflexion(this.sources, ['ExportNamedDeclaration']).factorize()
     }
 
     let result = new Set()
     this.sources
       .filter(e => e.type !== 'EmptyStatement')
-      .map(source => !expanded.includes(source.expression.type) ? [source] : this.ground(source.expression).factorize())
+      .map(source => !expanded.includes(source.expression.type) ? [source] : new AstGround(source.expression).factorize())
       .forEach(ast => ast.forEach(result.add.bind(result)))
     return [...result]
   }
@@ -121,14 +121,27 @@ class FunctionGround extends Reflexion {
       return [ast.body] // function without brackets.
     }
 
-    return new JointGround(ast.body.body)._factorizeOnly(['IfStatement'])
+    return new HorizontalReflexion(ast.body.body, ['IfStatement']).factorize()
+  }
+}
+
+class ConditionalGround extends Reflexion {
+  factorizeEach(conditional) {
+    const test = conditional.test
+    const consequent = conditional.consequent?.body || []
+    const alternate = conditional.alternate?.body || []
+    return [
+      test,
+      ...new HorizontalReflexion(consequent, ['IfStatement']).factorize(),
+      ...new HorizontalReflexion(alternate, ['IfStatement']).factorize()
+    ]
   }
 }
 
 class ExpressionGround extends Reflexion {
-  factorizeEach(ast) {
+  factorizeEach(expression) {
     const result = new Set()
-    AcornWalk.simple(ast, {
+    AcornWalk.simple(expression, {
       Identifier(node) {
         result.add(node)
       },
@@ -143,19 +156,6 @@ class ExpressionGround extends Reflexion {
       }
     })
     return result
-  }
-}
-
-class ConditionalGround extends Reflexion {
-  factorizeEach(ast) {
-    const test = ast.test
-    const consequent = ast.consequent?.body || []
-    const alternate = ast.alternate?.body || []
-    return [
-      test,
-      ...new JointGround(consequent)._factorizeOnly(['IfStatement']),
-      ...new JointGround(alternate)._factorizeOnly(['IfStatement']),
-    ]
   }
 }
 
