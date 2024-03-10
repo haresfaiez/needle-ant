@@ -8,37 +8,6 @@ export class Reflexion {
     this.footsteps = footsteps || []
   }
 
-  createDelegate(ast) {
-    if (ast.type === 'Program') {
-      return new ProgramGround(ast)
-    }
-
-    if (ast.type === 'IfStatement') {
-      return new ConditionalGround(ast)
-    }
-
-    if (ast.type === 'ArrowFunctionExpression') {
-      return new FunctionGround(ast)
-    }
-
-    if (ast.type === 'ReturnStatement'
-      || ast.type === 'BinaryExpression'
-      || ast.type === 'ExpressionStatement'
-      || ast.type === 'ImportSpecifier') {
-      return new ExpressionGround(ast)
-    }
-
-    if (ast.type === 'ImportDeclaration') {
-      return new DependenciesStructure(ast)
-    }
-
-    if (ast.type === 'ExportNamedDeclaration') {
-      return new ExpressionGround(ast)
-    }
-
-    throw new Error(`Ast type "${ast.type}" not handeled yet!`)
-  }
-
   // TODO: remove this
   paint() {
     this.sources = this.odds()
@@ -96,9 +65,40 @@ class ProgramGround extends Reflexion {
   }
 }
 
-class JointGround extends Reflexion {
+export class JointGround extends Reflexion {
   factorizeEach(ast) {
     return this.createDelegate(ast).factorize()
+  }
+
+  createDelegate(ast) {
+    if (ast.type === 'Program') {
+      return new ProgramGround(ast)
+    }
+
+    if (ast.type === 'IfStatement') {
+      return new ConditionalGround(ast)
+    }
+
+    if (ast.type === 'ArrowFunctionExpression') {
+      return new FunctionGround(ast)
+    }
+
+    if (ast.type === 'ReturnStatement'
+      || ast.type === 'BinaryExpression'
+      || ast.type === 'ExpressionStatement'
+      || ast.type === 'ImportSpecifier') {
+      return new ExpressionGround(ast)
+    }
+
+    if (ast.type === 'ImportDeclaration') {
+      return new DependenciesStructure(ast)
+    }
+
+    if (ast.type === 'ExportNamedDeclaration') {
+      return new ExpressionGround(ast)
+    }
+
+    throw new Error(`Ast type "${ast.type}" not handeled yet!`)
   }
 }
 
