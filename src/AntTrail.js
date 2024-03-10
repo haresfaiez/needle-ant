@@ -2,7 +2,7 @@ import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
 
 
-class Reflexion {
+export class Reflexion {
   constructor(sources, footsteps) {
     this.sources = Array.isArray(sources) ? sources : [sources]
     this.footsteps = footsteps || []
@@ -63,55 +63,42 @@ class Reflexion {
 }
 
 class HorizontalReflexion extends Reflexion {
-  constructor(source, typesToExpand) {
+  constructor(source, typesToExpand, checkExp) {
     super(source)
     this.typesToExpand = typesToExpand
+    this.checkExp = checkExp
   }
 
   factorizeEach(ast) {
+    if (this.checkExp) {
+      if (!this.typesToExpand.includes(ast.expression.type)) {
+        return [ast]
+      }
+  
+      return new JointGround(ast.expression).factorize()
+    }
+
     if (!this.typesToExpand.includes(ast.type)) {
       return [ast]
     }
 
-    return new AstGround(ast).factorize()
-  }
-}
-
-export class AstGround extends Reflexion {
-  // TODO: Merge this with Reflexion...
-  constructor(ast) {
-    super(ast)
-    this.delegate = this.sources.map(e => this.createDelegate(e))[0]
-  }
-
-  factorize() {
-    return this.delegate.factorize()
-  }
-}
-
-class JointGround extends Reflexion {
-  // TODO: keep only one factorize()
-  factorizeEach(ast) {
-    return new AstGround(ast).factorize()
-  }
-
-  factorizeOnly(expanded) {
-    if (this.sources[0].type === 'ExportNamedDeclaration') {
-      return new HorizontalReflexion(this.sources, ['ExportNamedDeclaration']).factorize()
-    }
-
-    let result = new Set()
-    this.sources
-      .filter(e => e.type !== 'EmptyStatement')
-      .map(source => !expanded.includes(source.expression.type) ? [source] : new AstGround(source.expression).factorize())
-      .forEach(ast => ast.forEach(result.add.bind(result)))
-    return [...result]
+    return new JointGround(ast).factorize()
   }
 }
 
 class ProgramGround extends Reflexion {
   factorizeEach(ast) {
-    return new JointGround(ast.body).factorizeOnly(['ArrowFunctionExpression'])
+    if (ast.body[0].type === 'ExportNamedDeclaration') {
+      return new HorizontalReflexion(ast.body, ['ExportNamedDeclaration']).factorize()
+    }
+
+    return new HorizontalReflexion(ast.body, ['ArrowFunctionExpression'], true).factorize()
+  }
+}
+
+class JointGround extends Reflexion {
+  factorizeEach(ast) {
+    return this.createDelegate(ast).factorize()
   }
 }
 

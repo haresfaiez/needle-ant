@@ -1,4 +1,4 @@
-import { AntTrail, AstGround } from './AntTrail.js'
+import { AntTrail, Reflexion } from './AntTrail.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
 
 // TODO: Merge all in one class
@@ -31,7 +31,8 @@ export class JointEntropy extends Entropy {
   
 export class DependencyEntropy extends Entropy {
   evaluate() {
-    const importParts = new AstGround(this.dividend.sources[0]).delegate.__factorize()
+    // TODO: fix next line
+    const importParts = new Reflexion([]).createDelegate(this.dividend.sources[0]).__factorize()
     const importSpecifiers = importParts[0]
     const importSource = importParts[1]
     // TODO: Remove this check
