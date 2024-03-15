@@ -29,6 +29,11 @@ export class Reflexion {
       .forEach(ast => ast.forEach(result.add.bind(result)))
     return [...result]
   }
+
+  static parse(sourceCode, transformer) {
+    const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
+    return new AstStructure(transformer ? transformer(ast) : ast)
+  }
 }
 
 class HorizontalReflexion extends Reflexion {
@@ -142,7 +147,7 @@ class ExpressionGround extends Reflexion {
   }
 }
 
-class DependenciesGround extends Reflexion {
+export class DependenciesGround extends Reflexion {
   files = []
 
   add(file) {
@@ -168,27 +173,15 @@ class DependenciesGround extends Reflexion {
 }
 
 export class AntTrail extends Reflexion {
-  static parse(sourceCode, transformer) {
-    const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
-    return new AstStructure(transformer ? transformer(ast) : ast)
-  }
-
   static dependency(code, modules) {
-    const ast = AntTrail.parse(code, (ast) => ast.body)
+    const ast = Reflexion.parse(code, (ast) => ast.body)
     // TODO: use instance instead of literal object
     return { importedModuleExports: ast.api(), otherModules: modules }
   }
-
-  static from(ast, footsteps) {
-    return new AstStructure(ast, footsteps)
-  }
-
-  static create() {
-    return new DependenciesGround()
-  }
 }
 
-class AstStructure extends Reflexion {
+// TODO: rename this
+export class AstStructure extends Reflexion {
   odds() {
     return new JointGround(this.sources).factorize()
   }

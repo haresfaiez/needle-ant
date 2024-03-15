@@ -1,4 +1,4 @@
-import { AntTrail } from './AntTrail.js'
+import { AntTrail, DependenciesGround, Reflexion } from './AntTrail.js'
 import { DependencyEntropy } from './Entropy.js'
 import { Evaluation } from './Evalution.js'
 import NeedleAnt from './NeedleAnt.js'
@@ -16,7 +16,7 @@ describe('Dependency AntTrail', () => {
 
 describe('Expresson factors', () => {
   it('of "a + b + c" are a, b, and c', () => {
-    const subject = AntTrail.parse('a + b + c')
+    const subject = Reflexion.parse('a + b + c')
     expect(subject.identifiers()).toEqual(['a', 'b', 'c'])
   })
 })
@@ -64,8 +64,8 @@ describe('Module dependency entropy', () => {
   it('of wildecard checks files available for import', () => {
     const code = 'import * as A from "./a"'
     const entropy = new DependencyEntropy(
-      AntTrail.parse(code, (ast) => ast.body),
-      AntTrail.create().add('./B.js').add('./C.js')
+      Reflexion.parse(code, (ast) => ast.body),
+      new DependenciesGround().add('./B.js').add('./C.js')
     )
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 2))
@@ -77,8 +77,8 @@ describe('Dependency entropy', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}'
     const entropy = new DependencyEntropy(
-      AntTrail.parse(code, (ast) => ast.body),
-      AntTrail.parse(dependencyCode)
+      Reflexion.parse(code, (ast) => ast.body),
+      Reflexion.parse(dependencyCode)
     )
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 1))
@@ -89,8 +89,8 @@ describe('Dependency entropy', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new DependencyEntropy(
-      AntTrail.parse(code, (ast) => ast.body),
-      AntTrail.parse(dependencyCode)
+      Reflexion.parse(code, (ast) => ast.body),
+      Reflexion.parse(dependencyCode)
     )
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 3))
@@ -100,8 +100,8 @@ describe('Dependency entropy', () => {
     const code = 'import { a, b } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new DependencyEntropy(
-      AntTrail.parse(code, (ast) => ast.body),
-      AntTrail.parse(dependencyCode)
+      Reflexion.parse(code, (ast) => ast.body),
+      Reflexion.parse(dependencyCode)
     )
 
     expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
@@ -111,7 +111,7 @@ describe('Dependency entropy', () => {
     const code = 'import { a } from "./a";'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new DependencyEntropy(
-      AntTrail.parse(code, (ast) => ast.body),
+      Reflexion.parse(code, (ast) => ast.body),
       AntTrail.dependency(dependencyCode, [ './a', './b', './c', './e' ])
     )
 
@@ -123,8 +123,8 @@ describe('Dependency entropy', () => {
     const code = 'import { a, b } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {};'
     const entropy = new DependencyEntropy(
-      AntTrail.parse(code, (ast) => ast.body),
-      AntTrail.parse(dependencyCode)
+      Reflexion.parse(code, (ast) => ast.body),
+      Reflexion.parse(dependencyCode)
     )
 
     expect(entropy.calculate()).toEqual(0)

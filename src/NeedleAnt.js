@@ -1,7 +1,7 @@
 import * as acorn from 'acorn'
 import { DependencyEntropy, DeclarationEntropy } from './Entropy.js'
 import { JointEntropy } from './Entropy.js'
-import { AntTrail } from './AntTrail.js'
+import { AstStructure } from './AntTrail.js'
 
 class NeedleAnt {
   constructor(code) {
@@ -11,7 +11,7 @@ class NeedleAnt {
   }
 
   entropy() {
-    const trail = AntTrail.from(this.ast, this.footsteps)
+    const trail = new AstStructure(this.ast, this.footsteps)
     trail.paint()
     return new JointEntropy(trail, trail.scope(), this.footsteps).calculate()
   }
@@ -29,10 +29,10 @@ class NeedleAnt {
       return 4
 
     if (this.code === 'import A from "./a"')
-      return new DependencyEntropy(AntTrail.from(this.ast)).minus(new DependencyEntropy(AntTrail.from(updatedAst)))
+      return new DependencyEntropy(new AstStructure(this.ast)).minus(new DependencyEntropy(new AstStructure(updatedAst)))
 
     if (this.ast.body[0].kind !== updatedAst.body[0].kind)
-      return new DeclarationEntropy(AntTrail.from(this.ast)).minus(new DeclarationEntropy(AntTrail.from(updatedAst)))
+      return new DeclarationEntropy(new AstStructure(this.ast)).minus(new DeclarationEntropy(new AstStructure(updatedAst)))
 
     return 0
   }
