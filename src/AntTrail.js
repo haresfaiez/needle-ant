@@ -8,11 +8,6 @@ export class Reflexion {
     this.footsteps = footsteps || []
   }
 
-  // TODO: remove this
-  paint() {
-    this.sources = this.odds()
-  }
-
   add() {
     throw new Error('Not implemented yet!')
   }
