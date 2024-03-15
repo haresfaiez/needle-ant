@@ -13,12 +13,24 @@ export class Reflexion {
     this.sources = this.odds()
   }
 
-  odds() {
+  add() {
     throw new Error('Not implemented yet!')
   }
 
-  add() {
-    throw new Error('Not implemented yet!')
+  odds() {
+    return new JointGround(this.sources).factorize()
+  }
+
+  identifiers() {
+    return new IdentifiersGround(this.sources).factorize()
+  }
+
+  api() {
+    return new ApiGround(this.sources).factorize()
+  }
+
+  literals() {
+    return new LiteralsGround(this.sources).factorize()
   }
 
   factorize() {
@@ -32,7 +44,7 @@ export class Reflexion {
 
   static parse(sourceCode, transformer) {
     const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
-    return new AstStructure(transformer ? transformer(ast) : ast)
+    return new Reflexion(transformer ? transformer(ast) : ast)
   }
 }
 
@@ -147,6 +159,45 @@ class ExpressionGround extends Reflexion {
   }
 }
 
+class IdentifiersGround extends Reflexion {
+  factorizeEach(expression) {
+    const result = new Set()
+    AcornWalk.simple(expression, {
+      Identifier(node) {
+        result.add(node.name)
+      },
+      ImportSpecifier(node) {
+        result.add(node.imported.name)
+      }
+    })
+    return result
+  }
+}
+
+class LiteralsGround extends Reflexion {
+  factorizeEach(expression) {
+    const result = new Set()
+    AcornWalk.simple(expression, {
+      Literal(node) {
+        result.add(node.value)
+      }
+    })
+    return result
+  }
+}
+
+class ApiGround extends Reflexion {
+  factorizeEach(expression) {
+    const result = new Set()
+    AcornWalk.simple(expression, {
+      ExportNamedDeclaration(node) {
+        result.add(node.declaration?.id?.name)
+      }
+    })
+    return result
+  }
+}
+
 export class DependenciesGround extends Reflexion {
   files = []
 
@@ -179,63 +230,3 @@ export class AntTrail extends Reflexion {
     return { importedModuleExports: ast.api(), otherModules: modules }
   }
 }
-
-// TODO: rename this
-export class AstStructure extends Reflexion {
-  odds() {
-    return new JointGround(this.sources).factorize()
-  }
-
-  // TODO: Use Ground.factorize() instead of this
-  scope() {
-    return this.identifiers()
-  }
-
-  // TODO: remove all these, and use Ground.factorize()
-  identifiers() {
-    let result = new Set()
-    const footsteps = this.footsteps
-    this.sources.forEach(eachAst => {
-      AcornWalk.simple(eachAst, {
-        Identifier(node) {
-          footsteps.push(`AntTrail/identifiers/Identifier/${node.name}`)
-          result.add(node.name)
-        },
-        ImportSpecifier(node) {
-          footsteps.push(`AntTrail/identifiers/Identifier/${node.imported.name}`)
-          result.add(node.imported.name)
-        }
-      })
-    })
-    this.footsteps.push(`AntTrail/identifiers/result/${result}`)
-    return [...result]
-  }
-
-  api() {
-    let result = new Set()
-    const footsteps = this.footsteps
-    this.sources.forEach(eachAst => {
-      AcornWalk.simple(eachAst, {
-        ExportNamedDeclaration(node) {
-          footsteps.push(`AntTrail/api/Identifier/${node.name}`)
-          result.add(node.declaration?.id?.name)
-        },
-      })
-    })
-    this.footsteps.push(`AntTrail/api/result/${result}`)
-    return [...result]
-  }
-
-  literalsWeight() {
-    let result = []
-    this.sources.forEach(eachAst => {
-      AcornWalk.simple(eachAst, {
-        Literal(node) {
-          result.push(node.value)
-        }
-      })
-    })
-    return result.length ? 1 : 0
-  }
-}
-

@@ -1,4 +1,4 @@
-import { AstStructure, JointGround } from './AntTrail.js'
+import { Reflexion, JointGround } from './AntTrail.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
 
 // TODO: Merge all in one class
@@ -24,7 +24,7 @@ export class Entropy {
 export class JointEntropy extends Entropy {
   evaluate() {
     return this.dividend.sources
-      .map(eachSource => new ExpressionEntropy(new AstStructure(eachSource), this.divisor))
+      .map(eachSource => new ExpressionEntropy(new Reflexion(eachSource), this.divisor))
       .reduce((acc, eachEntropy) => acc.plus(eachEntropy.evaluate()), new NullEvaluation())
   }
 }
@@ -37,8 +37,8 @@ export class DependencyEntropy extends Entropy {
     const importSource = importParts[1]
     // TODO: Remove this check
     if (this.divisor.otherModules) {
-      return new ExpressionEntropy(new AstStructure(importSpecifiers), this.divisor.importedModuleExports).evaluate()
-        .plus(new ExpressionEntropy(new AstStructure(importSource), this.divisor.otherModules).evaluate())
+      return new ExpressionEntropy(new Reflexion(importSpecifiers), this.divisor.importedModuleExports).evaluate()
+        .plus(new ExpressionEntropy(new Reflexion(importSource), this.divisor.otherModules).evaluate())
     }
 
     const actualCount = this.dividend.odds().length
@@ -74,7 +74,7 @@ export class ExpressionEntropy extends Entropy {
     // TODO: simplify this method
     const actualCount = this.dividend.sources?.[0]?.type === 'ImportNamespaceSpecifier' ? 3 : (this.dividend.identifiers().length > 0 ? this.dividend.odds().length : 0)
     const allPossibilitiesCount = this.divisor.length
-    const localPossibilities = this.dividend.identifiers().length + this.dividend.literalsWeight()
+    const localPossibilities = this.dividend.identifiers().length + (this.dividend.literals().length ? 1 : 0)
     return new Evaluation(actualCount, allPossibilitiesCount)
       .withLocalPossibilities(localPossibilities)
   }
