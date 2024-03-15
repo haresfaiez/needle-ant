@@ -13,7 +13,7 @@ export class Reflexion {
   }
 
   odds() {
-    return new JointGround(this.sources).factorize()
+    return new HorizontalReflexion(this.sources).factorize()
   }
 
   identifiers() {
@@ -49,25 +49,27 @@ class HorizontalReflexion extends Reflexion {
     this.typesToExpand = typesToExpand
   }
 
-  factorizeEach(ast) {
-    if (ast.type === 'ExpressionStatement') {
-      if (!this.typesToExpand.includes(ast.expression.type)) {
-        return [ast]
-      }
-  
-      return new JointGround(ast.expression).factorize()
+  shouldKeep(ast) {
+    if (!this.typesToExpand) {
+      return false
     }
 
-    if (!this.typesToExpand.includes(ast.type)) {
+    if (ast.type === 'ExpressionStatement') {
+      return !this.typesToExpand.includes(ast.expression.type)
+    }
+
+    return !this.typesToExpand.includes(ast.type)
+  }
+
+  factorizeEach(ast) {
+    if (this.shouldKeep(ast)) {
       return [ast]
     }
 
-    return new JointGround(ast).factorize()
-  }
-}
+    if (ast.type === 'ExpressionStatement') {
+      return this.createDelegate(ast.expression).factorize()
+    }
 
-export class JointGround extends Reflexion {
-  factorizeEach(ast) {
     return this.createDelegate(ast).factorize()
   }
 
