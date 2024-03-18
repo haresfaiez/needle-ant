@@ -17,15 +17,15 @@ export class Reflexion {
   }
 
   identifiers() {
-    return new IdentifiersGround(this.sources).factorize()
+    return new IdentifiersReflexion(this.sources).factorize()
   }
 
   api() {
-    return new ApiGround(this.sources).factorize()
+    return new ApiReflexion(this.sources).factorize()
   }
 
   literals() {
-    return new LiteralsGround(this.sources).factorize()
+    return new LiteralsReflexion(this.sources).factorize()
   }
 
   factorize() {
@@ -75,44 +75,44 @@ class HorizontalReflexion extends Reflexion {
 
   createDelegate(ast) {
     if (ast.type === 'Program') {
-      return new ProgramGround(ast)
+      return new ProgramReflexion(ast)
     }
 
     if (ast.type === 'IfStatement') {
-      return new ConditionalGround(ast)
+      return new ConditionalReflexion(ast)
     }
 
     if (ast.type === 'ArrowFunctionExpression') {
-      return new FunctionGround(ast)
+      return new FunctionReflexion(ast)
     }
 
     if (ast.type === 'ReturnStatement'
       || ast.type === 'BinaryExpression'
       || ast.type === 'ExpressionStatement'
       || ast.type === 'ImportSpecifier') {
-      return new ExpressionGround(ast)
+      return new ExpressionReflexion(ast)
     }
 
     if (ast.type === 'ImportDeclaration') {
-      return new DependenciesGround(ast)
+      return new DependenciesReflexion(ast)
     }
 
     if (ast.type === 'ExportNamedDeclaration') {
-      return new ExpressionGround(ast)
+      return new ExpressionReflexion(ast)
     }
 
     throw new Error(`Ast type "${ast.type}" not handeled yet!`)
   }
 }
 
-class ProgramGround extends Reflexion {
+class ProgramReflexion extends Reflexion {
   factorizeEach(ast) {
     const typesToExpand = ['ExportNamedDeclaration', 'ArrowFunctionExpression']
     return new HorizontalReflexion(ast.body, typesToExpand).factorize()
   }
 }
 
-class FunctionGround extends Reflexion {
+class FunctionReflexion extends Reflexion {
   factorizeEach(ast) {
     if (!Array.isArray(ast.body.body)) {
       return [ast.body] // function without brackets.
@@ -122,7 +122,7 @@ class FunctionGround extends Reflexion {
   }
 }
 
-class ConditionalGround extends Reflexion {
+class ConditionalReflexion extends Reflexion {
   factorizeEach(conditional) {
     const test = conditional.test
     const consequent = conditional.consequent?.body || []
@@ -135,7 +135,7 @@ class ConditionalGround extends Reflexion {
   }
 }
 
-class ExpressionGround extends Reflexion {
+class ExpressionReflexion extends Reflexion {
   factorizeEach(expression) {
     const result = new Set()
     AcornWalk.simple(expression, {
@@ -156,7 +156,7 @@ class ExpressionGround extends Reflexion {
   }
 }
 
-class IdentifiersGround extends Reflexion {
+class IdentifiersReflexion extends Reflexion {
   factorizeEach(expression) {
     const result = new Set()
     AcornWalk.simple(expression, {
@@ -171,7 +171,7 @@ class IdentifiersGround extends Reflexion {
   }
 }
 
-class LiteralsGround extends Reflexion {
+class LiteralsReflexion extends Reflexion {
   factorizeEach(expression) {
     const result = new Set()
     AcornWalk.simple(expression, {
@@ -183,7 +183,7 @@ class LiteralsGround extends Reflexion {
   }
 }
 
-class ApiGround extends Reflexion {
+class ApiReflexion extends Reflexion {
   factorizeEach(expression) {
     const result = new Set()
     AcornWalk.simple(expression, {
@@ -195,7 +195,7 @@ class ApiGround extends Reflexion {
   }
 }
 
-export class DependenciesGround extends Reflexion {
+export class DependenciesReflexion extends Reflexion {
   files = []
 
   add(file) {

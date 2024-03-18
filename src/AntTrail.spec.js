@@ -1,4 +1,4 @@
-import { AntTrail, DependenciesGround, Reflexion } from './AntTrail.js'
+import { AntTrail, DependenciesReflexion, Reflexion } from './AntTrail.js'
 import { DependencyEntropy } from './Entropy.js'
 import { Evaluation } from './Evalution.js'
 import NeedleAnt from './NeedleAnt.js'
@@ -65,7 +65,7 @@ describe('Module dependency entropy', () => {
     const code = 'import * as A from "./a"'
     const entropy = new DependencyEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      new DependenciesGround().add('./B.js').add('./C.js')
+      new DependenciesReflexion().add('./B.js').add('./C.js')
     )
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 2))
