@@ -3,25 +3,6 @@ import { DependencyEntropy } from './Entropy.js'
 import { Evaluation } from './Evalution.js'
 import NeedleAnt from './NeedleAnt.js'
 
-describe('Dependency Reflexion', () => {
-  it('counts possible imports', () => {
-    const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
-
-    const dependcyAst = Reflexion.parse(dependencyCode, (ast) => ast.body)
-    const actual = new DependenciesReflexion(dependcyAst, [ './a', './b', './c', './e' ])
-
-    expect(actual.importedModuleExports).toEqual(['a', 'b', 'c'])
-    expect(actual.otherModules).toEqual([ './a', './b', './c', './e' ])
-  })
-})
-
-describe('Expresson factors', () => {
-  it('of "a + b + c" are a, b, and c', () => {
-    const subject = Reflexion.parse('a + b + c')
-    expect(subject.identifiers()).toEqual(['a', 'b', 'c'])
-  })
-})
-
 describe('Successive statements entropy', () => {
   it('is the sum of each statement entropy', () => {
     const ant = new NeedleAnt('(a) => { if (a > 0) { return true; } return a + 1; }')
@@ -61,8 +42,8 @@ describe('Nested expressions entropy', () => {
   })
 })
 
-describe('Module dependency entropy', () => {
-  it('of wildecard checks files available for import', () => {
+describe('Dependency entropy', () => {
+  it('of wildecard import checks files available for import', () => {
     const code = 'import * as A from "./a"'
     const entropy = new DependencyEntropy(
       Reflexion.parse(code, (ast) => ast.body),
@@ -71,9 +52,7 @@ describe('Module dependency entropy', () => {
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 2))
   })
-})
 
-describe('Dependency entropy', () => {
   it('is null when a module imports the only exported function', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}'
@@ -86,7 +65,7 @@ describe('Dependency entropy', () => {
     expect(entropy.calculate()).toBe(0)
   })
 
-  it('calculates module imports of one of three exported functions', () => {
+  it('is 1/3 when a module imports of one of three exported functions', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new DependencyEntropy(
@@ -97,7 +76,7 @@ describe('Dependency entropy', () => {
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 3))
   })
 
-  it('calculates module imports of two of three exported functions', () => {
+  it('is 2/3 when a module imports of two of three exported functions', () => {
     const code = 'import { a, b } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new DependencyEntropy(
@@ -108,7 +87,7 @@ describe('Dependency entropy', () => {
     expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
   })
 
-  it('calculates module imports of one of three exported functions', () => {
+  it('is (1/3)+(1/4) when a module imports of one of three exported functions', () => {
     const code = 'import { a } from "./a";'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const dependencyAst = Reflexion.parse(dependencyCode, (ast) => ast.body)
@@ -130,5 +109,26 @@ describe('Dependency entropy', () => {
     )
 
     expect(entropy.calculate()).toEqual(0)
+  })
+})
+
+describe('Factorization', () => {
+  describe('of a dependcy', () => {
+    it('counts possible imports', () => {
+      const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
+
+      const dependcyAst = Reflexion.parse(dependencyCode, (ast) => ast.body)
+      const actual = new DependenciesReflexion(dependcyAst, [ './a', './b', './c', './e' ])
+
+      expect(actual.importedModuleExports).toEqual(['a', 'b', 'c'])
+      expect(actual.otherModules).toEqual([ './a', './b', './c', './e' ])
+    })
+  })
+
+  describe('of an expression', () => {
+    it('of "a + b + c" is "a, b, and c"', () => {
+      const subject = Reflexion.parse('a + b + c')
+      expect(subject.identifiers()).toEqual(['a', 'b', 'c'])
+    })
   })
 })
