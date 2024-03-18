@@ -86,7 +86,7 @@ describe('Dependency entropy', () => {
     expect(entropy.calculate()).toBe(0)
   })
 
-  it('is null when a module imports one of three exported functions', () => {
+  it('calculates module imports of one of three exported functions', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new DependencyEntropy(
@@ -97,7 +97,7 @@ describe('Dependency entropy', () => {
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 3))
   })
 
-  it('is not null when a module imports two of three exported functions', () => {
+  it('calculates module imports of two of three exported functions', () => {
     const code = 'import { a, b } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new DependencyEntropy(
@@ -108,7 +108,7 @@ describe('Dependency entropy', () => {
     expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
   })
 
-  it('is null when a module imports one of three exported functions', () => {
+  it('calculates module imports of one of three exported functions', () => {
     const code = 'import { a } from "./a";'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const dependencyAst = Reflexion.parse(dependencyCode, (ast) => ast.body)
