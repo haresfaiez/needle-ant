@@ -1,13 +1,14 @@
-import { AntTrail, DependenciesReflexion, Reflexion } from './AntTrail.js'
+import { DependenciesReflexion, Reflexion } from './Reflexion.js'
 import { DependencyEntropy } from './Entropy.js'
 import { Evaluation } from './Evalution.js'
 import NeedleAnt from './NeedleAnt.js'
 
-describe('Dependency AntTrail', () => {
+describe('Dependency Reflexion', () => {
   it('counts possible imports', () => {
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
 
-    const actual = AntTrail.dependency(dependencyCode, [ './a', './b', './c', './e' ])
+    const dependcyAst = Reflexion.parse(dependencyCode, (ast) => ast.body)
+    const actual = new DependenciesReflexion(dependcyAst, [ './a', './b', './c', './e' ])
 
     expect(actual.importedModuleExports).toEqual(['a', 'b', 'c'])
     expect(actual.otherModules).toEqual([ './a', './b', './c', './e' ])
@@ -110,9 +111,10 @@ describe('Dependency entropy', () => {
   it('is null when a module imports one of three exported functions', () => {
     const code = 'import { a } from "./a";'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
+    const dependencyAst = Reflexion.parse(dependencyCode, (ast) => ast.body)
     const entropy = new DependencyEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      AntTrail.dependency(dependencyCode, [ './a', './b', './c', './e' ])
+      new DependenciesReflexion(dependencyAst, [ './a', './b', './c', './e' ])
     )
 
     const expected = new Evaluation(1, 3).withLocalPossibilities(1).plus(new Evaluation(0, 4).withLocalPossibilities(1))

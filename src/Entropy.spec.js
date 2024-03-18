@@ -1,4 +1,4 @@
-import { Reflexion } from './AntTrail.js'
+import { Reflexion } from './Reflexion.js'
 import { ExpressionEntropy } from './Entropy.js'
 import { Evaluation } from './Evalution.js'
 

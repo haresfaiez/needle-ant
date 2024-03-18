@@ -1,7 +1,6 @@
 import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
 
-
 export class Reflexion {
   constructor(sources, footsteps) {
     this.sources = Array.isArray(sources) ? sources : [sources]
@@ -198,6 +197,12 @@ class ApiReflexion extends Reflexion {
 export class DependenciesReflexion extends Reflexion {
   files = []
 
+  constructor(sources, modules) {
+    super(sources)
+    this.importedModuleExports = sources?.api?.()
+    this.otherModules = modules
+  }
+
   add(file) {
     this.files.push(file)
     return this
@@ -217,13 +222,5 @@ export class DependenciesReflexion extends Reflexion {
 
   factorizeEach(ast) {
     return ast.specifiers
-  }
-}
-
-export class AntTrail extends Reflexion {
-  static dependency(code, modules) {
-    const ast = Reflexion.parse(code, (ast) => ast.body)
-    // TODO: use instance instead of literal object
-    return { importedModuleExports: ast.api(), otherModules: modules }
   }
 }

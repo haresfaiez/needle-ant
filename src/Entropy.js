@@ -1,4 +1,4 @@
-import { Reflexion, DependenciesReflexion } from './AntTrail.js'
+import { Reflexion, DependenciesReflexion } from './Reflexion.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
 
 // TODO: Merge all in one class
