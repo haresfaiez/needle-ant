@@ -92,6 +92,10 @@ export class JointEvaluation extends Evaluation {
 }
 
 export class NullEvaluation extends Evaluation {
+  plus(otherEvaluation) {
+    return otherEvaluation
+  }
+
   calculate() {
     return 0
   }

@@ -73,7 +73,8 @@ export class ExpressionEntropy extends Entropy {
   evaluate() {
     // TODO: simplify this method
     const actualCount = this.dividend.sources?.[0]?.type === 'ImportNamespaceSpecifier' ? 3 : (this.dividend.identifiers().length > 0 ? this.dividend.odds().length : 0)
-    const allPossibilitiesCount = this.divisor.length
+    // TODO: Do this the proper way
+    const allPossibilitiesCount = this.divisor.length + (this.dividend.sources?.[0]?.expression?.callee?.name === 'call' ? 1 : 0)
     const localPossibilities = this.dividend.identifiers().length + (this.dividend.literals().length ? 1 : 0)
     return new Evaluation(actualCount, allPossibilitiesCount)
       .withLocalPossibilities(localPossibilities)

@@ -1,6 +1,5 @@
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: entropy("sum(a(),b())")=e(calling-sum)+e(calling-a)+e(calling-b) === entropy("const h=b(); sum(a(),h)")
 // TODO: entropy("f.c()")=entropy(calling-c-in-f)
 // TODO: entropy("f.c()")=entropy(calling-c-in-f)+entropy(using-f)
 

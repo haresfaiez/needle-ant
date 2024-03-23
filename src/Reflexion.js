@@ -88,7 +88,8 @@ class HorizontalReflexion extends Reflexion {
     if (ast.type === 'ReturnStatement'
       || ast.type === 'BinaryExpression'
       || ast.type === 'ExpressionStatement'
-      || ast.type === 'ImportSpecifier') {
+      || ast.type === 'ImportSpecifier'
+      || ast.type === 'CallExpression') {
       return new ExpressionReflexion(ast)
     }
 
@@ -98,6 +99,11 @@ class HorizontalReflexion extends Reflexion {
 
     if (ast.type === 'ExportNamedDeclaration') {
       return new ExpressionReflexion(ast)
+    }
+
+    if (ast.type === 'VariableDeclaration'
+      || ast.type === 'VariableDeclarator') {
+      return new DeclarationReflexion(ast)
     }
 
     throw new Error(`Ast type "${ast.type}" not handeled yet!`)
@@ -118,6 +124,16 @@ class FunctionReflexion extends Reflexion {
     }
 
     return new HorizontalReflexion(ast.body.body, ['IfStatement']).factorize()
+  }
+}
+
+class DeclarationReflexion extends Reflexion {
+  factorizeEach(expression) {
+    if (expression.declarations) {
+      return new HorizontalReflexion(expression.declarations).factorize()
+    }
+
+    return new HorizontalReflexion(expression.init).factorize()
   }
 }
 
