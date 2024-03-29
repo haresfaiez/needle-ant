@@ -32,16 +32,24 @@ describe('Call entropy', () => {
       const code = 'const x = b(); call(x)'
       const entropy = new JointEntropy(
         Reflexion.parse(code, (ast) => ast.body),
-        new JointEntropy([], ['a', 'b', 'c', 'd'])
+        new JointEntropy([], ['b', 'call'])
       )
 
-      const expected = new Evaluation(1, 4).withLocalPossibilities(1)
-        .plus(new Evaluation(2, 5).withLocalPossibilities(2))
+      const expected = new Evaluation(1, 2).withLocalPossibilities(1)
+        .plus(new Evaluation(2, 3).withLocalPossibilities(2))
       expect(entropy.evaluate()).toEqual(expected)
     })
 
     it('is the sum of all calls', () => {
       const code = 'const x = b(); a(c, x, d())'
+      const entropy = new JointEntropy(
+        Reflexion.parse(code, (ast) => ast.body),
+        new JointEntropy([], ['a', 'b', 'c', 'd'])
+      )
+
+      const expected = new Evaluation(1, 4).withLocalPossibilities(1)
+        .plus(new Evaluation(4, 5).withLocalPossibilities(4))
+      expect(entropy.evaluate()).toEqual(expected)
     })
   })
 })
