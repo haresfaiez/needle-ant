@@ -12,7 +12,7 @@ describe('Call entropy', () => {
       const code = 'a(b())'
       const entropy = new ExpressionEntropy(
         Reflexion.parse(code, (ast) => ast.body),
-        ['a', 'b', 'c']
+        new JointEntropy([], ['a', 'b', 'c'])
       )
 
       expect(entropy.evaluate()).toEqual(new Evaluation(2, 3).withLocalPossibilities(2))
@@ -22,7 +22,7 @@ describe('Call entropy', () => {
       const code = 'a(b(c()))'
       const entropy = new ExpressionEntropy(
         Reflexion.parse(code, (ast) => ast.body),
-        ['a', 'b', 'c', 'd']
+        new JointEntropy([], ['a', 'b', 'c', 'd'])
       )
 
       expect(entropy.evaluate()).toEqual(new Evaluation(3, 4).withLocalPossibilities(3))
@@ -32,7 +32,7 @@ describe('Call entropy', () => {
       const code = 'const x = b(); call(x)'
       const entropy = new JointEntropy(
         Reflexion.parse(code, (ast) => ast.body),
-        ['a', 'b', 'c', 'd']
+        new JointEntropy([], ['a', 'b', 'c', 'd'])
       )
 
       const expected = new Evaluation(1, 4).withLocalPossibilities(1)
@@ -51,7 +51,7 @@ describe('Import statement entropy', () => {
     const code = 'import { a } from "./a"'
     const specifiers = Reflexion.parse(code, (ast) => ast.body[0].specifiers)
 
-    const entropy = new ExpressionEntropy(specifiers, [ 'a', 'b' ])
+    const entropy = new ExpressionEntropy(specifiers, new JointEntropy([], ['a', 'b']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 2).withLocalPossibilities(1))
   })
@@ -60,7 +60,7 @@ describe('Import statement entropy', () => {
     const code = 'import { a, b } from "./a"'
     const specifiers = Reflexion.parse(code, (ast) => ast.body[0].specifiers)
 
-    const entropy = new ExpressionEntropy(specifiers, [ 'a', 'b', 'c' ])
+    const entropy = new ExpressionEntropy(specifiers, new JointEntropy([], ['a', 'b', 'c']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(2, 3).withLocalPossibilities(2))
   })
@@ -69,7 +69,7 @@ describe('Import statement entropy', () => {
     const code = 'import * as A from "./a"'
     const specifiers = Reflexion.parse(code, (ast) => ast.body[0].specifiers)
 
-    const entropy = new ExpressionEntropy(specifiers, [ 'a', 'b', 'c' ])
+    const entropy = new ExpressionEntropy(specifiers, new JointEntropy([], ['a', 'b', 'c']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(3, 3))
   })
@@ -78,7 +78,7 @@ describe('Import statement entropy', () => {
     const code = 'import { a } from "./a"'
     const source = Reflexion.parse(code, (ast) => ast.body[0].source)
 
-    const entropy = new ExpressionEntropy(source, [ './a', './b', './c' ])
+    const entropy = new ExpressionEntropy(source, new JointEntropy([], ['./a', './b', './c']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(0, 3).withLocalPossibilities(1))
   })

@@ -3,9 +3,17 @@ import { Evaluation, NullEvaluation } from './Evalution.js'
 
 // TODO: Merge all in one class
 export class Entropy {
-  constructor(dividend, divisor) {
+  constructor(dividend, _divisor) {
     this.dividend = dividend
-    this.divisor = divisor
+    this._divisor = _divisor?.divisor ? _divisor.divisor() : _divisor
+  }
+
+  plus() {
+    throw new Error('`Entropy#plus` not implemented yet in `Entropy`!')
+  }
+
+  divisor() {
+    return this._divisor
   }
 
   calculate() {
@@ -21,11 +29,26 @@ export class Entropy {
   }
 }
 
+class SumEntropy extends Entropy {
+  plus(anEntropy) {
+    this.dividend = [...this.dividend, anEntropy]
+    return this
+  }
+
+  evaluate() {
+    return this.dividend.reduce(
+      (acc, eachEntropy) => acc.plus(eachEntropy.evaluate()),
+      new NullEvaluation()
+    )
+  }
+}
+
 export class JointEntropy extends Entropy {
   evaluate() {
     return this.dividend.sources
-      .map(eachSource => new ExpressionEntropy(new Reflexion(eachSource), this.divisor))
-      .reduce((acc, eachEntropy) => acc.plus(eachEntropy.evaluate()), new NullEvaluation())
+      .map(eachSource => new ExpressionEntropy(new Reflexion(eachSource), this))
+      .reduce((acc, eachEntropy) => acc.plus(eachEntropy), new SumEntropy([], []))
+      .evaluate()
   }
 }
   
@@ -36,13 +59,13 @@ export class DependencyEntropy extends Entropy {
     const importSpecifiers = importParts[0]
     const importSource = importParts[1]
     // TODO: Remove this check
-    if (this.divisor.otherModules) {
-      return new ExpressionEntropy(new Reflexion(importSpecifiers), this.divisor.importedModuleExports).evaluate()
-        .plus(new ExpressionEntropy(new Reflexion(importSource), this.divisor.otherModules).evaluate())
+    if (this.divisor().otherModules) {
+      return new ExpressionEntropy(new Reflexion(importSpecifiers), new JointEntropy([], this.divisor().importedModuleExports)).evaluate()
+        .plus(new ExpressionEntropy(new Reflexion(importSource), new JointEntropy([], this.divisor().otherModules)).evaluate())
     }
 
     const actualCount = this.dividend.odds().length
-    const allPossibilitiesCount = this.divisor.odds().length
+    const allPossibilitiesCount = this.divisor().odds().length
     return new Evaluation(actualCount, allPossibilitiesCount)
   }
 }
@@ -74,7 +97,7 @@ export class ExpressionEntropy extends Entropy {
     // TODO: simplify this method
     const actualCount = this.dividend.sources?.[0]?.type === 'ImportNamespaceSpecifier' ? 3 : (this.dividend.identifiers().length > 0 ? this.dividend.odds().length : 0)
     // TODO: Do this the proper way
-    const allPossibilitiesCount = this.divisor.length + (this.dividend.sources?.[0]?.expression?.callee?.name === 'call' ? 1 : 0)
+    const allPossibilitiesCount = this.divisor().length + (this.dividend.sources?.[0]?.expression?.callee?.name === 'call' ? 1 : 0)
     const localPossibilities = this.dividend.identifiers().length + (this.dividend.literals().length ? 1 : 0)
     return new Evaluation(actualCount, allPossibilitiesCount)
       .withLocalPossibilities(localPossibilities)

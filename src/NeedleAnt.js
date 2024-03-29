@@ -13,7 +13,7 @@ class NeedleAnt {
   entropy() {
     const trail = new Reflexion(this.ast, this.footsteps)
     const flatTrail = new Reflexion(trail.odds())
-    return new JointEntropy(flatTrail, flatTrail.identifiers(), this.footsteps).calculate()
+    return new JointEntropy(flatTrail, new JointEntropy([], flatTrail.identifiers())).calculate()
   }
 
   coverEntropy(updatedCode) {
