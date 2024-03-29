@@ -115,11 +115,21 @@ export class DeclarationEntropy extends Entropy {
 
 export class ExpressionEntropy extends Entropy {
   evaluate() {
-    // TODO: simplify this method
-    const actualCount = this.dividend.sources?.[0]?.type === 'ImportNamespaceSpecifier' ? 3 : (this.dividend.identifiers().length > 0 ? this.dividend.odds().length : 0)
-    // TODO: Do this the proper way
+    const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
+      && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
+
+    // TODO: Move this to DependencyEntropy
+    if (isWildcardImport) {
+      return new Evaluation(this.divisor().length, this.divisor().length)
+    }
+
     const allPossibilitiesCount = this.divisor().length
-    const localPossibilities = this.dividend.identifiers().length + (this.dividend.literals().length ? 1 : 0)
-    return new Evaluation(actualCount || localPossibilities, allPossibilitiesCount)
+
+    const literalsWeight = this.dividend.literals().length ? 1 : 0
+    const actualCount = this.dividend.identifiers().length > 0
+      ? this.dividend.odds().length
+      : (this.dividend.identifiers().length + literalsWeight)
+
+    return new Evaluation(actualCount, allPossibilitiesCount)
   }
 }
