@@ -31,8 +31,28 @@ export class Entropy {
 }
 
 class SumEntropy extends Entropy {
+  constructor(dividend, _divisor) {
+    super(dividend, _divisor)
+    this._divisor = new Set()
+  }
+
+  divisor() {
+    return Array.from(this._divisor)
+  }
+
   plus(anEntropy) {
-    this.dividend = [...this.dividend, anEntropy]
+    anEntropy.divisor().forEach(eachDivisor => this._divisor.add(eachDivisor))
+
+    this.dividend = [...this.dividend, new ExpressionEntropy(anEntropy.dividend, this.divisor())]
+
+    if (anEntropy.dividend.sources?.[0]?.type === 'VariableDeclaration') {
+      anEntropy
+        .dividend
+        .sources?.[0]?.declarations
+        .map(eachDeclaration => eachDeclaration.id.name)
+        .forEach(eachId => this._divisor.add(eachId))
+    }
+
     return this
   }
 
@@ -98,7 +118,7 @@ export class ExpressionEntropy extends Entropy {
     // TODO: simplify this method
     const actualCount = this.dividend.sources?.[0]?.type === 'ImportNamespaceSpecifier' ? 3 : (this.dividend.identifiers().length > 0 ? this.dividend.odds().length : 0)
     // TODO: Do this the proper way
-    const allPossibilitiesCount = this.divisor().length + (this.dividend.sources?.[0]?.expression?.callee?.name === 'call' ? 1 : 0)
+    const allPossibilitiesCount = this.divisor().length
     const localPossibilities = this.dividend.identifiers().length + (this.dividend.literals().length ? 1 : 0)
     return new Evaluation(actualCount, allPossibilitiesCount)
       .withLocalPossibilities(localPossibilities)
