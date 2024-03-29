@@ -117,6 +117,7 @@ class ProgramReflexion extends Reflexion {
   }
 }
 
+// TODO: should it be merged with DeclarationReflexion
 class FunctionReflexion extends Reflexion {
   factorizeEach(ast) {
     if (!Array.isArray(ast.body.body)) {
