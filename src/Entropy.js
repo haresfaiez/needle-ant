@@ -5,6 +5,7 @@ import { Evaluation, NullEvaluation } from './Evalution.js'
 export class Entropy {
   constructor(dividend, _divisor) {
     this.dividend = dividend
+    // TODO: Simplify this
     this._divisor = _divisor?.divisor ? _divisor.divisor() : _divisor
   }
 
@@ -21,7 +22,7 @@ export class Entropy {
   }
 
   evaluate() {
-    throw new Error('Non implemented yet')
+    throw new Error('`Entropy#evaluate` not implemented yet in `Entropy`!')
   }
 
   minus(other) {
