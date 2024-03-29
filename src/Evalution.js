@@ -3,20 +3,14 @@ export class Evaluation {
   constructor(actualCount, possibleCount) {
     this.actualCount = actualCount
     this.possibleCount = possibleCount
-    this.localPossibilitiesCount = 0
   }
 
   plus(otherEvaluation) {
     return new JointEvaluation([this, otherEvaluation])
   }
 
-  withLocalPossibilities(localPossibilitiesCount) {
-    this.localPossibilitiesCount = localPossibilitiesCount
-    return this
-  }
-
   possibilitiesCount(primitiveAndGlobalsCount = 0) {
-    if (this.localPossibilitiesCount) {
+    if (this.actualCount) {
       primitiveAndGlobalsCount = 1
     }
 
@@ -30,7 +24,7 @@ export class Evaluation {
         ? this.possibleCount
         : 0
 
-    return (this.localPossibilitiesCount || possibilitiesWeight) + combinationsCount
+    return (this.actualCount || possibilitiesWeight) + combinationsCount
   }
 
   probability() {

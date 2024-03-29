@@ -96,7 +96,7 @@ describe('Dependency entropy', () => {
       new JointEntropy([], new DependenciesReflexion(dependencyAst, [ './a', './b', './c', './e' ]))
     )
 
-    const expected = new Evaluation(1, 3).withLocalPossibilities(1).plus(new Evaluation(0, 4).withLocalPossibilities(1))
+    const expected = new Evaluation(1, 3).plus(new Evaluation(1, 4))
     expect(entropy.evaluate()).toEqual(expected)
   })
 

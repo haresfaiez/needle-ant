@@ -120,7 +120,6 @@ export class ExpressionEntropy extends Entropy {
     // TODO: Do this the proper way
     const allPossibilitiesCount = this.divisor().length
     const localPossibilities = this.dividend.identifiers().length + (this.dividend.literals().length ? 1 : 0)
-    return new Evaluation(actualCount, allPossibilitiesCount)
-      .withLocalPossibilities(localPossibilities)
+    return new Evaluation(actualCount || localPossibilities, allPossibilitiesCount)
   }
 }
