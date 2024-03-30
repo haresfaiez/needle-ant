@@ -94,7 +94,8 @@ class HorizontalReflexion extends Reflexion {
       || ast.type === 'BinaryExpression'
       || ast.type === 'ExpressionStatement'
       || ast.type === 'ImportSpecifier'
-      || ast.type === 'CallExpression') {
+      || ast.type === 'CallExpression'
+      || ast.type === 'Identifier') {
       return new ExpressionReflexion(ast)
     }
 

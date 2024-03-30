@@ -98,12 +98,20 @@ export class SingleEntropy extends Entropy {
   createDelegate(dividend, _divisor) {
     const dividendType = dividend.sources?.[0]?.type
 
-    if ((dividendType === 'ImportDeclaration')) {
+    if (dividendType === 'ImportDeclaration') {
       return new DependencyEntropy(dividend, _divisor)
     }
 
     if (dividendType === 'VariableDeclaration') {
       return new DeclarationEntropy(dividend, _divisor)
+    }
+
+    const callee = dividend.sources?.[0]?.expression?.callee
+    if (callee?.type === 'MemberExpression') {
+      return new SumEntropy([
+        new ExpressionEntropy(new Reflexion(callee.object), _divisor),
+        new ExpressionEntropy(new Reflexion(callee.property), [callee.property.name])
+      ])
     }
 
     return new ExpressionEntropy(dividend, _divisor)

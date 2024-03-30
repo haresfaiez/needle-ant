@@ -6,6 +6,24 @@ import { Evaluation } from './Evalution.js'
 //   * https://github.com/GoogleChrome/lighthouse/blob/main/core/gather/base-gatherer.js
 //   * https://github.com/GoogleChrome/lighthouse/blob/main/core/lib/traces/metric-trace-events.js
 
+describe('Method invocation entropy', () => {
+  it('sums objects entropy and method entropy', () => {
+    const code = 'f.c()'
+    const entropy = new SingleEntropy(
+      Reflexion.parse(code, (ast) => ast.body),
+      ['f', 'z']
+    )
+
+    expect(entropy.evaluate()).toEqual(new Evaluation(1, 2).plus(new Evaluation(1, 1)))
+  })
+
+  it('sums all invocation when a method invocation argument is afunction call', () => {})
+
+  it('considers all methods invocation for method entropy', () => {
+    // const code = 'f.a(); f.b();'
+  })
+})
+
 describe('Call entropy', () => {
   describe('when an argument of a call is also a call', () => {
     it('calculates possible identifiers when calls are nested', () => {

@@ -1,11 +1,7 @@
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: entropy("f.c()")=entropy(calling-c-in-f)
-// TODO: entropy("f.c()")=entropy(calling-c-in-f)+entropy(using-f)
-
 // TODO: more variables -> more entropy
 // TODO: more state space for variable -> more entropy
-// TODO: `f(b){x(),b(),y()}, f(z)` -> higher entropy than `x(), z(), y()`, but same entropy as `f(){x(),z(),y()}, f()`
 // TODO: entropy(pull request with another if) >>> entropy(pull request that parses config and dispatch)
 // TODO: entropy(a=1, b=2, c=3) > entropy(obj = {a: 1, b: 2, c: 3})
 
