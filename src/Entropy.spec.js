@@ -1,5 +1,5 @@
 import { Reflexion } from './Reflexion.js'
-import { ExpressionEntropy, JointEntropy } from './Entropy.js'
+import { SingleEntropy, JointEntropy } from './Entropy.js'
 import { Evaluation } from './Evalution.js'
 
 // Run it for:
@@ -10,7 +10,7 @@ describe('Call entropy', () => {
   describe('when an argument of a call is also a call', () => {
     it('calculates possible identifiers when calls are nested', () => {
       const code = 'a(b())'
-      const entropy = new ExpressionEntropy(
+      const entropy = new SingleEntropy(
         Reflexion.parse(code, (ast) => ast.body),
         new JointEntropy([], ['a', 'b', 'c'])
       )
@@ -20,7 +20,7 @@ describe('Call entropy', () => {
 
     it('calculates possible identifiers when three calls are nested', () => {
       const code = 'a(b(c()))'
-      const entropy = new ExpressionEntropy(
+      const entropy = new SingleEntropy(
         Reflexion.parse(code, (ast) => ast.body),
         new JointEntropy([], ['a', 'b', 'c', 'd'])
       )

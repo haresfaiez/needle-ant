@@ -1,12 +1,15 @@
 import { Reflexion, DependenciesReflexion } from './Reflexion.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
 
-// TODO: Merge all in one class
 class Entropy {
   constructor(dividend, _divisor) {
     this.dividend = dividend
     // TODO: Simplify this
     this._divisor = _divisor?.divisor ? _divisor.divisor() : _divisor
+  }
+
+  definitions() {
+    return this.dividend.definitions()
   }
 
   plus() {
@@ -17,6 +20,7 @@ class Entropy {
     this._divisor = newDivisor
   }
 
+  // TODO: Make this returns always an array
   divisor() {
     return this._divisor
   }
@@ -46,19 +50,9 @@ class SumEntropy extends Entropy {
 
   plus(anEntropy) {
     anEntropy.divisor().forEach(eachDivisor => this._divisor.add(eachDivisor))
-
     anEntropy.setDivisor(this.divisor())
-
     this.dividend = [...this.dividend, anEntropy]
-
-    if (anEntropy.dividend.sources?.[0]?.type === 'VariableDeclaration') {
-      anEntropy
-        .dividend
-        .sources?.[0]?.declarations
-        .map(eachDeclaration => eachDeclaration.id.name)
-        .forEach(eachId => this._divisor.add(eachId))
-    }
-
+    anEntropy.definitions().forEach(eachId => this._divisor.add(eachId))
     return this
   }
 
@@ -73,9 +67,54 @@ class SumEntropy extends Entropy {
 export class JointEntropy extends Entropy {
   evaluate() {
     return this.dividend.sources
-      .map(eachSource => new ExpressionEntropy(new Reflexion(eachSource), this))
+      .map(eachSource => new SingleEntropy(new Reflexion(eachSource), this))
       .reduce((acc, eachEntropy) => acc.plus(eachEntropy), new SumEntropy([], []))
       .evaluate()
+  }
+}
+
+export class SingleEntropy extends Entropy {
+  constructor(dividend, _divisor) {
+    super()
+    this.delegate = this.createDelegate(dividend, _divisor)
+  }
+
+  setDivisor(newDivisor) {
+    this.delegate.setDivisor(newDivisor)
+  }
+
+  divisor() {
+    return this.delegate.divisor()
+  }
+
+  evaluate() {
+    return this.delegate.evaluate()
+  }
+
+  definitions() {
+    return this.delegate.definitions()
+  }
+
+  createDelegate(dividend, _divisor) {
+    // dividend/ BinaryExpression
+    // dividend/ ExpressionStatement
+    // dividend/ ImportDeclaration
+    // dividend/ Literal
+    // dividend/ ReturnStatement
+    // dividend/ VariableDeclaration
+
+    const dividendType = dividend.sources?.[0]?.type
+
+    if (dividendType === 'ImportDeclaration') {
+      // console.log('dividend/', dividend.sources?.[0]?.type)
+      // return new DependencyEntropy(dividend, _divisor)
+    }
+
+    if (dividendType === 'VariableDeclaration') {
+      return new DeclarationEntropy(dividend, _divisor)
+    }
+
+    return new ExpressionEntropy(dividend, _divisor)
   }
 }
 
@@ -87,8 +126,8 @@ export class DependencyEntropy extends Entropy {
     const importSource = importParts[1]
     // TODO: Remove this check
     if (this.divisor().otherModules) {
-      return new ExpressionEntropy(new Reflexion(importSpecifiers), new JointEntropy([], this.divisor().importedModuleExports)).evaluate()
-        .plus(new ExpressionEntropy(new Reflexion(importSource), new JointEntropy([], this.divisor().otherModules)).evaluate())
+      return new SingleEntropy(new Reflexion(importSpecifiers), new JointEntropy([], this.divisor().importedModuleExports)).evaluate()
+        .plus(new SingleEntropy(new Reflexion(importSource), new JointEntropy([], this.divisor().otherModules)).evaluate())
     }
 
     const actualCount = this.dividend.odds().length
@@ -96,35 +135,13 @@ export class DependencyEntropy extends Entropy {
     return new Evaluation(actualCount, allPossibilitiesCount)
   }
 }
-  
-export class DeclarationEntropy extends Entropy {
-  kindProbability() {
-    if (this.dividend.sources[0].body?.[0].kind === 'let')
-      return 2/6
-  
-    if (this.dividend.sources[0].body?.[0].kind === 'var')
-      return 1/6
-  
-    if (this.dividend.sources[0].body?.[0].kind === 'const')
-      return 3/6
-  
-    throw new Error('Unknown declaration kind')
-  }
-  
-  calculate() {
-    const numberOfKinds = 3 // let, const, var
-    const possibleKinds = 3
-    const kindProbability = this.kindProbability() * (1/numberOfKinds)
-    return kindProbability * possibleKinds * Math.log2(numberOfKinds)
-  }
-}
 
-export class ExpressionEntropy extends Entropy {
+class ExpressionEntropy extends Entropy {
   evaluate() {
     const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
       && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
 
-    // TODO: Move this to DependencyEntropy
+    // TODO: Move this to DependencyEntropy...
     if (isWildcardImport) {
       return new Evaluation(this.divisor().length, this.divisor().length)
     }
@@ -138,4 +155,7 @@ export class ExpressionEntropy extends Entropy {
 
     return new Evaluation(actualCount, allPossibilitiesCount)
   }
+}
+
+class DeclarationEntropy extends ExpressionEntropy {
 }

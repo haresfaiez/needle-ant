@@ -7,6 +7,11 @@ export class Reflexion {
     this.footsteps = footsteps || []
   }
 
+  definitions() {
+    // TODO: Improve this
+    return (this.sources?.[0]?.declarations || []).map(eachDeclaration => eachDeclaration.id.name)
+  }
+
   add() {
     throw new Error('Not implemented yet!')
   }
