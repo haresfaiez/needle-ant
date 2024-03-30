@@ -98,7 +98,7 @@ export class SingleEntropy extends Entropy {
   createDelegate(dividend, _divisor) {
     const dividendType = dividend.sources?.[0]?.type
 
-    if ((dividendType === 'ImportDeclaration') && (!!_divisor.odds || !!_divisor._divisor.files || (_divisor.dividend.length === 0))) {
+    if ((dividendType === 'ImportDeclaration')) {
       return new DependencyEntropy(dividend, _divisor)
     }
 
@@ -111,7 +111,19 @@ export class SingleEntropy extends Entropy {
 }
 
 class DependencyEntropy extends Entropy {
+  // TODO: improve this
   evaluate() {
+    if (!this.divisor().odds) {
+      const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
+        && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
+
+      if (isWildcardImport) {
+        return new Evaluation(this.divisor().length, this.divisor().length)
+      }
+
+      return new ExpressionEntropy(this.dividend, this._divisor).evaluate()
+    }
+
     // TODO: fix next line
     const importParts = new DependenciesReflexion(this.dividend.sources[0]).__factorize()
     const importSpecifiers = importParts[0]
@@ -130,14 +142,6 @@ class DependencyEntropy extends Entropy {
 
 class ExpressionEntropy extends Entropy {
   evaluate() {
-    const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
-      && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
-
-    // TODO: Move this to DependencyEntropy...
-    if (isWildcardImport) {
-      return new Evaluation(this.divisor().length, this.divisor().length)
-    }
-
     const allPossibilitiesCount = this.divisor().length
 
     const literalsWeight = this.dividend.literals().length ? 1 : 0
