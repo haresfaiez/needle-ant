@@ -1,6 +1,6 @@
 import { Reflexion } from './Reflexion.js'
 import { SingleEntropy, JointEntropy } from './Entropy.js'
-import { Evaluation } from './Evalution.js'
+import { Evaluation, NullEvaluation } from './Evalution.js'
 
 // Run it for:
 //   * https://github.com/GoogleChrome/lighthouse/blob/main/core/gather/base-gatherer.js
@@ -14,10 +14,35 @@ describe('Method invocation entropy', () => {
       ['f', 'z']
     )
 
-    expect(entropy.evaluate()).toEqual(new Evaluation(1, 2).plus(new Evaluation(1, 1)))
+    const expected = new Evaluation(1, 2).plus(new Evaluation(1, 1)).plus(new NullEvaluation())
+    expect(entropy.evaluate()).toEqual(expected)
   })
 
-  it('sums all invocation when a method invocation argument is afunction call', () => {})
+  it('sums all invocation when a method invocation argument is a function call', () => {
+    const code = 'f.c(b())'
+    const entropy = new SingleEntropy(
+      Reflexion.parse(code, (ast) => ast.body),
+      ['f', 'z', 'b', 'c']
+    )
+
+    const expected = new Evaluation(1, 4)
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 4))
+    expect(entropy.evaluate()).toEqual(expected)
+  })
+
+  it('sums all invocation when a arguments are functions calls', () => {
+    const code = 'f.c(b(), c())'
+    const entropy = new SingleEntropy(
+      Reflexion.parse(code, (ast) => ast.body),
+      ['f', 'z', 'b', 'c']
+    )
+
+    const expected = new Evaluation(1, 4)
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 4).plus(new Evaluation(1, 4)))
+    expect(entropy.evaluate()).toEqual(expected)
+  })
 
   it('considers all methods invocation for method entropy', () => {
     // const code = 'f.a(); f.b();'

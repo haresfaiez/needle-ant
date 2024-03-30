@@ -110,7 +110,8 @@ export class SingleEntropy extends Entropy {
     if (callee?.type === 'MemberExpression') {
       return new SumEntropy([
         new SingleEntropy(new Reflexion(callee.object), _divisor),
-        new SingleEntropy(new Reflexion(callee.property), [callee.property.name])
+        new SingleEntropy(new Reflexion(callee.property), [callee.property.name]),
+        new JointEntropy(new Reflexion(dividend.sources?.[0]?.expression?.arguments), _divisor)
       ])
     }
 
