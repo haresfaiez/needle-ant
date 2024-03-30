@@ -56,18 +56,18 @@ describe('Call entropy', () => {
 describe('Import statement entropy', () => {
   it('calculates entropy of import specfiers', () => {
     const code = 'import { a } from "./a"'
-    const specifiers = Reflexion.parse(code, (ast) => ast.body[0].specifiers)
+    const specifiers = Reflexion.parse(code, (ast) => ast.body)
 
-    const entropy = new ExpressionEntropy(specifiers, new JointEntropy([], ['a', 'b']))
+    const entropy = new JointEntropy(specifiers, new JointEntropy([], ['a', 'b']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 2))
   })
 
   it('calculates entropy of two import specfiers', () => {
     const code = 'import { a, b } from "./a"'
-    const specifiers = Reflexion.parse(code, (ast) => ast.body[0].specifiers)
+    const specifiers = Reflexion.parse(code, (ast) => ast.body)
 
-    const entropy = new ExpressionEntropy(specifiers, new JointEntropy([], ['a', 'b', 'c']))
+    const entropy = new JointEntropy(specifiers, new JointEntropy([], ['a', 'b', 'c']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
   })

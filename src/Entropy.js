@@ -2,7 +2,7 @@ import { Reflexion, DependenciesReflexion } from './Reflexion.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
 
 // TODO: Merge all in one class
-export class Entropy {
+class Entropy {
   constructor(dividend, _divisor) {
     this.dividend = dividend
     // TODO: Simplify this
@@ -11,6 +11,10 @@ export class Entropy {
 
   plus() {
     throw new Error('`Entropy#plus` not implemented yet in `Entropy`!')
+  }
+
+  setDivisor(newDivisor) {
+    this._divisor = newDivisor
   }
 
   divisor() {
@@ -43,7 +47,9 @@ class SumEntropy extends Entropy {
   plus(anEntropy) {
     anEntropy.divisor().forEach(eachDivisor => this._divisor.add(eachDivisor))
 
-    this.dividend = [...this.dividend, new ExpressionEntropy(anEntropy.dividend, this.divisor())]
+    anEntropy.setDivisor(this.divisor())
+
+    this.dividend = [...this.dividend, anEntropy]
 
     if (anEntropy.dividend.sources?.[0]?.type === 'VariableDeclaration') {
       anEntropy
@@ -72,7 +78,7 @@ export class JointEntropy extends Entropy {
       .evaluate()
   }
 }
-  
+
 export class DependencyEntropy extends Entropy {
   evaluate() {
     // TODO: fix next line
