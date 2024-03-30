@@ -109,8 +109,8 @@ export class SingleEntropy extends Entropy {
     const callee = dividend.sources?.[0]?.expression?.callee
     if (callee?.type === 'MemberExpression') {
       return new SumEntropy([
-        new ExpressionEntropy(new Reflexion(callee.object), _divisor),
-        new ExpressionEntropy(new Reflexion(callee.property), [callee.property.name])
+        new SingleEntropy(new Reflexion(callee.object), _divisor),
+        new SingleEntropy(new Reflexion(callee.property), [callee.property.name])
       ])
     }
 
