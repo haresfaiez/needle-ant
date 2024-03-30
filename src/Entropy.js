@@ -96,18 +96,10 @@ export class SingleEntropy extends Entropy {
   }
 
   createDelegate(dividend, _divisor) {
-    // dividend/ BinaryExpression
-    // dividend/ ExpressionStatement
-    // dividend/ ImportDeclaration
-    // dividend/ Literal
-    // dividend/ ReturnStatement
-    // dividend/ VariableDeclaration
-
     const dividendType = dividend.sources?.[0]?.type
 
-    if (dividendType === 'ImportDeclaration') {
-      // console.log('dividend/', dividend.sources?.[0]?.type)
-      // return new DependencyEntropy(dividend, _divisor)
+    if ((dividendType === 'ImportDeclaration') && (!!_divisor.odds || !!_divisor._divisor.files || (_divisor.dividend.length === 0))) {
+      return new DependencyEntropy(dividend, _divisor)
     }
 
     if (dividendType === 'VariableDeclaration') {
@@ -118,7 +110,7 @@ export class SingleEntropy extends Entropy {
   }
 }
 
-export class DependencyEntropy extends Entropy {
+class DependencyEntropy extends Entropy {
   evaluate() {
     // TODO: fix next line
     const importParts = new DependenciesReflexion(this.dividend.sources[0]).__factorize()

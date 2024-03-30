@@ -1,5 +1,5 @@
 import { DependenciesReflexion, Reflexion } from './Reflexion.js'
-import { DependencyEntropy, JointEntropy } from './Entropy.js'
+import { JointEntropy, SingleEntropy } from './Entropy.js'
 import { Evaluation } from './Evalution.js'
 import NeedleAnt from './NeedleAnt.js'
 
@@ -45,7 +45,7 @@ describe('Nested expressions entropy', () => {
 describe('Dependency entropy', () => {
   it('of wildecard import checks files available for import', () => {
     const code = 'import * as A from "./a"'
-    const entropy = new DependencyEntropy(
+    const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
       new JointEntropy([], new DependenciesReflexion().add('./B.js').add('./C.js'))
     )
@@ -56,7 +56,7 @@ describe('Dependency entropy', () => {
   it('is null when a module imports the only exported function', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}'
-    const entropy = new DependencyEntropy(
+    const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
       new JointEntropy([], Reflexion.parse(dependencyCode))
     )
@@ -68,7 +68,7 @@ describe('Dependency entropy', () => {
   it('is 1/3 when a module imports of one of three exported functions', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
-    const entropy = new DependencyEntropy(
+    const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
       new JointEntropy([], Reflexion.parse(dependencyCode))
     )
@@ -79,7 +79,7 @@ describe('Dependency entropy', () => {
   it('is 2/3 when a module imports of two of three exported functions', () => {
     const code = 'import { a, b } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
-    const entropy = new DependencyEntropy(
+    const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
       new JointEntropy([], Reflexion.parse(dependencyCode))
     )
@@ -91,7 +91,7 @@ describe('Dependency entropy', () => {
     const code = 'import { a } from "./a";'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const dependencyAst = Reflexion.parse(dependencyCode, (ast) => ast.body)
-    const entropy = new DependencyEntropy(
+    const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
       new JointEntropy([], new DependenciesReflexion(dependencyAst, [ './a', './b', './c', './e' ]))
     )
@@ -103,7 +103,7 @@ describe('Dependency entropy', () => {
   it('is null when a module imports all exported functions', () => {
     const code = 'import { a, b } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {};'
-    const entropy = new DependencyEntropy(
+    const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
       new JointEntropy([], Reflexion.parse(dependencyCode))
     )

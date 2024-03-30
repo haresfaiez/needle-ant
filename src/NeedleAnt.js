@@ -1,5 +1,4 @@
 import * as acorn from 'acorn'
-import { DependencyEntropy } from './Entropy.js'
 import { JointEntropy } from './Entropy.js'
 import { Reflexion } from './Reflexion.js'
 
@@ -28,8 +27,8 @@ class NeedleAnt {
     if (this.ast.body?.[0].declarations?.[0].id.name !== updatedAst.body?.[0].declarations?.[0].id.name)
       return 4
 
-    if (this.code === 'import A from "./a"')
-      return new DependencyEntropy(new Reflexion(this.ast)).minus(new DependencyEntropy(new Reflexion(updatedAst)))
+    // if (this.code === 'import A from "./a"')
+    //   return new DependencyEntropy(new Reflexion(this.ast)).minus(new DependencyEntropy(new Reflexion(updatedAst)))
 
     // if (this.ast.body[0].kind !== updatedAst.body[0].kind)
     //   return new DeclarationEntropy(new Reflexion(this.ast)).minus(new DeclarationEntropy(new Reflexion(updatedAst)))
