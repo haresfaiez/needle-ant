@@ -1,6 +1,6 @@
 import { DependenciesReflexion, Reflexion } from './Reflexion.js'
 import { SingleEntropy } from './Entropy.js'
-import { Evaluation } from './Evalution.js'
+import { Evaluation, JointEvaluation } from './Evalution.js'
 import NeedleAnt from './NeedleAnt.js'
 import { Divisor, MultiModulesDivisor } from './Divisor.js'
 
@@ -46,13 +46,13 @@ describe('Nested expressions entropy', () => {
 describe('Dependency entropy', () => {
   it('of wildecard import checks files available for import', () => {
     const code = 'import * as A from "./a"'
+    const dependencyAst = Reflexion.parse('', (ast) => ast.body)
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      // TODO: Use MultiModuleDivisor
-      new Divisor(new DependenciesReflexion().add('./B.js').add('./C.js'))
+      new MultiModulesDivisor(new DependenciesReflexion(dependencyAst, [ './B.js', './C.js' ]))
     )
 
-    expect(entropy.evaluate()).toEqual(new Evaluation(1, 2))
+    expect(entropy.evaluate()).toEqual(new JointEvaluation([new Evaluation(1, 2)]))
   })
 
   it('is null when a module imports the only exported function', () => {

@@ -120,7 +120,7 @@ class DependencyEntropy extends Entropy {
     const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
       && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
 
-    if (this.divisor.shouldFocusOnCurrentModule() && isWildcardImport) {
+    if (isWildcardImport) {
       return new Evaluation(this.divisor.identifiersCount(), this.divisor.identifiersCount())
     }
 

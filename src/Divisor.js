@@ -1,18 +1,20 @@
 export class Divisor {
   constructor(rawDivisor) {
-    this._divisor = rawDivisor?.dividend ? rawDivisor.divisor._divisor : rawDivisor
-    const source = this._divisor?.odds ? this._divisor.odds() : this._divisor
-
-
     this._identifiers = new Set()
-    if (Array.isArray(this._divisor)) {
-      this._divisor.forEach(e => this._identifiers.add(e))
+
+    const isReflexion = rawDivisor.odds
+    if (isReflexion) {
+      rawDivisor.odds().forEach(e => this._identifiers.add(e))
+    } else {
+      rawDivisor.forEach(e => this._identifiers.add(e))
     }
-    (source || []).forEach(e => this._identifiers.add(e))
 
+    this.importedModules = rawDivisor.importedModuleExports
+    this.otherModules = rawDivisor.otherModules
+  }
 
-    this.importedModules = this._divisor?.importedModuleExports
-    this.otherModules = this._divisor?.otherModules
+  shouldFocusOnCurrentModule() {
+    return true
   }
 
   merge(anEntropy) {
@@ -32,26 +34,20 @@ export class Divisor {
     return this.identifiers().length
   }
 
-  shouldFocusOnCurrentModule() {
-    return Array.isArray(this._divisor)
-  }
-
   importedModulesNames() {
-    return this.importedModules
+    return []
   }
 
-  // TODO: Rename this
   adjacentModules() {
-    return this.otherModules
+    return []
   }
 
   shouldCheckAdjacentModules() {
-    return !!this.otherModules
+    return false
   }
 }
 
 export class MultiModulesDivisor extends Divisor {
-
   shouldFocusOnCurrentModule() {
     return false
   }
@@ -60,7 +56,6 @@ export class MultiModulesDivisor extends Divisor {
     return this.importedModules
   }
 
-  // TODO: Rename this
   adjacentModules() {
     return this.otherModules
   }

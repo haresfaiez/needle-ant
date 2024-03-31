@@ -5,7 +5,15 @@ export class Evaluation {
     this.possibleCount = possibleCount
   }
 
+  shouldIgnoreAdding(otherEvaluation) {
+    return (otherEvaluation.actualCount === 0) && (otherEvaluation.possibleCount === 0)
+  }
+
   plus(otherEvaluation) {
+    if (this.shouldIgnoreAdding(otherEvaluation)) {
+      return this
+    }
+
     return new JointEvaluation([this, otherEvaluation])
   }
 
@@ -72,10 +80,14 @@ export class Evaluation {
 export class JointEvaluation extends Evaluation {
   constructor(evaluations) {
     super()
-    this.evaluations = evaluations
+    this.evaluations = evaluations.filter(eachEvaluation => !this.shouldIgnoreAdding(eachEvaluation))
   }
 
   plus(otherEvaluation) {
+    if (this.shouldIgnoreAdding(otherEvaluation)) {
+      return this
+    }
+
     this.evaluations.push(otherEvaluation)
     return this
   }
