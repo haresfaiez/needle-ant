@@ -48,7 +48,6 @@ describe('Dependency entropy', () => {
     const code = 'import * as A from "./a"'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      null,
       // TODO: Use MultiModuleDivisor
       new Divisor(new DependenciesReflexion().add('./B.js').add('./C.js'))
     )
@@ -61,7 +60,6 @@ describe('Dependency entropy', () => {
     const dependencyCode = 'export function a() {}'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      null,
       new Divisor(Reflexion.parse(dependencyCode))
     )
 
@@ -74,7 +72,6 @@ describe('Dependency entropy', () => {
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      null,
       new Divisor(Reflexion.parse(dependencyCode))
     )
 
@@ -86,7 +83,6 @@ describe('Dependency entropy', () => {
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      null,
       new Divisor(Reflexion.parse(dependencyCode))
     )
 
@@ -99,7 +95,6 @@ describe('Dependency entropy', () => {
     const dependencyAst = Reflexion.parse(dependencyCode, (ast) => ast.body)
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      null,
       new MultiModulesDivisor(new DependenciesReflexion(dependencyAst, [ './a', './b', './c', './e' ]))
     )
 
@@ -112,7 +107,6 @@ describe('Dependency entropy', () => {
     const dependencyCode = 'export function a() {}; export function b() {};'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      null,
       new Divisor(Reflexion.parse(dependencyCode))
     )
 

@@ -12,7 +12,6 @@ describe('Method invocation entropy', () => {
     const code = 'f.c()'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      null,
       new Divisor(['f', 'z'])
     )
 
@@ -24,7 +23,6 @@ describe('Method invocation entropy', () => {
     const code = 'f.c(b())'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      null,
       new Divisor(['f', 'z', 'b', 'c'])
     )
 
@@ -38,7 +36,6 @@ describe('Method invocation entropy', () => {
     const code = 'f.c(b(), c())'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      null,
       new Divisor(['f', 'z', 'b', 'c'])
     )
 
@@ -52,8 +49,7 @@ describe('Method invocation entropy', () => {
   //   const code = 'f.a(); f.b();'
   //   const entropy = new JointEntropy(
   //     Reflexion.parse(code, (ast) => ast.body),
-  //     null,
-      // new Divisor(['f'])
+  // new Divisor(['f'])
   //   )
 
   //   const expected =
@@ -69,7 +65,6 @@ describe('Call entropy', () => {
       const code = 'a(b())'
       const entropy = new SingleEntropy(
         Reflexion.parse(code, (ast) => ast.body),
-        null,
         new Divisor(['a', 'b', 'c'])
       )
 
@@ -80,7 +75,6 @@ describe('Call entropy', () => {
       const code = 'a(b(c()))'
       const entropy = new SingleEntropy(
         Reflexion.parse(code, (ast) => ast.body),
-        null,
         new Divisor(['a', 'b', 'c', 'd'])
       )
 
@@ -91,7 +85,6 @@ describe('Call entropy', () => {
       const code = 'const x = b(); call(x)'
       const entropy = new JointEntropy(
         Reflexion.parse(code, (ast) => ast.body),
-        null,
         new Divisor(['b', 'call'])
       )
 
@@ -104,7 +97,6 @@ describe('Call entropy', () => {
       const code = 'const x = b(); a(c, x, d())'
       const entropy = new JointEntropy(
         Reflexion.parse(code, (ast) => ast.body),
-        null,
         new Divisor(['a', 'b', 'c', 'd'])
       )
 
@@ -119,7 +111,7 @@ describe('Import statement entropy', () => {
     const code = 'import { a } from "./a"'
     const specifiers = Reflexion.parse(code, (ast) => ast.body)
 
-    const entropy = new JointEntropy(specifiers, null, new Divisor(['a', 'b']))
+    const entropy = new JointEntropy(specifiers, new Divisor(['a', 'b']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 2))
   })
@@ -128,7 +120,7 @@ describe('Import statement entropy', () => {
     const code = 'import { a, b } from "./a"'
     const specifiers = Reflexion.parse(code, (ast) => ast.body)
 
-    const entropy = new JointEntropy(specifiers, null, new Divisor(['a', 'b', 'c']))
+    const entropy = new JointEntropy(specifiers, new Divisor(['a', 'b', 'c']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
   })
@@ -137,7 +129,7 @@ describe('Import statement entropy', () => {
     const code = 'import * as A from "./a"'
     const specifiers = Reflexion.parse(code, (ast) => ast.body)
 
-    const entropy = new JointEntropy(specifiers, null, new Divisor(['a', 'b', 'c']))
+    const entropy = new JointEntropy(specifiers, new Divisor(['a', 'b', 'c']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(3, 3))
   })
@@ -146,7 +138,7 @@ describe('Import statement entropy', () => {
     const code = 'import { a } from "./a"'
     const source = Reflexion.parse(code, (ast) => ast.body)
 
-    const entropy = new JointEntropy(source, null, new Divisor(['./a', './b', './c']))
+    const entropy = new JointEntropy(source, new Divisor(['./a', './b', './c']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 3))
   })

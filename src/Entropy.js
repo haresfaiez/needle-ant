@@ -3,9 +3,9 @@ import { Evaluation, NullEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
 class Entropy {
-  constructor(dividend, rawDivisor, divisorInstance) {
+  constructor(dividend, rawDivisor) {
     this.dividend = dividend
-    this.divisor = divisorInstance || new Divisor([])
+    this.divisor = rawDivisor || new Divisor([])
   }
 
   definitions() {
@@ -59,7 +59,7 @@ class SumEntropy extends Entropy {
 export class JointEntropy extends Entropy {
   evaluate() {
     return this.dividend.sources
-      .map(eachSource => new SingleEntropy(new Reflexion(eachSource), null, this.divisor))
+      .map(eachSource => new SingleEntropy(new Reflexion(eachSource), this.divisor))
       .reduce((acc, eachEntropy) => acc.plus(eachEntropy), new SumEntropy([]))
       .evaluate()
   }
@@ -94,7 +94,7 @@ export class SingleEntropy extends Entropy {
     if (callee?.type === 'MemberExpression') {
       return new SumEntropy([
         new SingleEntropy(new Reflexion(callee.object), divisor, divisorInstance),
-        new SingleEntropy(new Reflexion(callee.property), null, new Divisor([callee.property.name])),
+        new SingleEntropy(new Reflexion(callee.property), new Divisor([callee.property.name])),
         new JointEntropy(new Reflexion(dividend.sources?.[0]?.expression?.arguments), divisor, divisorInstance)
       ])
     }
@@ -113,8 +113,8 @@ class DependencyEntropy extends Entropy {
       const importSpecifiers = importParts[0]
       const importSource = importParts[1]
 
-      return new SingleEntropy(new Reflexion(importSpecifiers), null, new Divisor(this.divisor.importedModulesNames())).evaluate()
-        .plus(new SingleEntropy(new Reflexion(importSource), null, new Divisor(this.divisor.adjacentModules())).evaluate())
+      return new SingleEntropy(new Reflexion(importSpecifiers), new Divisor(this.divisor.importedModulesNames())).evaluate()
+        .plus(new SingleEntropy(new Reflexion(importSource), new Divisor(this.divisor.adjacentModules())).evaluate())
     }
 
     const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
@@ -125,7 +125,7 @@ class DependencyEntropy extends Entropy {
     }
 
     if (this.divisor.shouldFocusOnCurrentModule()) {
-      return new ExpressionEntropy(this.dividend, null, new Divisor(this.divisor.identifiers())).evaluate()
+      return new ExpressionEntropy(this.dividend, new Divisor(this.divisor.identifiers())).evaluate()
     }
 
     // TODO: Use ExpressionEntropy
