@@ -1,5 +1,6 @@
 import { Reflexion, DependenciesReflexion } from './Reflexion.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
+import { Divisor } from './Divisor.js'
 
 class Entropy {
   constructor(dividend, _divisor) {
@@ -42,6 +43,11 @@ class SumEntropy extends Entropy {
   constructor(dividend, _divisor) {
     super(dividend, _divisor)
     this._divisor = new Set()
+  }
+
+  definitions() {
+    // TODO: Implement this
+    return []
   }
 
   divisor() {
@@ -115,6 +121,7 @@ export class SingleEntropy extends Entropy {
       ])
     }
 
+    // TODO: Add ifs and throw Error by default
     return new ExpressionEntropy(dividend, _divisor)
   }
 }
@@ -122,29 +129,38 @@ export class SingleEntropy extends Entropy {
 class DependencyEntropy extends Entropy {
   // TODO: improve this
   evaluate() {
+
+
+    const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
+      && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
+
+    const source = this.divisor().odds ? this.divisor().odds() : this.divisor()
+    const importedModules = this.divisor().importedModuleExports
+    const otherModules = this.divisor().otherModules
+    const __divisor = new Divisor(source, importedModules, otherModules)
+
+    if (!this.divisor().odds && isWildcardImport) {
+      return new Evaluation(__divisor.identifiersCount(), __divisor.identifiersCount())
+    }
+
+    // TODO: Remove this check
+    if (__divisor.adjacentModules()) {
+      // TODO: fix next line
+      const importParts = new DependenciesReflexion(this.dividend.sources[0]).__factorize()
+      const importSpecifiers = importParts[0]
+      const importSource = importParts[1]
+
+      return new SingleEntropy(new Reflexion(importSpecifiers), new JointEntropy([], __divisor.importedModulesNames())).evaluate()
+        .plus(new SingleEntropy(new Reflexion(importSource), new JointEntropy([], __divisor.adjacentModules())).evaluate())
+    }
+
     if (!this.divisor().odds) {
-      const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
-        && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
-
-      if (isWildcardImport) {
-        return new Evaluation(this.divisor().length, this.divisor().length)
-      }
-
       return new ExpressionEntropy(this.dividend, this._divisor).evaluate()
     }
 
-    // TODO: fix next line
-    const importParts = new DependenciesReflexion(this.dividend.sources[0]).__factorize()
-    const importSpecifiers = importParts[0]
-    const importSource = importParts[1]
-    // TODO: Remove this check
-    if (this.divisor().otherModules) {
-      return new SingleEntropy(new Reflexion(importSpecifiers), new JointEntropy([], this.divisor().importedModuleExports)).evaluate()
-        .plus(new SingleEntropy(new Reflexion(importSource), new JointEntropy([], this.divisor().otherModules)).evaluate())
-    }
-
+    // TODO: Use ExpressionEntropy
     const actualCount = this.dividend.odds().length
-    const allPossibilitiesCount = this.divisor().odds().length
+    const allPossibilitiesCount = __divisor.identifiersCount()
     return new Evaluation(actualCount, allPossibilitiesCount)
   }
 }

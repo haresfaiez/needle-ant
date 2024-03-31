@@ -44,9 +44,18 @@ describe('Method invocation entropy', () => {
     expect(entropy.evaluate()).toEqual(expected)
   })
 
-  it('considers all methods invocation for method entropy', () => {
-    // const code = 'f.a(); f.b();'
-  })
+  // it('considers all methods invocation for method entropy', () => {
+  //   const code = 'f.a(); f.b();'
+  //   const entropy = new JointEntropy(
+  //     Reflexion.parse(code, (ast) => ast.body),
+  //     ['f']
+  //   )
+
+  //   const expected =
+  //     new Evaluation(1, 1).plus(new Evaluation(1, 2)).plus(new NullEvaluation())
+  //       .plus(new Evaluation(1, 1).plus(new Evaluation(1, 2)).plus(new NullEvaluation()))
+  //   expect(entropy.evaluate()).toEqual(expected)
+  // })
 })
 
 describe('Call entropy', () => {
