@@ -1,6 +1,7 @@
 import * as acorn from 'acorn'
 import { JointEntropy } from './Entropy.js'
 import { Reflexion } from './Reflexion.js'
+import { Divisor } from './Divisor.js'
 
 class NeedleAnt {
   constructor(code) {
@@ -12,7 +13,7 @@ class NeedleAnt {
   entropy() {
     const trail = new Reflexion(this.ast, this.footsteps)
     const flatTrail = new Reflexion(trail.odds())
-    return new JointEntropy(flatTrail, new JointEntropy([], flatTrail.identifiers())).calculate()
+    return new JointEntropy(flatTrail, null, new Divisor(flatTrail.identifiers())).calculate()
   }
 
   coverEntropy(updatedCode) {

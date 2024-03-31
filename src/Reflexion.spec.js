@@ -1,7 +1,8 @@
 import { DependenciesReflexion, Reflexion } from './Reflexion.js'
-import { JointEntropy, SingleEntropy } from './Entropy.js'
+import { SingleEntropy } from './Entropy.js'
 import { Evaluation } from './Evalution.js'
 import NeedleAnt from './NeedleAnt.js'
+import { Divisor, MultiModulesDivisor } from './Divisor.js'
 
 describe('Successive statements entropy', () => {
   it('is the sum of each statement entropy', () => {
@@ -47,7 +48,9 @@ describe('Dependency entropy', () => {
     const code = 'import * as A from "./a"'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      new JointEntropy([], new DependenciesReflexion().add('./B.js').add('./C.js'))
+      null,
+      // TODO: Use MultiModuleDivisor
+      new Divisor(new DependenciesReflexion().add('./B.js').add('./C.js'))
     )
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 2))
@@ -58,7 +61,8 @@ describe('Dependency entropy', () => {
     const dependencyCode = 'export function a() {}'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      new JointEntropy([], Reflexion.parse(dependencyCode))
+      null,
+      new Divisor(Reflexion.parse(dependencyCode))
     )
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 1))
@@ -70,7 +74,8 @@ describe('Dependency entropy', () => {
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      new JointEntropy([], Reflexion.parse(dependencyCode))
+      null,
+      new Divisor(Reflexion.parse(dependencyCode))
     )
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 3))
@@ -81,7 +86,8 @@ describe('Dependency entropy', () => {
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      new JointEntropy([], Reflexion.parse(dependencyCode))
+      null,
+      new Divisor(Reflexion.parse(dependencyCode))
     )
 
     expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
@@ -93,7 +99,8 @@ describe('Dependency entropy', () => {
     const dependencyAst = Reflexion.parse(dependencyCode, (ast) => ast.body)
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      new JointEntropy([], new DependenciesReflexion(dependencyAst, [ './a', './b', './c', './e' ]))
+      null,
+      new MultiModulesDivisor(new DependenciesReflexion(dependencyAst, [ './a', './b', './c', './e' ]))
     )
 
     const expected = new Evaluation(1, 3).plus(new Evaluation(1, 4))
@@ -105,7 +112,8 @@ describe('Dependency entropy', () => {
     const dependencyCode = 'export function a() {}; export function b() {};'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      new JointEntropy([], Reflexion.parse(dependencyCode))
+      null,
+      new Divisor(Reflexion.parse(dependencyCode))
     )
 
     expect(entropy.calculate()).toEqual(0)

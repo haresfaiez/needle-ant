@@ -1,6 +1,7 @@
 import { Reflexion } from './Reflexion.js'
 import { SingleEntropy, JointEntropy } from './Entropy.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
+import { Divisor } from './Divisor.js'
 
 // Run it for:
 //   * https://github.com/GoogleChrome/lighthouse/blob/main/core/gather/base-gatherer.js
@@ -11,7 +12,8 @@ describe('Method invocation entropy', () => {
     const code = 'f.c()'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      ['f', 'z']
+      null,
+      new Divisor(['f', 'z'])
     )
 
     const expected = new Evaluation(1, 2).plus(new Evaluation(1, 1)).plus(new NullEvaluation())
@@ -22,7 +24,8 @@ describe('Method invocation entropy', () => {
     const code = 'f.c(b())'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      ['f', 'z', 'b', 'c']
+      null,
+      new Divisor(['f', 'z', 'b', 'c'])
     )
 
     const expected = new Evaluation(1, 4)
@@ -35,7 +38,8 @@ describe('Method invocation entropy', () => {
     const code = 'f.c(b(), c())'
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      ['f', 'z', 'b', 'c']
+      null,
+      new Divisor(['f', 'z', 'b', 'c'])
     )
 
     const expected = new Evaluation(1, 4)
@@ -48,7 +52,8 @@ describe('Method invocation entropy', () => {
   //   const code = 'f.a(); f.b();'
   //   const entropy = new JointEntropy(
   //     Reflexion.parse(code, (ast) => ast.body),
-  //     ['f']
+  //     null,
+      // new Divisor(['f'])
   //   )
 
   //   const expected =
@@ -64,7 +69,8 @@ describe('Call entropy', () => {
       const code = 'a(b())'
       const entropy = new SingleEntropy(
         Reflexion.parse(code, (ast) => ast.body),
-        new JointEntropy([], ['a', 'b', 'c'])
+        null,
+        new Divisor(['a', 'b', 'c'])
       )
 
       expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
@@ -74,7 +80,8 @@ describe('Call entropy', () => {
       const code = 'a(b(c()))'
       const entropy = new SingleEntropy(
         Reflexion.parse(code, (ast) => ast.body),
-        new JointEntropy([], ['a', 'b', 'c', 'd'])
+        null,
+        new Divisor(['a', 'b', 'c', 'd'])
       )
 
       expect(entropy.evaluate()).toEqual(new Evaluation(3, 4))
@@ -84,7 +91,8 @@ describe('Call entropy', () => {
       const code = 'const x = b(); call(x)'
       const entropy = new JointEntropy(
         Reflexion.parse(code, (ast) => ast.body),
-        new JointEntropy([], ['b', 'call'])
+        null,
+        new Divisor(['b', 'call'])
       )
 
       const expected = new Evaluation(1, 2)
@@ -96,7 +104,8 @@ describe('Call entropy', () => {
       const code = 'const x = b(); a(c, x, d())'
       const entropy = new JointEntropy(
         Reflexion.parse(code, (ast) => ast.body),
-        new JointEntropy([], ['a', 'b', 'c', 'd'])
+        null,
+        new Divisor(['a', 'b', 'c', 'd'])
       )
 
       const expected = new Evaluation(1, 4).plus(new Evaluation(4, 5))
@@ -110,7 +119,7 @@ describe('Import statement entropy', () => {
     const code = 'import { a } from "./a"'
     const specifiers = Reflexion.parse(code, (ast) => ast.body)
 
-    const entropy = new JointEntropy(specifiers, new JointEntropy([], ['a', 'b']))
+    const entropy = new JointEntropy(specifiers, null, new Divisor(['a', 'b']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 2))
   })
@@ -119,7 +128,7 @@ describe('Import statement entropy', () => {
     const code = 'import { a, b } from "./a"'
     const specifiers = Reflexion.parse(code, (ast) => ast.body)
 
-    const entropy = new JointEntropy(specifiers, new JointEntropy([], ['a', 'b', 'c']))
+    const entropy = new JointEntropy(specifiers, null, new Divisor(['a', 'b', 'c']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
   })
@@ -128,7 +137,7 @@ describe('Import statement entropy', () => {
     const code = 'import * as A from "./a"'
     const specifiers = Reflexion.parse(code, (ast) => ast.body)
 
-    const entropy = new JointEntropy(specifiers, new JointEntropy([], ['a', 'b', 'c']))
+    const entropy = new JointEntropy(specifiers, null, new Divisor(['a', 'b', 'c']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(3, 3))
   })
@@ -137,7 +146,7 @@ describe('Import statement entropy', () => {
     const code = 'import { a } from "./a"'
     const source = Reflexion.parse(code, (ast) => ast.body)
 
-    const entropy = new JointEntropy(source, new JointEntropy([], ['./a', './b', './c']))
+    const entropy = new JointEntropy(source, null, new Divisor(['./a', './b', './c']))
 
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 3))
   })

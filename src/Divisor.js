@@ -15,10 +15,6 @@ export class Divisor {
     this.otherModules = this._divisor?.otherModules
   }
 
-  shouldFocusOnCurrentModule() {
-    return Array.isArray(this._divisor)
-  }
-
   merge(anEntropy) {
     const otherDivisor = anEntropy.delegate.divisor
     otherDivisor.identifiers().forEach(eachDivisor => this._identifiers.add(eachDivisor))
@@ -36,6 +32,10 @@ export class Divisor {
     return this.identifiers().length
   }
 
+  shouldFocusOnCurrentModule() {
+    return Array.isArray(this._divisor)
+  }
+
   importedModulesNames() {
     return this.importedModules
   }
@@ -47,5 +47,25 @@ export class Divisor {
 
   shouldCheckAdjacentModules() {
     return !!this.otherModules
+  }
+}
+
+export class MultiModulesDivisor extends Divisor {
+
+  shouldFocusOnCurrentModule() {
+    return false
+  }
+
+  importedModulesNames() {
+    return this.importedModules
+  }
+
+  // TODO: Rename this
+  adjacentModules() {
+    return this.otherModules
+  }
+
+  shouldCheckAdjacentModules() {
+    return true
   }
 }
