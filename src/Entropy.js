@@ -5,7 +5,7 @@ import { Divisor } from './Divisor.js'
 class Entropy {
   constructor(dividend, rawDivisor) {
     this.dividend = dividend
-    this.__divisor = new Divisor(rawDivisor)
+    this.divisor = new Divisor(rawDivisor)
   }
 
   definitions() {
@@ -40,11 +40,11 @@ class SumEntropy extends Entropy {
   }
 
   plus(anEntropy) {
-    this.__divisor.merge(anEntropy)
+    this.divisor.merge(anEntropy)
 
-    anEntropy.delegate.__divisor = new Divisor(this.__divisor.identifiers())
+    anEntropy.delegate.divisor = new Divisor(this.divisor.identifiers())
     this.dividend = [...this.dividend, anEntropy]
-    this.__divisor.addDefinitions(anEntropy)
+    this.divisor.addDefinitions(anEntropy)
     return this
   }
 
@@ -66,9 +66,9 @@ export class JointEntropy extends Entropy {
 }
 
 export class SingleEntropy extends Entropy {
-  constructor(dividend, aDivisor) {
+  constructor(dividend, divisor) {
     super()
-    this.delegate = this.createDelegate(dividend, aDivisor)
+    this.delegate = this.createDelegate(dividend, divisor)
   }
 
   evaluate() {
@@ -79,65 +79,65 @@ export class SingleEntropy extends Entropy {
     return this.delegate.definitions()
   }
 
-  createDelegate(dividend, aDivisor) {
+  createDelegate(dividend, divisor) {
     const dividendType = dividend.sources?.[0]?.type
 
     if (dividendType === 'ImportDeclaration') {
-      return new DependencyEntropy(dividend, aDivisor)
+      return new DependencyEntropy(dividend, divisor)
     }
 
     if (dividendType === 'VariableDeclaration') {
-      return new DeclarationEntropy(dividend, aDivisor)
+      return new DeclarationEntropy(dividend, divisor)
     }
 
     const callee = dividend.sources?.[0]?.expression?.callee
     if (callee?.type === 'MemberExpression') {
       return new SumEntropy([
-        new SingleEntropy(new Reflexion(callee.object), aDivisor),
+        new SingleEntropy(new Reflexion(callee.object), divisor),
         new SingleEntropy(new Reflexion(callee.property), [callee.property.name]),
-        new JointEntropy(new Reflexion(dividend.sources?.[0]?.expression?.arguments), aDivisor)
+        new JointEntropy(new Reflexion(dividend.sources?.[0]?.expression?.arguments), divisor)
       ])
     }
 
     // TODO: Add ifs and throw Error by default
-    return new ExpressionEntropy(dividend, aDivisor)
+    return new ExpressionEntropy(dividend, divisor)
   }
 }
 
 class DependencyEntropy extends Entropy {
   // TODO: improve this
   evaluate() {
-    if (this.__divisor.shouldCheckAdjacentModules()) {
+    if (this.divisor.shouldCheckAdjacentModules()) {
       // TODO: fix next line
       const importParts = new DependenciesReflexion(this.dividend.sources[0]).__factorize()
       const importSpecifiers = importParts[0]
       const importSource = importParts[1]
 
-      return new SingleEntropy(new Reflexion(importSpecifiers), new JointEntropy([], this.__divisor.importedModulesNames())).evaluate()
-        .plus(new SingleEntropy(new Reflexion(importSource), new JointEntropy([], this.__divisor.adjacentModules())).evaluate())
+      return new SingleEntropy(new Reflexion(importSpecifiers), new JointEntropy([], this.divisor.importedModulesNames())).evaluate()
+        .plus(new SingleEntropy(new Reflexion(importSource), new JointEntropy([], this.divisor.adjacentModules())).evaluate())
     }
 
     const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
       && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
 
-    if (this.__divisor.shouldFocusOnCurrentModule() && isWildcardImport) {
-      return new Evaluation(this.__divisor.identifiersCount(), this.__divisor.identifiersCount())
+    if (this.divisor.shouldFocusOnCurrentModule() && isWildcardImport) {
+      return new Evaluation(this.divisor.identifiersCount(), this.divisor.identifiersCount())
     }
 
-    if (this.__divisor.shouldFocusOnCurrentModule()) {
-      return new ExpressionEntropy(this.dividend, this.__divisor._divisor).evaluate()
+    if (this.divisor.shouldFocusOnCurrentModule()) {
+      return new ExpressionEntropy(this.dividend, this.divisor.identifiers()).evaluate()
     }
 
     // TODO: Use ExpressionEntropy
     const actualCount = this.dividend.odds().length
-    const allPossibilitiesCount = this.__divisor.identifiersCount()
+    const allPossibilitiesCount = this.divisor.identifiersCount()
     return new Evaluation(actualCount, allPossibilitiesCount)
   }
 }
 
 class ExpressionEntropy extends Entropy {
   evaluate() {
-    const allPossibilitiesCount = this.__divisor.identifiersCount()
+    const allPossibilitiesCount = this.divisor.identifiersCount()
 
     const literalsWeight = this.dividend.literals().length ? 1 : 0
     const actualCount = this.dividend.identifiers().length > 0

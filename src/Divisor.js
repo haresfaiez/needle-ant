@@ -1,7 +1,7 @@
 export class Divisor {
   constructor(rawDivisor) {
 
-    const _divisor = rawDivisor?.dividend ? rawDivisor.__divisor._divisor : rawDivisor
+    const _divisor = rawDivisor?.dividend ? rawDivisor.divisor._divisor : rawDivisor
 
     this._divisor = _divisor
     const source = this._divisor?.odds ? this._divisor.odds() : this._divisor
@@ -13,6 +13,9 @@ export class Divisor {
     this.otherModules = otherModules
 
     this._identifiers = new Set()
+    if (Array.isArray(_divisor)) {
+      _divisor.forEach(e => this._identifiers.add(e))
+    }
   }
 
   shouldFocusOnCurrentModule() {
@@ -33,7 +36,7 @@ export class Divisor {
   }
 
   merge(anEntropy) {
-    const __identifiers = Array.isArray(anEntropy.delegate.__divisor._divisor) ? anEntropy.delegate.__divisor._divisor : anEntropy.delegate.__divisor._divisor.identifiers()
+    const __identifiers = Array.isArray(anEntropy.delegate.divisor._divisor) ? anEntropy.delegate.divisor._divisor : anEntropy.delegate.divisor._divisor.identifiers()
     __identifiers.forEach(eachDivisor => this._identifiers.add(eachDivisor))
   }
 
