@@ -3,10 +3,9 @@ import { Evaluation, NullEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
 class Entropy {
-  constructor(dividend, _divisor) {
+  constructor(dividend, rawDivisor) {
     this.dividend = dividend
-    // TODO: Simplify this
-    this._divisor = _divisor?.divisor ? _divisor.divisor() : _divisor
+    this.__divisor = new Divisor(rawDivisor)
   }
 
   definitions() {
@@ -15,15 +14,6 @@ class Entropy {
 
   plus() {
     throw new Error('`Entropy#plus` not implemented yet in `Entropy`!')
-  }
-
-  setDivisor(newDivisor) {
-    this._divisor = newDivisor
-  }
-
-  // TODO: Make this returns always an array
-  divisor() {
-    return this._divisor
   }
 
   calculate() {
@@ -40,9 +30,8 @@ class Entropy {
 }
 
 class SumEntropy extends Entropy {
-  constructor(dividend, _divisor) {
-    super(dividend, _divisor)
-    this._divisor = new Set()
+  constructor(dividend) {
+    super(dividend)
   }
 
   definitions() {
@@ -50,15 +39,12 @@ class SumEntropy extends Entropy {
     return []
   }
 
-  divisor() {
-    return Array.from(this._divisor)
-  }
-
   plus(anEntropy) {
-    anEntropy.divisor().forEach(eachDivisor => this._divisor.add(eachDivisor))
-    anEntropy.setDivisor(this.divisor())
+    this.__divisor.merge(anEntropy)
+
+    anEntropy.delegate.__divisor = new Divisor(this.__divisor.identifiers())
     this.dividend = [...this.dividend, anEntropy]
-    anEntropy.definitions().forEach(eachId => this._divisor.add(eachId))
+    this.__divisor.addDefinitions(anEntropy)
     return this
   }
 
@@ -80,17 +66,9 @@ export class JointEntropy extends Entropy {
 }
 
 export class SingleEntropy extends Entropy {
-  constructor(dividend, _divisor) {
+  constructor(dividend, aDivisor) {
     super()
-    this.delegate = this.createDelegate(dividend, _divisor)
-  }
-
-  setDivisor(newDivisor) {
-    this.delegate.setDivisor(newDivisor)
-  }
-
-  divisor() {
-    return this.delegate.divisor()
+    this.delegate = this.createDelegate(dividend, aDivisor)
   }
 
   evaluate() {
@@ -101,73 +79,65 @@ export class SingleEntropy extends Entropy {
     return this.delegate.definitions()
   }
 
-  createDelegate(dividend, _divisor) {
+  createDelegate(dividend, aDivisor) {
     const dividendType = dividend.sources?.[0]?.type
 
     if (dividendType === 'ImportDeclaration') {
-      return new DependencyEntropy(dividend, _divisor)
+      return new DependencyEntropy(dividend, aDivisor)
     }
 
     if (dividendType === 'VariableDeclaration') {
-      return new DeclarationEntropy(dividend, _divisor)
+      return new DeclarationEntropy(dividend, aDivisor)
     }
 
     const callee = dividend.sources?.[0]?.expression?.callee
     if (callee?.type === 'MemberExpression') {
       return new SumEntropy([
-        new SingleEntropy(new Reflexion(callee.object), _divisor),
+        new SingleEntropy(new Reflexion(callee.object), aDivisor),
         new SingleEntropy(new Reflexion(callee.property), [callee.property.name]),
-        new JointEntropy(new Reflexion(dividend.sources?.[0]?.expression?.arguments), _divisor)
+        new JointEntropy(new Reflexion(dividend.sources?.[0]?.expression?.arguments), aDivisor)
       ])
     }
 
     // TODO: Add ifs and throw Error by default
-    return new ExpressionEntropy(dividend, _divisor)
+    return new ExpressionEntropy(dividend, aDivisor)
   }
 }
 
 class DependencyEntropy extends Entropy {
   // TODO: improve this
   evaluate() {
-
-
-    const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
-      && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
-
-    const source = this.divisor().odds ? this.divisor().odds() : this.divisor()
-    const importedModules = this.divisor().importedModuleExports
-    const otherModules = this.divisor().otherModules
-    const __divisor = new Divisor(source, importedModules, otherModules)
-
-    if (!this.divisor().odds && isWildcardImport) {
-      return new Evaluation(__divisor.identifiersCount(), __divisor.identifiersCount())
-    }
-
-    // TODO: Remove this check
-    if (__divisor.adjacentModules()) {
+    if (this.__divisor.shouldCheckAdjacentModules()) {
       // TODO: fix next line
       const importParts = new DependenciesReflexion(this.dividend.sources[0]).__factorize()
       const importSpecifiers = importParts[0]
       const importSource = importParts[1]
 
-      return new SingleEntropy(new Reflexion(importSpecifiers), new JointEntropy([], __divisor.importedModulesNames())).evaluate()
-        .plus(new SingleEntropy(new Reflexion(importSource), new JointEntropy([], __divisor.adjacentModules())).evaluate())
+      return new SingleEntropy(new Reflexion(importSpecifiers), new JointEntropy([], this.__divisor.importedModulesNames())).evaluate()
+        .plus(new SingleEntropy(new Reflexion(importSource), new JointEntropy([], this.__divisor.adjacentModules())).evaluate())
     }
 
-    if (!this.divisor().odds) {
-      return new ExpressionEntropy(this.dividend, this._divisor).evaluate()
+    const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
+      && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
+
+    if (this.__divisor.shouldFocusOnCurrentModule() && isWildcardImport) {
+      return new Evaluation(this.__divisor.identifiersCount(), this.__divisor.identifiersCount())
+    }
+
+    if (this.__divisor.shouldFocusOnCurrentModule()) {
+      return new ExpressionEntropy(this.dividend, this.__divisor._divisor).evaluate()
     }
 
     // TODO: Use ExpressionEntropy
     const actualCount = this.dividend.odds().length
-    const allPossibilitiesCount = __divisor.identifiersCount()
+    const allPossibilitiesCount = this.__divisor.identifiersCount()
     return new Evaluation(actualCount, allPossibilitiesCount)
   }
 }
 
 class ExpressionEntropy extends Entropy {
   evaluate() {
-    const allPossibilitiesCount = this.divisor().length
+    const allPossibilitiesCount = this.__divisor.identifiersCount()
 
     const literalsWeight = this.dividend.literals().length ? 1 : 0
     const actualCount = this.dividend.identifiers().length > 0
