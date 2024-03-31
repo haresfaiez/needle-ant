@@ -218,21 +218,14 @@ class ApiReflexion extends Reflexion {
 }
 
 export class DependenciesReflexion extends Reflexion {
-  files = []
-
   constructor(sources, modules) {
     super(sources)
     this.importedModuleExports = sources?.api?.()
     this.otherModules = modules
   }
 
-  add(file) {
-    this.files.push(file)
-    return this
-  }
-
   odds() {
-    return this.files
+    return []
   }
 
   // TODO: keep only one factorize()
