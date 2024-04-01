@@ -66,9 +66,9 @@ export class JointEntropy extends Entropy {
 }
 
 export class SingleEntropy extends Entropy {
-  constructor(dividend, divisor, divisorInstance) {
+  constructor(dividend, divisor) {
     super()
-    this.delegate = this.createDelegate(dividend, divisor, divisorInstance)
+    this.delegate = this.createDelegate(dividend, divisor)
   }
 
   evaluate() {
@@ -79,28 +79,28 @@ export class SingleEntropy extends Entropy {
     return this.delegate.definitions()
   }
 
-  createDelegate(dividend, divisor, divisorInstance) {
+  createDelegate(dividend, divisor) {
     const dividendType = dividend.sources?.[0]?.type
 
     if (dividendType === 'ImportDeclaration') {
-      return new DependencyEntropy(dividend, divisor, divisorInstance)
+      return new DependencyEntropy(dividend, divisor)
     }
 
     if (dividendType === 'VariableDeclaration') {
-      return new DeclarationEntropy(dividend, divisor, divisorInstance)
+      return new DeclarationEntropy(dividend, divisor)
     }
 
     const callee = dividend.sources?.[0]?.expression?.callee
     if (callee?.type === 'MemberExpression') {
       return new SumEntropy([
-        new SingleEntropy(new Reflexion(callee.object), divisor, divisorInstance),
+        new SingleEntropy(new Reflexion(callee.object), divisor),
         new SingleEntropy(new Reflexion(callee.property), new Divisor([callee.property.name])),
-        new JointEntropy(new Reflexion(dividend.sources?.[0]?.expression?.arguments), divisor, divisorInstance)
+        new JointEntropy(new Reflexion(dividend.sources?.[0]?.expression?.arguments), divisor)
       ])
     }
 
     // TODO: Add ifs and throw Error by default
-    return new ExpressionEntropy(dividend, divisor, divisorInstance)
+    return new ExpressionEntropy(dividend, divisor)
   }
 }
 
