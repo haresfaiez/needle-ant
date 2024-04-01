@@ -1,6 +1,6 @@
 import { Reflexion } from './Reflexion.js'
 import { SingleEntropy, JointEntropy } from './Entropy.js'
-import { Evaluation, NullEvaluation } from './Evalution.js'
+import { Evaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
 // Run it for:
@@ -15,7 +15,7 @@ describe('Method invocation entropy', () => {
       new Divisor(['f', 'z'])
     )
 
-    const expected = new Evaluation(1, 2).plus(new Evaluation(1, 1)).plus(new NullEvaluation())
+    const expected = new Evaluation(1, 2).plus(new Evaluation(1, 1))
     expect(entropy.evaluate()).toEqual(expected)
   })
 

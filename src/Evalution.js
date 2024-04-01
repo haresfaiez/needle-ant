@@ -6,7 +6,7 @@ export class Evaluation {
   }
 
   shouldIgnoreAdding(otherEvaluation) {
-    return (otherEvaluation.actualCount === 0) && (otherEvaluation.possibleCount === 0)
+    return !otherEvaluation.actualCount && !otherEvaluation.possibleCount
   }
 
   plus(otherEvaluation) {
