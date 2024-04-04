@@ -1,5 +1,7 @@
+import { Reflexion } from './Reflexion.js'
+
 export class Divisor {
-  constructor(rawDivisor) {
+  constructor(rawDivisor, foldingMap) {
     this._identifiers = new Set()
 
     const isReflexion = rawDivisor.odds
@@ -11,6 +13,12 @@ export class Divisor {
 
     this.importedModules = rawDivisor.importedModuleExports
     this.otherModules = rawDivisor.otherModules
+
+    this.foldingMap = foldingMap || new Map()
+  }
+
+  unfold(callee) {
+    return new Divisor(this.foldingMap.get(callee) || [callee])
   }
 
   shouldFocusOnCurrentModule() {
@@ -44,6 +52,17 @@ export class Divisor {
 
   shouldCheckAdjacentModules() {
     return false
+  }
+
+  static parse(sourceCode, transformer) {
+    const ast = Reflexion.parse(sourceCode, transformer)
+    const map = new Map()
+    ast
+      .identifiers()
+      .forEach(eachIdentifier => {
+        map.set(eachIdentifier, ast.properties(eachIdentifier))
+      })
+    return new Divisor(ast.identifiers(), map)
   }
 }
 

@@ -32,6 +32,10 @@ export class Reflexion {
     return new LiteralsReflexion(this.sources).factorize()
   }
 
+  properties(identifier) {
+    return new PropertiesReflexion(this.sources, identifier).factorize()
+  }
+
   factorize() {
     let result = new Set()
     this.sources
@@ -187,6 +191,23 @@ class IdentifiersReflexion extends Reflexion {
       },
       ImportSpecifier(node) {
         result.add(node.imported.name)
+      }
+    })
+    return result
+  }
+}
+
+class PropertiesReflexion extends Reflexion {
+  constructor(sources, identifier) {
+    super(sources)
+    this.identifier = identifier
+  }
+
+  factorizeEach(expression) {
+    const result = new Set()
+    AcornWalk.simple(expression, {
+      MemberExpression(node) {
+        result.add(node.property.name)
       }
     })
     return result
