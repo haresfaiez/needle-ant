@@ -14,7 +14,7 @@ describe('Divisor identifiers lookup', () => {
     expect(actual.identifiers()).toEqual(['y'])
   })
 
-  it('extracts called many objects properties', () => {
+  it('extracts many objects called properties', () => {
     const actual = Divisor.parse('f.y(); o.x()', (ast) => ast.body)
 
     expect(actual.unfold('f').identifiers()).toEqual(['y'])
