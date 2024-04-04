@@ -9,6 +9,14 @@ export class Evaluation {
     return !otherEvaluation.actualCount && !otherEvaluation.possibleCount
   }
 
+  times(multiplier) {
+    if (multiplier !== 2)
+      // TODO: Implement this
+      throw new Error('times(n) not implemented for this multiplier')
+
+    return this.plus(this)
+  }
+
   plus(otherEvaluation) {
     if (this.shouldIgnoreAdding(otherEvaluation)) {
       return this
