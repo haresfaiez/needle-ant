@@ -6,7 +6,9 @@ export class Evaluation {
   }
 
   shouldIgnoreAdding(otherEvaluation) {
-    return !otherEvaluation.actualCount && !otherEvaluation.possibleCount
+    return !otherEvaluation.evaluations
+      && !otherEvaluation.actualCount
+      && !otherEvaluation.possibleCount
   }
 
   times(multiplier) {
@@ -96,7 +98,11 @@ export class JointEvaluation extends Evaluation {
       return this
     }
 
-    this.evaluations.push(otherEvaluation)
+    if (otherEvaluation.evaluations) {
+      this.evaluations.push(...otherEvaluation.evaluations)
+    } else {
+      this.evaluations.push(otherEvaluation)
+    }
     return this
   }
 
