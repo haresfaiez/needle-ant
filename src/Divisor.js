@@ -18,6 +18,7 @@ export class Divisor {
   }
 
   unfold(callee) {
+    // TODO: remove '|| ...'
     return new Divisor(this.foldingMap.get(callee) || [callee])
   }
 

@@ -205,9 +205,12 @@ class PropertiesReflexion extends Reflexion {
 
   factorizeEach(expression) {
     const result = new Set()
+    const targetIdentifier = this.identifier
     AcornWalk.simple(expression, {
       MemberExpression(node) {
-        result.add(node.property.name)
+        if (node.object.name === targetIdentifier) {
+          result.add(node.property.name)
+        }
       }
     })
     return result
