@@ -87,27 +87,6 @@ describe('Declarations entropy', () => {
     const ant = new NeedleAnt(initialCode)
     expect(ant.coverEntropy(updatedCode)).toBe(4)
   })
-
-  // TODO: uncomment following tests
-  // it('', () => {
-  //   const code = 'const a = 1;'
-  // })
-
-  // it('', () => {
-  //   const code = 'const a = 1; let b = "Hello world!"'
-  // })
-
-  // it('', () => {
-  //   const code = 'const a = {x: 3, y: 0};'
-  // })
-
-  // it('', () => {
-  //   const code = 'const a = new Example();'
-  // })
-
-  // it('', () => {
-  //   const code = 'const a = new User({ name: "Joe" });'
-  // })
 })
 
 describe('Api change entropy', () => {

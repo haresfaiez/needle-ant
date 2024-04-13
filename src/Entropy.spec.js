@@ -141,3 +141,26 @@ describe('Import statement entropy', () => {
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 3))
   })
 })
+
+// TODO: uncomment following tests
+// describe('Variable declaration entropy', () => {
+// it('', () => {
+//   const code = 'const a = 1;'
+// })
+
+// it('', () => {
+//   const code = 'const a = 1; let b = "Hello world!"'
+// })
+
+// it('', () => {
+//   const code = 'const a = {x: 3, y: 0};'
+// })
+
+// it('', () => {
+//   const code = 'const a = new Example();'
+// })
+
+// it('', () => {
+//   const code = 'const a = new User({ name: "Joe" });'
+// })
+// })
