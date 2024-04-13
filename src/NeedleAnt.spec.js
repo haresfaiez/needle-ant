@@ -66,6 +66,7 @@ describe('Declarations entropy', () => {
     expect(ant.coverEntropy(updatedCode)).toBe(0)
   })
 
+  // TODO: uncomment this
   // it('increases unit when a "let" changes into a "var"', () => {
   //   const initialCode = 'let a'
   //   const updatedCode = 'var a'
