@@ -1,15 +1,5 @@
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: more variables -> more entropy
-// TODO: more state space for variable -> more entropy
-// TODO: entropy(pull request with another if) >>> entropy(pull request that parses config and dispatch)
-// TODO: entropy(a=1, b=2, c=3) > entropy(obj = {a: 1, b: 2, c: 3})
-
-// TODO: no effects on entropy: names/length/lines count
-// TODO: refactoring should not change entropy
-
-// TODO: create graph of entropy changes by commit for open-source projects
-
 describe('Function', () => {
   describe('body entropy', () => {
     it('with simple conditional', () => {
@@ -96,6 +86,27 @@ describe('Declarations entropy', () => {
     const ant = new NeedleAnt(initialCode)
     expect(ant.coverEntropy(updatedCode)).toBe(4)
   })
+
+  // TODO: uncomment following tests
+  // it('', () => {
+  //   const code = 'const a = 1;'
+  // })
+
+  // it('', () => {
+  //   const code = 'const a = 1; let b = "Hello world!"'
+  // })
+
+  // it('', () => {
+  //   const code = 'const a = {x: 3, y: 0};'
+  // })
+
+  // it('', () => {
+  //   const code = 'const a = new Example();'
+  // })
+
+  // it('', () => {
+  //   const code = 'const a = new User({ name: "Joe" });'
+  // })
 })
 
 describe('Api change entropy', () => {
