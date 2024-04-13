@@ -20,8 +20,14 @@ class Entropy {
     return this.evaluate().calculate()
   }
 
-  evaluate() {
+  _evaluate() {
     throw new Error('`Entropy#evaluate` not implemented yet in `Entropy`!')
+  }
+
+  evaluate(createEvaluation) {
+    const evaluationFactory =
+      (actual, possibilities) => new Evaluation(actual, possibilities)
+    return this._evaluate(createEvaluation || evaluationFactory)
   }
 
   minus(other) {
@@ -48,20 +54,20 @@ class SumEntropy extends Entropy {
     return this
   }
 
-  evaluate() {
+  _evaluate(createEvaluation) {
     return this.dividend.reduce(
-      (acc, eachEntropy) => acc.plus(eachEntropy.evaluate()),
+      (acc, eachEntropy) => acc.plus(eachEntropy.evaluate(createEvaluation)),
       new NullEvaluation()
     )
   }
 }
 
 export class JointEntropy extends Entropy {
-  evaluate() {
+  _evaluate(createEvaluation) {
     return this.dividend.sources
       .map(eachSource => new SingleEntropy(new Reflexion(eachSource), this.divisor))
       .reduce((acc, eachEntropy) => acc.plus(eachEntropy), new SumEntropy([]))
-      .evaluate()
+      .evaluate(createEvaluation)
   }
 }
 
@@ -71,8 +77,8 @@ export class SingleEntropy extends Entropy {
     this.delegate = this.createDelegate(dividend, divisor)
   }
 
-  evaluate() {
-    return this.delegate.evaluate()
+  _evaluate(createEvaluation) {
+    return this.delegate.evaluate(createEvaluation)
   }
 
   definitions() {
@@ -106,37 +112,37 @@ export class SingleEntropy extends Entropy {
 
 class DependencyEntropy extends Entropy {
   // TODO: improve this
-  evaluate() {
+  _evaluate(createEvaluation) {
     if (this.divisor.shouldCheckAdjacentModules()) {
       // TODO: fix next line
       const importParts = new DependenciesReflexion(this.dividend.sources[0]).__factorize()
       const importSpecifiers = importParts[0]
       const importSource = importParts[1]
 
-      return new SingleEntropy(new Reflexion(importSpecifiers), new Divisor(this.divisor.importedModulesNames())).evaluate()
-        .plus(new SingleEntropy(new Reflexion(importSource), new Divisor(this.divisor.adjacentModules())).evaluate())
+      return new SingleEntropy(new Reflexion(importSpecifiers), new Divisor(this.divisor.importedModulesNames())).evaluate(createEvaluation)
+        .plus(new SingleEntropy(new Reflexion(importSource), new Divisor(this.divisor.adjacentModules())).evaluate(createEvaluation))
     }
 
     const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
       && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
 
     if (isWildcardImport) {
-      return new Evaluation(this.divisor.identifiersCount(), this.divisor.identifiersCount())
+      return createEvaluation(this.divisor.identifiersCount(), this.divisor.identifiersCount())
     }
 
     if (this.divisor.shouldFocusOnCurrentModule()) {
-      return new ExpressionEntropy(this.dividend, new Divisor(this.divisor.identifiers())).evaluate()
+      return new ExpressionEntropy(this.dividend, new Divisor(this.divisor.identifiers())).evaluate(createEvaluation)
     }
 
     // TODO: Use ExpressionEntropy
     const actualCount = this.dividend.odds().length
     const allPossibilitiesCount = this.divisor.identifiersCount()
-    return new Evaluation(actualCount, allPossibilitiesCount)
+    return createEvaluation(actualCount, allPossibilitiesCount)
   }
 }
 
 class ExpressionEntropy extends Entropy {
-  evaluate() {
+  _evaluate(createEvaluation) {
     const allPossibilitiesCount = this.divisor.identifiersCount()
 
     const literalsWeight = this.dividend.literals().length ? 1 : 0
@@ -144,7 +150,7 @@ class ExpressionEntropy extends Entropy {
       ? this.dividend.odds().length
       : (this.dividend.identifiers().length + literalsWeight)
 
-    return new Evaluation(actualCount, allPossibilitiesCount)
+    return createEvaluation(actualCount, allPossibilitiesCount, this.dividend.sources[0])
   }
 }
 

@@ -1,17 +1,36 @@
 import * as acorn from 'acorn'
+import * as escodegen from 'escodegen'
 import { JointEntropy } from './Entropy.js'
 import { Reflexion } from './Reflexion.js'
 import { Divisor } from './Divisor.js'
+import { Evaluation } from './Evalution.js'
 
 class NeedleAnt {
   constructor(code) {
     this.code = code
     this.ast = acorn.parse(this.code, { ecmaVersion: 2023, sourceType: 'module' })
-    this.footsteps = []
+    this.sources = new Map()
   }
 
+  set(fileName) {
+    this.sources.set(fileName, ['a', 'b', 'c'])
+  }
+
+  scan(code) {
+    const jointEntropy = new JointEntropy(
+      Reflexion.parse(code, (ast) => ast.body),
+      new Divisor(this.sources.get('other.js'))
+    )
+    const evaluationFactory =
+      (actual, possibilities, expression)=> new Evaluation(actual, possibilities, expression && escodegen.generate(expression, { format: escodegen.FORMAT_MINIFY }))
+    const result = jointEntropy.evaluate(evaluationFactory)
+
+    return result
+  }
+
+  // TODO: remove this
   entropy() {
-    const trail = new Reflexion(this.ast, this.footsteps)
+    const trail = new Reflexion(this.ast)
     const flatTrail = new Reflexion(trail.odds())
     return new JointEntropy(flatTrail, new Divisor(flatTrail.identifiers())).calculate()
   }

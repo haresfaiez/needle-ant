@@ -1,8 +1,9 @@
 export class Evaluation {
 
-  constructor(actualCount, possibleCount) {
+  constructor(actualCount, possibleCount, source) {
     this.actualCount = actualCount
     this.possibleCount = possibleCount
+    this.source = source
   }
 
   shouldIgnoreAdding(otherEvaluation) {

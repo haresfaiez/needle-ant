@@ -1,3 +1,4 @@
+import { Evaluation, JointEvaluation } from './Evalution.js'
 import NeedleAnt from './NeedleAnt.js'
 
 describe('Function', () => {
@@ -95,5 +96,26 @@ describe('Api change entropy', () => {
     const updatedCode = 'class Country { setCode(codeName, countryName) {} }'
     const ant = new NeedleAnt(initialCode)
     expect(ant.coverEntropy(updatedCode)).toBe(8)
+  })
+})
+
+describe('Entropy result', () => {
+  it('calculates top level variable entropy', () => {
+    const code = `import { a, b, c } from './other.js';
+      const x = b();
+      a(c, x);
+    `
+
+    const ant = new NeedleAnt()
+    ant.set('other.js', 'export const a = 1; export const b = 3; export const c = 45;')
+
+    const actual = ant.scan(code)
+
+    const expected = new JointEvaluation([
+      new Evaluation(3, 3, 'import{a,b,c}from\'./other.js\';'),
+      new Evaluation(1, 3, 'const x=b();'),
+      new Evaluation(3, 4, 'a(c,x);')
+    ])
+    expect(actual).toEqual(expected)
   })
 })
