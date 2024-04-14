@@ -6,14 +6,16 @@ import { Divisor } from './Divisor.js'
 import { Evaluation } from './Evalution.js'
 
 class NeedleAnt {
-  constructor(code) {
+  constructor(code, dependencies) {
     this.code = code
-    this.ast = acorn.parse(this.code, { ecmaVersion: 2023, sourceType: 'module' })
-    this.dependenciesApi = []
-  }
+    this.dependenciesApi = [];
 
-  addDependency(sourceCode) {
-    this.dependenciesApi.push(...Reflexion.parse(sourceCode, ast => ast.body).api())
+    (dependencies || [])
+      .map(dependency => Reflexion.parse(dependency, ast => ast.body).api())
+      .forEach(dependencyApi => this.dependenciesApi.push(...dependencyApi))
+
+    // TODO: Remove this
+    this.ast = acorn.parse(this.code, { ecmaVersion: 2023, sourceType: 'module' })
   }
 
   // TODO: rename to entropy()

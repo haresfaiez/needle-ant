@@ -105,11 +105,9 @@ describe('Entropy result', () => {
       const x = b();
       a(c, x);
     `
+    const otherJsCode = 'export const a = 1; export const b = 3; export const c = 45;'
 
-    const ant = new NeedleAnt(code)
-    ant.addDependency('export const a = 1; export const b = 3; export const c = 45;')
-
-    const actual = ant.scan()
+    const actual = new NeedleAnt(code, [otherJsCode]).scan()
 
     const expected = new JointEvaluation([
       new Evaluation(3, 3, 'import{a,b,c}from\'./other.js\';'),
