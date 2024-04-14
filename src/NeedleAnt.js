@@ -9,23 +9,22 @@ class NeedleAnt {
   constructor(code) {
     this.code = code
     this.ast = acorn.parse(this.code, { ecmaVersion: 2023, sourceType: 'module' })
-    this.sources = new Map()
+    this.dependenciesApi = []
   }
 
-  set(fileName) {
-    this.sources.set(fileName, ['a', 'b', 'c'])
+  addDependency(sourceCode) {
+    this.dependenciesApi.push(...Reflexion.parse(sourceCode, ast => ast.body).api())
   }
 
-  scan(code) {
-    const jointEntropy = new JointEntropy(
-      Reflexion.parse(code, (ast) => ast.body),
-      new Divisor(this.sources.get('other.js'))
-    )
+  // TODO: rename to entropy()
+  scan() {
+    const codeReflexion = Reflexion.parse(this.code, (ast) => ast.body)
+    const jointEntropy = new JointEntropy(codeReflexion, new Divisor(this.dependenciesApi))
+
     const evaluationFactory =
       (actual, possibilities, expression)=> new Evaluation(actual, possibilities, expression && escodegen.generate(expression, { format: escodegen.FORMAT_MINIFY }))
-    const result = jointEntropy.evaluate(evaluationFactory)
 
-    return result
+    return jointEntropy.evaluate(evaluationFactory)
   }
 
   // TODO: remove this

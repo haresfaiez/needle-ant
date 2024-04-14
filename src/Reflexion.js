@@ -144,7 +144,11 @@ class DeclarationReflexion extends Reflexion {
       return new HorizontalReflexion(expression.declarations).factorize()
     }
 
-    return new HorizontalReflexion(expression.init).factorize()
+    if (expression.init) {
+      return new HorizontalReflexion(expression.init).factorize()
+    }
+
+    return new HorizontalReflexion(expression).factorize()
   }
 }
 
@@ -191,6 +195,12 @@ class IdentifiersReflexion extends Reflexion {
       },
       ImportSpecifier(node) {
         result.add(node.imported.name)
+      },
+      FunctionDeclaration(node) {
+        result.add(node.id.name)
+      },
+      VariableDeclarator(node) {
+        result.add(node.id.name)
       }
     })
     return result
@@ -234,7 +244,9 @@ class ApiReflexion extends Reflexion {
     const result = new Set()
     AcornWalk.simple(expression, {
       ExportNamedDeclaration(node) {
-        result.add(node.declaration?.id?.name)
+        new IdentifiersReflexion(node)
+          .factorize()
+          .forEach(name => result.add(name))
       }
     })
     return result
