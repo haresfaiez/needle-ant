@@ -26,6 +26,7 @@ class NeedleAnt {
     const evaluationFactory =
       (actual, possibilities, expression)=> new Evaluation(actual, possibilities, expression && escodegen.generate(expression, { format: escodegen.FORMAT_MINIFY }))
 
+    // TODO: Use `new MultiModulesDivisor(new DependenciesReflexion(...`
     return jointEntropy.evaluate(evaluationFactory)
   }
 
