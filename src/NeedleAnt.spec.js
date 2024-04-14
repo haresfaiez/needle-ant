@@ -128,6 +128,7 @@ describe('Entropy result', () => {
   })
 })
 
+//TODO: Uncomment these
 // BASED ON: https://github.com/GoogleChrome/lighthouse/blob/main/core/lib/traces/metric-trace-events.js
 // describe('Module entropy', () => {
 //   it('', () => {
