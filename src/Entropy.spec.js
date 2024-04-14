@@ -3,10 +3,6 @@ import { SingleEntropy, JointEntropy } from './Entropy.js'
 import { Evaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
-// Run it for:
-//   * https://github.com/GoogleChrome/lighthouse/blob/main/core/gather/base-gatherer.js
-//   * https://github.com/GoogleChrome/lighthouse/blob/main/core/lib/traces/metric-trace-events.js
-
 describe('Method invocation entropy', () => {
   it('sums objects entropy and method entropy', () => {
     const code = 'f.c()'
@@ -163,4 +159,25 @@ describe('Import statement entropy', () => {
 // it('', () => {
 //   const code = 'const a = new User({ name: "Joe" });'
 // })
+// })
+
+// describe('Class definition entropy', () => {
+//   it('', () => {
+//     const code = `class A {
+//       meta = {s: []};
+//          // Skip if auditResults is missing a particular audit result
+
+//       start(passContext) { }
+
+//       /**
+//        * Comment
+//        */
+//       stop(context) { }
+//     }
+//     `
+//   })
+// })
+
+// describe('Loop entropy', () => {
+//   // TODO: check all forms of loops
 // })

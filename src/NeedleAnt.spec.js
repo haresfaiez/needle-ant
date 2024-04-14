@@ -127,3 +127,89 @@ describe('Entropy result', () => {
     expect(actual).toEqual(expected)
   })
 })
+
+// BASED ON: https://github.com/GoogleChrome/lighthouse/blob/main/core/lib/traces/metric-trace-events.js
+// describe('Module entropy', () => {
+//   it('', () => {
+//     const code = `
+//       import log from 'lighthouse-logger';
+//       import {TraceProcessor} from '../tracehouse/trace-processor.js';
+
+//       function getUberMetrics(auditResults) {
+//         const metricsAudit = auditResults.metrics;
+//         if (!metricsAudit || !metricsAudit.details || !('items' in metricsAudit.details)) return;
+
+//         return metricsAudit.details.items[0];
+//       }
+//     `
+//   })
+
+//   it('', () => {
+//     const code = `
+//       class MetricTraceEvents {
+//         constructor(traceEvents, auditResults) {
+//           this._traceEvents = traceEvents;
+//           this._auditResults = auditResults;
+//         }
+
+//         static get metricsDefinitions() {
+//           return [
+//             {
+//               name: 'Time Origin',
+//               id: 'timeorigin',
+//               tsKey: 'observedTimeOriginTs',
+//             },
+//             {
+//               name: 'First Contentful Paint',
+//               id: 'ttfcp',
+//               tsKey: 'observedFirstContentfulPaintTs',
+//             },
+//           ];
+//         }
+//       }
+
+//       export {MetricTraceEvents};
+//     `
+//   })
+
+//   it('', () => {
+//     const code = `
+//       class MetricTraceEvents {
+//         gatherMetrics() {
+//           const uberMetrics = getUberMetrics(this._auditResults);
+//           if (!uberMetrics) {
+//             return [];
+//           }
+
+//           return uberMetrics;
+//         }
+
+//         getTimeOriginEvt(metrics, uberMetrics) {
+//           const resolvedMetrics = [];
+//           MetricTraceEvents.metricsDefinitions.forEach(metric => {
+//             const ts = uberMetrics[metric.tsKey];
+//             if (ts === undefined) {
+//               log.error('pwmetrics-events', ```${metric.name} timestamp not found```);
+//               return;
+//             }
+
+//             resolvedMetrics.push({
+//               id: metric.id,
+//               name: metric.name,
+//               ts,
+//             });
+//           });
+
+//           const timeOriginMetric = metrics.find(e => e.id === 'timeorigin');
+//           if (!timeOriginMetric) return {errorMessage: 'timeorigin Metric not found in definitions'};
+//           try {
+//             const frameIds = TraceProcessor.findMainFrameIds(this._traceEvents);
+//             return {pid: frameIds.startingPid, tid: 1, ts: timeOriginMetric.ts};
+//           } catch (err) {
+//             return {errorMessage: err.message};
+//           }
+//         }
+//       }
+//     `
+//   })
+// })
