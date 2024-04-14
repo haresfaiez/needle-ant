@@ -127,17 +127,18 @@ class DependencyEntropy extends Entropy {
       && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
 
     if (isWildcardImport) {
-      return createEvaluation(this.divisor.identifiersCount(), this.divisor.identifiersCount())
+      return createEvaluation(
+        this.divisor.identifiersCount(),
+        this.divisor.identifiersCount(),
+        this.dividend.sources[0]
+      )
     }
 
     if (this.divisor.shouldFocusOnCurrentModule()) {
       return new ExpressionEntropy(this.dividend, new Divisor(this.divisor.identifiers())).evaluate(createEvaluation)
     }
 
-    // TODO: Use ExpressionEntropy
-    const actualCount = this.dividend.odds().length
-    const allPossibilitiesCount = this.divisor.identifiersCount()
-    return createEvaluation(actualCount, allPossibilitiesCount)
+    throw ('DepencyEntropy#_evaluate does not handle this case yet')
   }
 }
 

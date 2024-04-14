@@ -116,4 +116,14 @@ describe('Entropy result', () => {
     ])
     expect(actual).toEqual(expected)
   })
+
+  it('calculates top level entropy of wildcard import', () => {
+    const code = 'import * as Other from \'./other.js\';'
+    const otherJsCode = 'export const a = 1;'
+
+    const actual = new NeedleAnt(code, [otherJsCode]).scan()
+
+    const expected = new Evaluation(1, 1, 'import*as Other from\'./other.js\';')
+    expect(actual).toEqual(expected)
+  })
 })
