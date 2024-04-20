@@ -1,6 +1,6 @@
 import { Reflexion } from './Reflexion.js'
 import { SingleEntropy, JointEntropy } from './Entropy.js'
-import { Evaluation, JointEvaluation } from './Evalution.js'
+import { Evaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
 describe('Method invocation entropy', () => {
@@ -139,17 +139,14 @@ describe('Import statement entropy', () => {
 })
 
 describe('Function body entropy', () => {
-  it('is the sum of body statements entropies when it\'s pure ', () => {
+  it('is the body statement entropy for identity function', () => {
     const code = 'const identity = (aNumber) => aNumber;'
     const entropy = new JointEntropy(
       Reflexion.parse(code, (ast) => ast.body),
       new Divisor([])
     )
 
-    const expectedEvaluation = new JointEvaluation([
-      new Evaluation(1, 1),
-      new Evaluation(1, 2),
-    ])
+    const expectedEvaluation = new Evaluation(1, 2)
     expect(entropy.evaluate()).toEqual(expectedEvaluation)
   })
 

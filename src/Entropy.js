@@ -67,8 +67,7 @@ class SumEntropy extends Entropy {
 export class JointEntropy extends Entropy {
   _evaluate(createEvaluation) {
 
-    return this.dividend
-      .flatten()
+    return this.dividend.sources
       .map(eachSource => new SingleEntropy(new Reflexion(eachSource), this.divisor))
       .reduce((acc, eachEntropy) => acc.plus(eachEntropy), new SumEntropy([], this.divisor))
       .evaluate(createEvaluation)
@@ -97,7 +96,8 @@ export class SingleEntropy extends Entropy {
     }
 
     if (dividendType === 'VariableDeclaration') {
-      return new DeclarationEntropy(dividend, divisor)
+      // TODO: why are we ignoring "const"/"let"/"var"/...?
+      return new DeclarationEntropy(new DeclarationReflexion(dividend.sources[0].declarations), divisor)
     }
 
     const callee = dividend.sources?.[0]?.expression?.callee
@@ -107,6 +107,11 @@ export class SingleEntropy extends Entropy {
         new SingleEntropy(new Reflexion(callee.property), divisor.unfold(callee.object.name)),
         new JointEntropy(new Reflexion(dividend.sources?.[0]?.expression?.arguments), divisor)
       ])
+    }
+
+    // TODO: generalize this to all functions
+    if (dividendType === 'VariableDeclarator' && dividend.sources[0].init.type === 'ArrowFunctionExpression') {
+      return new JointEntropy(new Reflexion(dividend.sources[0].init.body), divisor)
     }
 
     const expressionTypes = [
@@ -127,7 +132,7 @@ export class SingleEntropy extends Entropy {
       return new ExpressionEntropy(dividend, divisor)
     }
 
-    throw new Error(`Cannot create Delegate for dividend type: ${dividendType}`)
+    throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
   }
 }
 
@@ -177,13 +182,21 @@ class ExpressionEntropy extends Entropy {
 }
 
 class DeclarationEntropy extends Entropy {
+  definitions() {
+    const declaration = this.dividend.sources[0]
+    const declarationName = declaration.id.name
+    return [declarationName]
+  }
+
   _evaluate(createEvaluation) {
-    const declarations = this.dividend.sources?.[0]?.declarations
-    // TODO: Do this for all declarations, not just the first one
-    const declarationName = declarations[0]?.id?.name
-    if (declarations[0]?.init?.type === 'ArrowFunctionExpression') {
+    const declaration = this.dividend.sources[0]
+    const declarationName = declaration.id.name
+    if (declaration.init.type === 'ArrowFunctionExpression') {
+      // TODO: Move it to this.definitions() or change design
       this.divisor._identifiers.add(declarationName) // TODO: improve this
+      declaration.init.params.forEach(param => this.divisor._identifiers.add(param))
     }
-    return new JointEntropy(new DeclarationReflexion(declarations), this.divisor)._evaluate(createEvaluation)
+
+    return new SingleEntropy(new Reflexion(declaration), this.divisor)._evaluate(createEvaluation)
   }
 }

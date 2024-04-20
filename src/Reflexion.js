@@ -7,10 +7,6 @@ export class Reflexion {
     this.sources = Array.isArray(sources) ? sources : [sources]
   }
 
-  flatten() {
-    return this.sources
-  }
-
   definitions() {
     // TODO: Improve this
     // TODO: Move these to subclasses
@@ -161,17 +157,6 @@ class FunctionReflexion extends Reflexion {
 export class DeclarationReflexion extends Reflexion {
   constructor(sources) {
     super(sources)
-  }
-
-  // TODO: Remove this
-  flatten() {
-    const sources = this.sources[0]
-    const isFunctionDeclaration = sources.type === 'VariableDeclarator' && sources.init.type === 'ArrowFunctionExpression'
-    if (isFunctionDeclaration) {
-      return [sources, sources.init]
-    }
-
-    return super.flatten()
   }
 
   factorizeEach(expression) {
