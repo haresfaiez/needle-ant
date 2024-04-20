@@ -121,6 +121,7 @@ export class SingleEntropy extends Entropy {
       'ReturnStatement',
       'VariableDeclarator'
     ]
+    // TODO: Test declaration with many inits
     if (expressionTypes.includes(dividendType)) {
       return new ExpressionEntropy(dividend, divisor)
     }
