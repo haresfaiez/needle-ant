@@ -163,6 +163,7 @@ export class DeclarationReflexion extends Reflexion {
     super(sources)
   }
 
+  // TODO: Remove this
   flatten() {
     const sources = this.sources[0]
     const isFunctionDeclaration = sources.type === 'VariableDeclarator' && sources.init.type === 'ArrowFunctionExpression'

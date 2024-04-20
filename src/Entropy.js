@@ -2,6 +2,7 @@ import { Reflexion, DependenciesReflexion, DeclarationReflexion } from './Reflex
 import { Evaluation, NullEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
+// TODO: Check subclasses, do not ignore divisor
 class Entropy {
   constructor(dividend, rawDivisor) {
     this.dividend = dividend
