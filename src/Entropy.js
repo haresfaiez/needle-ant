@@ -9,6 +9,8 @@ class Entropy {
     this.divisor = rawDivisor || new Divisor([])
   }
 
+  // Definitions introduced by this dividend to the scope
+  // TODO: Remove this
   definitions() {
     return this.dividend.definitions()
   }
@@ -36,6 +38,7 @@ class Entropy {
   }
 }
 
+// TODO: Merge SumEntropy and JointEntropy
 class SumEntropy extends Entropy {
   constructor(dividend, divisor) {
     super(dividend, divisor)
@@ -47,11 +50,13 @@ class SumEntropy extends Entropy {
   }
 
   plus(anEntropy) {
-    // TODO: Call this.divisor only once
-    this.divisor.merge(anEntropy)
+    // Add definitions introduced by `anEntropy` that can be used by `anEntropy` itself
+    this.divisor.addIdentifiers(anEntropy.delegate.divisor)
 
     anEntropy.delegate.divisor = new Divisor(this.divisor.identifiers())
     this.dividend = [...this.dividend, anEntropy]
+
+    // Add definitions introduced by `anEntropy` into the scope
     this.divisor.addDefinitions(anEntropy)
     return this
   }
@@ -66,10 +71,11 @@ class SumEntropy extends Entropy {
 
 export class JointEntropy extends Entropy {
   _evaluate(createEvaluation) {
-
     return this.dividend.sources
-      .map(eachSource => new SingleEntropy(new Reflexion(eachSource), this.divisor))
-      .reduce((acc, eachEntropy) => acc.plus(eachEntropy), new SumEntropy([], this.divisor))
+      .reduce((sumEntropy, eachSource) => {
+        const eachEntropy = new SingleEntropy(new Reflexion(eachSource), this.divisor)
+        return sumEntropy.plus(eachEntropy)
+      }, new SumEntropy([], this.divisor))
       .evaluate(createEvaluation)
   }
 }
@@ -97,7 +103,11 @@ export class SingleEntropy extends Entropy {
 
     if (dividendType === 'VariableDeclaration') {
       // TODO: why are we ignoring "const"/"let"/"var"/...?
-      return new DeclarationEntropy(new DeclarationReflexion(dividend.sources[0].declarations), divisor)
+      const declaration = dividend.sources[0]
+      // TODO: Copy divisor (think about adjacent functions)
+      divisor.addIdentifiers(new Reflexion(declaration))
+      const declarationReflexion = new DeclarationReflexion(declaration.declarations)
+      return new DeclarationEntropy(declarationReflexion, divisor)
     }
 
     const callee = dividend.sources?.[0]?.expression?.callee
@@ -183,20 +193,12 @@ class ExpressionEntropy extends Entropy {
 
 class DeclarationEntropy extends Entropy {
   definitions() {
-    const declaration = this.dividend.sources[0]
-    const declarationName = declaration.id.name
-    return [declarationName]
+    return [this.dividend.sources[0].id.name] // Variable name
   }
 
   _evaluate(createEvaluation) {
     const declaration = this.dividend.sources[0]
-    const declarationName = declaration.id.name
-    if (declaration.init.type === 'ArrowFunctionExpression') {
-      // TODO: Move it to this.definitions() or change design
-      this.divisor._identifiers.add(declarationName) // TODO: improve this
-      declaration.init.params.forEach(param => this.divisor._identifiers.add(param))
-    }
-
-    return new SingleEntropy(new Reflexion(declaration), this.divisor)._evaluate(createEvaluation)
+    const declarationReflexion = new Reflexion(declaration)
+    return new SingleEntropy(declarationReflexion, this.divisor)._evaluate(createEvaluation)
   }
 }

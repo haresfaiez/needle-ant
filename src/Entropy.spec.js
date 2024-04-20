@@ -82,7 +82,7 @@ describe('Call entropy', () => {
         new Divisor(['b', 'call'])
       )
 
-      const expected = new Evaluation(1, 2)
+      const expected = new Evaluation(1, 3)
         .plus(new Evaluation(2, 3))
       expect(entropy.evaluate()).toEqual(expected)
     })
@@ -94,7 +94,7 @@ describe('Call entropy', () => {
         new Divisor(['a', 'b', 'c', 'd'])
       )
 
-      const expected = new Evaluation(1, 4).plus(new Evaluation(4, 5))
+      const expected = new Evaluation(1, 5).plus(new Evaluation(4, 5))
       expect(entropy.evaluate()).toEqual(expected)
     })
   })
@@ -151,6 +151,7 @@ describe('Function body entropy', () => {
   })
 
   // TODO: write the same test for NeedleAnt.spec.js
+  // TODO: test two adjacents functions
   // fit('defined variable does not impace top-level scope', () => {
   //   const code = `
   //     const start = 40;

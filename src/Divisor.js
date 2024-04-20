@@ -26,8 +26,7 @@ export class Divisor {
     return true
   }
 
-  merge(anEntropy) {
-    const otherDivisor = anEntropy.delegate.divisor
+  addIdentifiers(otherDivisor) {
     otherDivisor.identifiers().forEach(eachDivisor => this._identifiers.add(eachDivisor))
   }
 

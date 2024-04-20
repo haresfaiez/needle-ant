@@ -111,7 +111,7 @@ describe('Entropy result', () => {
 
     const expected = new JointEvaluation([
       new Evaluation(3, 3, 'import{a,b,c}from\'./other.js\';'),
-      new Evaluation(1, 3, 'x=b()'),
+      new Evaluation(1, 4, 'x=b()'),
       new Evaluation(3, 4, 'a(c,x);')
     ])
     expect(actual).toEqual(expected)
