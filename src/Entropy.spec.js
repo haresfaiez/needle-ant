@@ -1,6 +1,6 @@
 import { Reflexion } from './Reflexion.js'
 import { SingleEntropy, JointEntropy } from './Entropy.js'
-import { Evaluation } from './Evalution.js'
+import { Evaluation, JointEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
 describe('Method invocation entropy', () => {
@@ -137,6 +137,46 @@ describe('Import statement entropy', () => {
     expect(entropy.evaluate()).toEqual(new Evaluation(1, 3))
   })
 })
+
+describe('Function body entropy', () => {
+  it('is the sum of body statements entropies when it\'s pure ', () => {
+    const code = 'const identity = (aNumber) => aNumber;'
+    const entropy = new JointEntropy(
+      Reflexion.parse(code, (ast) => ast.body),
+      new Divisor([])
+    )
+
+    const expectedEvaluation = new JointEvaluation([
+      new Evaluation(1, 1),
+      new Evaluation(1, 2),
+    ])
+    expect(entropy.evaluate()).toEqual(expectedEvaluation)
+  })
+
+  // TODO: write the same test for NeedleAnt.spec.js
+  // fit('defined variable does not impace top-level scope', () => {
+  //   const code = `
+  //     const start = 40;
+  //     const a = (aNumber) => {
+  //       return start - aNumber;
+  //     };
+  //     a(4);
+  //   `
+  //   const entropy = new JointEntropy(
+  //     Reflexion.parse(code, (ast) => ast.body),
+  //     new Divisor(['40', '4', 'a'])
+  //   )
+
+  //   const expectedEvaluation = new JointEntropy([
+  //     new Evaluation(1, 3),
+  //     new Evaluation(1, 2),
+  //     new Evaluation(2, 3),
+  //     new Evaluation(2, 3)
+  //   ])
+  //   expect(entropy.evaluate()).toEqual(expectedEvaluation)
+  // })
+})
+
 
 // TODO: uncomment following tests
 // describe('Variable declaration entropy', () => {

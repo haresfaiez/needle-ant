@@ -1,15 +1,23 @@
 import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
+import * as escodegen from 'escodegen'
 
 export class Reflexion {
-  constructor(sources, footsteps) {
+  constructor(sources) {
     this.sources = Array.isArray(sources) ? sources : [sources]
-    this.footsteps = footsteps || []
+  }
+
+  flatten() {
+    return this.sources
   }
 
   definitions() {
     // TODO: Improve this
-    return (this.sources?.[0]?.declarations || []).map(eachDeclaration => eachDeclaration.id.name)
+    // TODO: Move these to subclasses
+    const target = this.sources?.[0]
+    const identifiers = target?.declarations?.map(eachDeclaration => eachDeclaration.id.name) || []
+    const params = target?.init?.params?.map(eachDeclaration => eachDeclaration.name) || []
+    return [...identifiers, ...params]
   }
 
   add() {
@@ -116,7 +124,19 @@ class HorizontalReflexion extends Reflexion {
       return new DeclarationReflexion(ast)
     }
 
-    throw new Error(`Ast type "${ast.type}" not handeled yet!`)
+    if (ast.type === 'Literal') {
+      return new IdentityReflexion(ast)
+    }
+
+    throw new Error(`Ast type "${ast.type}" not handeled yet! for "${escodegen.generate(ast)}"`)
+  }
+}
+
+class IdentityReflexion extends Reflexion {
+  factorizeEach(ast) {
+    const result = new Set()
+    result.add(ast.raw)
+    return result
   }
 }
 
@@ -138,7 +158,21 @@ class FunctionReflexion extends Reflexion {
   }
 }
 
-class DeclarationReflexion extends Reflexion {
+export class DeclarationReflexion extends Reflexion {
+  constructor(sources) {
+    super(sources)
+  }
+
+  flatten() {
+    const sources = this.sources[0]
+    const isFunctionDeclaration = sources.type === 'VariableDeclarator' && sources.init.type === 'ArrowFunctionExpression'
+    if (isFunctionDeclaration) {
+      return [sources, sources.init]
+    }
+
+    return super.flatten()
+  }
+
   factorizeEach(expression) {
     if (expression.declarations) {
       return new HorizontalReflexion(expression.declarations).factorize()

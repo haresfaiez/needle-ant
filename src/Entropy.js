@@ -1,4 +1,4 @@
-import { Reflexion, DependenciesReflexion } from './Reflexion.js'
+import { Reflexion, DependenciesReflexion, DeclarationReflexion } from './Reflexion.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
@@ -36,8 +36,8 @@ class Entropy {
 }
 
 class SumEntropy extends Entropy {
-  constructor(dividend) {
-    super(dividend)
+  constructor(dividend, divisor) {
+    super(dividend, divisor)
   }
 
   definitions() {
@@ -46,6 +46,7 @@ class SumEntropy extends Entropy {
   }
 
   plus(anEntropy) {
+    // TODO: Call this.divisor only once
     this.divisor.merge(anEntropy)
 
     anEntropy.delegate.divisor = new Divisor(this.divisor.identifiers())
@@ -64,9 +65,11 @@ class SumEntropy extends Entropy {
 
 export class JointEntropy extends Entropy {
   _evaluate(createEvaluation) {
-    return this.dividend.sources
+
+    return this.dividend
+      .flatten()
       .map(eachSource => new SingleEntropy(new Reflexion(eachSource), this.divisor))
-      .reduce((acc, eachEntropy) => acc.plus(eachEntropy), new SumEntropy([]))
+      .reduce((acc, eachEntropy) => acc.plus(eachEntropy), new SumEntropy([], this.divisor))
       .evaluate(createEvaluation)
   }
 }
@@ -156,4 +159,18 @@ class ExpressionEntropy extends Entropy {
 }
 
 class DeclarationEntropy extends ExpressionEntropy {
+  _evaluate(createEvaluation) {
+    const declarations = this.dividend.sources?.[0]?.declarations
+    if (declarations.length) {
+      // TODO: Do this for all declarations, not just the first one
+      const declarationName = declarations[0]?.id?.name
+      if (declarations[0]?.init?.type === 'ArrowFunctionExpression') {
+        this.divisor._identifiers.add(declarationName) // TODO: improve this
+      }
+      return new JointEntropy(new DeclarationReflexion(declarations), this.divisor)._evaluate(createEvaluation)
+    }
+
+    // TODO: throw exception here?
+    return super._evaluate(createEvaluation)
+  }
 }
