@@ -109,8 +109,23 @@ export class SingleEntropy extends Entropy {
       ])
     }
 
-    // TODO: Add ifs and throw Error by default
-    return new ExpressionEntropy(dividend, divisor)
+    const expressionTypes = [
+      'ArrowFunctionExpression',
+      'BinaryExpression',
+      'CallExpression',
+      'ExpressionStatement',
+      'Identifier',
+      'ImportNamespaceSpecifier',
+      'ImportSpecifier',
+      'Literal',
+      'ReturnStatement',
+      'VariableDeclarator'
+    ]
+    if (expressionTypes.includes(dividendType)) {
+      return new ExpressionEntropy(dividend, divisor)
+    }
+
+    throw new Error(`Cannot create Delegate for dividend type: ${dividendType}`)
   }
 }
 
