@@ -159,19 +159,14 @@ class ExpressionEntropy extends Entropy {
   }
 }
 
-class DeclarationEntropy extends ExpressionEntropy {
+class DeclarationEntropy extends Entropy {
   _evaluate(createEvaluation) {
     const declarations = this.dividend.sources?.[0]?.declarations
-    if (declarations.length) {
-      // TODO: Do this for all declarations, not just the first one
-      const declarationName = declarations[0]?.id?.name
-      if (declarations[0]?.init?.type === 'ArrowFunctionExpression') {
-        this.divisor._identifiers.add(declarationName) // TODO: improve this
-      }
-      return new JointEntropy(new DeclarationReflexion(declarations), this.divisor)._evaluate(createEvaluation)
+    // TODO: Do this for all declarations, not just the first one
+    const declarationName = declarations[0]?.id?.name
+    if (declarations[0]?.init?.type === 'ArrowFunctionExpression') {
+      this.divisor._identifiers.add(declarationName) // TODO: improve this
     }
-
-    // TODO: throw exception here?
-    return super._evaluate(createEvaluation)
+    return new JointEntropy(new DeclarationReflexion(declarations), this.divisor)._evaluate(createEvaluation)
   }
 }
