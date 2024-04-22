@@ -7,15 +7,6 @@ export class Reflexion {
     this.sources = Array.isArray(sources) ? sources : [sources]
   }
 
-  definitions() {
-    // TODO: Improve this
-    // TODO: Move these to subclasses
-    const target = this.sources?.[0]
-    const identifiers = target?.declarations?.map(eachDeclaration => eachDeclaration.id.name) || []
-    const params = target?.init?.params?.map(eachDeclaration => eachDeclaration.name) || []
-    return [...identifiers, ...params]
-  }
-
   add() {
     throw new Error('Not implemented yet!')
   }

@@ -9,12 +9,6 @@ class Entropy {
     this.divisor = rawDivisor || new Divisor([])
   }
 
-  // Definitions introduced by this dividend to the scope
-  // TODO: Remove this
-  definitions() {
-    return this.dividend.definitions()
-  }
-
   plus() {
     throw new Error('`Entropy#plus` not implemented yet in `Entropy`!')
   }
@@ -44,11 +38,6 @@ class SumEntropy extends Entropy {
     super(dividend, divisor)
   }
 
-  definitions() {
-    // TODO: Implement this
-    return []
-  }
-
   plus(anEntropy) {
     // Add definitions introduced by `anEntropy` that can be used by `anEntropy` itself
     this.divisor.addIdentifiers(anEntropy.delegate.divisor)
@@ -56,8 +45,6 @@ class SumEntropy extends Entropy {
     anEntropy.delegate.divisor = new Divisor(this.divisor.identifiers())
     this.dividend = [...this.dividend, anEntropy]
 
-    // Add definitions introduced by `anEntropy` into the scope
-    this.divisor.addDefinitions(anEntropy)
     return this
   }
 
@@ -88,10 +75,6 @@ export class SingleEntropy extends Entropy {
 
   _evaluate(createEvaluation) {
     return this.delegate.evaluate(createEvaluation)
-  }
-
-  definitions() {
-    return this.delegate.definitions()
   }
 
   createDelegate(dividend, divisor) {
@@ -192,10 +175,6 @@ class ExpressionEntropy extends Entropy {
 }
 
 class DeclarationEntropy extends Entropy {
-  definitions() {
-    return [this.dividend.sources[0].id.name] // Variable name
-  }
-
   _evaluate(createEvaluation) {
     const declaration = this.dividend.sources[0]
     const declarationReflexion = new Reflexion(declaration)

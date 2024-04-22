@@ -30,10 +30,6 @@ export class Divisor {
     otherDivisor.identifiers().forEach(eachDivisor => this._identifiers.add(eachDivisor))
   }
 
-  addDefinitions(anEntropy) {
-    anEntropy.definitions().forEach(eachId => this._identifiers.add(eachId))
-  }
-
   identifiers() {
     return Array.from(this._identifiers)
   }
