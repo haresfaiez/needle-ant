@@ -26,8 +26,8 @@ export class Divisor {
     return true
   }
 
-  addIdentifiers(otherDivisor) {
-    otherDivisor.identifiers().forEach(eachDivisor => this._identifiers.add(eachDivisor))
+  addIdentifiers(newIdentifiers) {
+    newIdentifiers.forEach(eachDivisor => this._identifiers.add(eachDivisor))
   }
 
   identifiers() {

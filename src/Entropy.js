@@ -39,9 +39,6 @@ class SumEntropy extends Entropy {
   }
 
   plus(anEntropy) {
-    // Add definitions introduced by `anEntropy` that can be used by `anEntropy` itself
-    this.divisor.addIdentifiers(anEntropy.delegate.divisor)
-
     anEntropy.delegate.divisor = new Divisor(this.divisor.identifiers())
     this.dividend = [...this.dividend, anEntropy]
 
@@ -88,7 +85,7 @@ export class SingleEntropy extends Entropy {
       // TODO: why are we ignoring "const"/"let"/"var"/...?
       const declaration = dividend.sources[0]
       // TODO: Copy divisor (think about adjacent functions)
-      divisor.addIdentifiers(new Reflexion(declaration))
+      divisor.addIdentifiers(new Reflexion(declaration).identifiers())
       const declarationReflexion = new DeclarationReflexion(declaration.declarations)
       return new DeclarationEntropy(declarationReflexion, divisor)
     }
