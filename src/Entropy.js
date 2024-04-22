@@ -74,34 +74,34 @@ export class SingleEntropy extends Entropy {
     return this.delegate.evaluate(createEvaluation)
   }
 
-  createDelegate(dividend, divisor) {
-    const dividendType = dividend.sources?.[0]?.type
+  createDelegate(_dividend, divisor) {
+    const dividend = _dividend?.sources?.[0]
+    const dividendType = dividend?.type
 
     if (dividendType === 'ImportDeclaration') {
-      return new DependencyEntropy(dividend, divisor)
+      return new DependencyEntropy(new Reflexion(dividend), divisor)
     }
 
     if (dividendType === 'VariableDeclaration') {
       // TODO: why are we ignoring "const"/"let"/"var"/...?
-      const declaration = dividend.sources[0]
       // TODO: Copy divisor (think about adjacent functions)
-      divisor.addIdentifiers(new Reflexion(declaration).identifiers())
-      const declarationReflexion = new DeclarationReflexion(declaration.declarations)
+      divisor.addIdentifiers(new Reflexion(dividend).identifiers())
+      const declarationReflexion = new DeclarationReflexion(dividend.declarations)
       return new DeclarationEntropy(declarationReflexion, divisor)
     }
 
-    const callee = dividend.sources?.[0]?.expression?.callee
+    const callee = dividend?.expression?.callee
     if (callee?.type === 'MemberExpression') {
       return new SumEntropy([
         new SingleEntropy(new Reflexion(callee.object), divisor),
         new SingleEntropy(new Reflexion(callee.property), divisor.unfold(callee.object.name)),
-        new JointEntropy(new Reflexion(dividend.sources?.[0]?.expression?.arguments), divisor)
+        new JointEntropy(new Reflexion(dividend?.expression?.arguments), divisor)
       ])
     }
 
     // TODO: generalize this to all functions
-    if (dividendType === 'VariableDeclarator' && dividend.sources[0].init.type === 'ArrowFunctionExpression') {
-      return new JointEntropy(new Reflexion(dividend.sources[0].init.body), divisor)
+    if (dividendType === 'VariableDeclarator' && dividend.init.type === 'ArrowFunctionExpression') {
+      return new JointEntropy(new Reflexion(dividend.init.body), divisor)
     }
 
     const expressionTypes = [
@@ -119,10 +119,12 @@ export class SingleEntropy extends Entropy {
     // TODO: should we handle function definition as DeclarationEntropy
     // TODO: Test declaration with many inits
     if (expressionTypes.includes(dividendType)) {
-      return new ExpressionEntropy(dividend, divisor)
+      return new ExpressionEntropy(new Reflexion(dividend), divisor)
     }
 
-    throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
+    // if (dividendType === 'BlockStatement') {}
+
+    throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(_dividend)}`)
   }
 }
 
