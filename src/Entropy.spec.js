@@ -48,7 +48,7 @@ describe('Method invocation entropy', () => {
       Divisor.parse(code, (ast) => ast.body)
     )
 
-    const expected = new Evaluation(1, 1).plus(new Evaluation(1, 2)).times(2)
+    const expected = new Evaluation(1, 1).plus(new Evaluation(1, 3)).times(2)
     expect(entropy.evaluate()).toEqual(expected)
   })
 })
@@ -151,8 +151,7 @@ describe('Function body entropy', () => {
   })
 
   // TODO: write the same test for NeedleAnt.spec.js
-  // TODO: test two adjacents functions
-  // fit('defined variable does not impace top-level scope', () => {
+  // it('defined variable does not impace top-level scope', () => {
   //   const code = `
   //     const start = 40;
   //     const a = (aNumber) => {
