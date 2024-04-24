@@ -34,10 +34,6 @@ export class Divisor {
     return Array.from(this._identifiers)
   }
 
-  identifiersCount() {
-    return this.identifiers().length
-  }
-
   importedModulesNames() {
     return []
   }

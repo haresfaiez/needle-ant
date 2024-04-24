@@ -11,6 +11,7 @@ export class Reflexion {
     throw new Error('Not implemented yet!')
   }
 
+  // TODO: Remove this
   odds() {
     return new HorizontalReflexion(this.sources).factorize()
   }

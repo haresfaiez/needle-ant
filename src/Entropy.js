@@ -98,8 +98,8 @@ export class SingleEntropy extends Entropy {
     }
 
     // TODO: generalize this to all functions
-    if (dividendType === 'VariableDeclarator' && dividend.init.type === 'ArrowFunctionExpression') {
-      return new JointEntropy(new Reflexion(dividend.init.body), divisor)
+    if (dividend.type === 'ArrowFunctionExpression') {
+      return new JointEntropy(new Reflexion(dividend.body), divisor)
     }
 
     // TODO: generalize this to all functions
@@ -108,7 +108,6 @@ export class SingleEntropy extends Entropy {
     }
 
     const expressionTypes = [
-      'ArrowFunctionExpression',
       'BinaryExpression',
       'CallExpression',
       'ExpressionStatement',
@@ -124,7 +123,9 @@ export class SingleEntropy extends Entropy {
       return new ExpressionEntropy(new Reflexion(dividend), divisor)
     }
 
-    // if (dividendType === 'BlockStatement') {}
+    if (dividendType === 'BlockStatement') {
+      return new JointEntropy(new Reflexion(dividend.body), divisor)
+    }
 
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(_dividend)}`)
   }
@@ -148,8 +149,8 @@ class DependencyEntropy extends Entropy {
 
     if (isWildcardImport) {
       return createEvaluation(
-        this.divisor.identifiersCount(),
-        this.divisor.identifiersCount(),
+        this.divisor.identifiers().length,
+        this.divisor.identifiers().length,
         this.dividend.sources[0]
       )
     }
@@ -164,12 +165,11 @@ class DependencyEntropy extends Entropy {
 
 class ExpressionEntropy extends Entropy {
   _evaluate(createEvaluation) {
-    const allPossibilitiesCount = this.divisor.identifiersCount()
-
-    const literalsWeight = this.dividend.literals().length ? 1 : 0
-    const actualCount = this.dividend.identifiers().length > 0
-      ? this.dividend.odds().length
-      : (this.dividend.identifiers().length + literalsWeight)
+    // TODO: Remove this check
+    const isImport = this.dividend.sources[0].type.includes('mport')
+    const literalsWeight = !isImport && this.dividend.literals().length ? 1 : 0
+    const allPossibilitiesCount = this.divisor.identifiers().length + literalsWeight
+    const actualCount = this.dividend.identifiers().length + literalsWeight
 
     return createEvaluation(actualCount, allPossibilitiesCount, this.dividend.sources[0])
   }
@@ -178,7 +178,6 @@ class ExpressionEntropy extends Entropy {
 class DeclarationEntropy extends Entropy {
   _evaluate(createEvaluation) {
     const declaration = this.dividend.sources[0]
-    const declarationReflexion = new Reflexion(declaration)
 
     this.divisor._identifiers.add(declaration.id.name)
 
@@ -188,6 +187,7 @@ class DeclarationEntropy extends Entropy {
     declarationDivisor.extend(this.divisor.identifiers())
     declarationDivisor.extend(params)
 
-    return new SingleEntropy(declarationReflexion, declarationDivisor)._evaluate(createEvaluation)
+    const delegateEntropy = new SingleEntropy(new Reflexion(declaration.init), declarationDivisor)
+    return delegateEntropy._evaluate(createEvaluation)
   }
 }

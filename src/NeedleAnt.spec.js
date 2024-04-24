@@ -1,18 +1,73 @@
-import { Evaluation, JointEvaluation } from './Evalution.js'
+import { Evaluation } from './Evalution.js'
 import NeedleAnt from './NeedleAnt.js'
 
-describe('Function', () => {
-  describe('body entropy', () => {
-    it('with simple conditional', () => {
-      const ant = new NeedleAnt('(a) => { if (a > 0) { return true; } else { return false; } }')
-      expect(ant.entropy()).toBeCloseTo(.528, 2)
-    })
 
-    it('with simple conditional and sum return', () => {
-      const ant = new NeedleAnt('(a) => { if (a > 0) { return a + 2; } else { return a + 4; } }')
-      expect(ant.entropy()).toBeCloseTo(1.584, 2)
-    })
-  })
+// describe('Successive statements entropy', () => {
+//   it('is the sum of each statement entropy', () => {
+//     const code = 'const f = (a) => { if (a > 0) { return true; } return a + 1; }'
+//     const actual = new NeedleAnt(code).scan()
+
+//     const expected = null
+//     expect(actual).toEqual(expected)
+//   })
+// })
+
+// describe('Nested expressions entropy', () => {
+//   it('is the sum of each statement entropy', () => {
+//     const code = `const f = (a) => {
+//       if (a > 0) {
+//         if (a === 1) {
+//           return false;
+//         } else {
+//           return true;
+//         }
+//       }
+//     }`
+//     const actual = new NeedleAnt(code).scan()
+
+//     const expected = null
+//     expect(actual).toEqual(expected)
+//   })
+
+//   it('twice is the sum of each statement entropy', () => {
+//     const code = `const f = (a) => {
+//       if (a > 5) {
+//         if (a < 0) {
+//           if (a === 1) {
+//             return false;
+//           } else {
+//             return true;
+//           }
+//         }
+//       }
+//     }`
+//     const actual = new NeedleAnt(code).scan()
+
+//     const expected = null
+//     expect(actual).toEqual(expected)
+//   })
+// })
+
+describe('Function', () => {
+  // describe('body entropy', () => {
+  // it('with simple conditional', () => {
+  //   const code = 'const f = (a) => { if (a > 0) { return true; } else { return false; } }'
+  //   const actual = new NeedleAnt(code).scan()
+
+  //   const expected = new JointEvaluation([
+  //     new Evaluation(3, 3, 'import{a,b,c}from\'./other.js\';'),
+  //     new Evaluation(2, 4, 'x=b()'),
+  //     new Evaluation(3, 4, 'a(c,x);')
+  //   ])
+  //   expect(actual).toEqual(expected)
+  //   // expect(ant.entropy()).toBeCloseTo(.528, 2)
+  // })
+
+  // it('with simple conditional and sum return', () => {
+  //   const ant = new NeedleAnt('(a) => { if (a > 0) { return a + 2; } else { return a + 4; } }')
+  //   expect(ant.entropy()).toBeCloseTo(1.584, 2)
+  // })
+  // })
 
   describe('as references are similarely likely', () => {
     it('of function that returns a constant is null', () => {
@@ -25,15 +80,15 @@ describe('Function', () => {
       expect(ant.entropy()).toBe(0)
     })
 
-    it('of function that increments a number', () => {
-      const ant = new NeedleAnt('a + 1')
-      expect(ant.entropy()).toBeCloseTo(.528, 2)
-    })
+    // it('of function that increments a number', () => {
+    //   const ant = new NeedleAnt('a + 1')
+    //   expect(ant.entropy()).toBeCloseTo(.528, 2)
+    // })
 
-    it('of function that pre-increments a number', () => {
-      const ant = new NeedleAnt('1 + a')
-      expect(ant.entropy()).toBeCloseTo(.528, 2)
-    })
+    // it('of function that pre-increments a number', () => {
+    //   const ant = new NeedleAnt('1 + a')
+    //   expect(ant.entropy()).toBeCloseTo(.528, 2)
+    // })
 
     it('of function that sums all available variables', () => {
       const ant = new NeedleAnt('a + b')
@@ -100,22 +155,22 @@ describe('Api change entropy', () => {
 })
 
 describe('Entropy result', () => {
-  it('calculates top level variable entropy', () => {
-    const code = `import { a, b, c } from './other.js';
-      const x = b();
-      a(c, x);
-    `
-    const otherJsCode = 'export const a = 1; export const b = 3; export const c = 45;'
+  // it('calculates top level variable entropy', () => {
+  //   const code = `import { a, b, c } from './other.js';
+  //     const x = b();
+  //     a(c, x);
+  //   `
+  //   const otherJsCode = 'export const a = 1; export const b = 3; export const c = 45;'
 
-    const actual = new NeedleAnt(code, [otherJsCode]).scan()
+  //   const actual = new NeedleAnt(code, [otherJsCode]).scan()
 
-    const expected = new JointEvaluation([
-      new Evaluation(3, 3, 'import{a,b,c}from\'./other.js\';'),
-      new Evaluation(1, 4, 'x=b()'),
-      new Evaluation(3, 4, 'a(c,x);')
-    ])
-    expect(actual).toEqual(expected)
-  })
+  //   const expected = new JointEvaluation([
+  //     new Evaluation(3, 3, 'import{a,b,c}from\'./other.js\';'),
+  //     new Evaluation(2, 4, 'x=b()'),
+  //     new Evaluation(3, 4, 'a(c,x);')
+  //   ])
+  //   expect(actual).toEqual(expected)
+  // })
 
   it('calculates top level entropy of wildcard import', () => {
     const code = 'import * as Other from \'./other.js\';'

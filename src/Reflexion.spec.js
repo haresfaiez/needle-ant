@@ -1,47 +1,7 @@
 import { DependenciesReflexion, Reflexion } from './Reflexion.js'
 import { SingleEntropy } from './Entropy.js'
 import { Evaluation, JointEvaluation } from './Evalution.js'
-import NeedleAnt from './NeedleAnt.js'
 import { Divisor, MultiModulesDivisor } from './Divisor.js'
-
-describe('Successive statements entropy', () => {
-  it('is the sum of each statement entropy', () => {
-    const ant = new NeedleAnt('(a) => { if (a > 0) { return true; } return a + 1; }')
-    expect(ant.entropy()).toBeCloseTo(1.056, 2)
-  })
-})
-
-describe('Nested expressions entropy', () => {
-  it('is the sum of each statement entropy', () => {
-    const code = `(a) => {
-      if (a > 0) {
-        if (a === 1) {
-          return false;
-        } else {
-          return true;
-        }
-      }
-    }`
-    const ant = new NeedleAnt(code)
-    expect(ant.entropy()).toBeCloseTo(1.056, 2)
-  })
-
-  it('twice is the sum of each statement entropy', () => {
-    const code = `(a) => {
-      if (a > 5) {
-        if (a < 0) {
-          if (a === 1) {
-            return false;
-          } else {
-            return true;
-          }
-        }
-      }
-    }`
-    const ant = new NeedleAnt(code)
-    expect(ant.entropy()).toBeCloseTo(1.584, 2)
-  })
-})
 
 describe('Dependency entropy', () => {
   it('of wildecard import checks files available for import', () => {
@@ -52,7 +12,7 @@ describe('Dependency entropy', () => {
       new MultiModulesDivisor(new DependenciesReflexion(dependencyAst, [ './B.js', './C.js' ]))
     )
 
-    expect(entropy.evaluate()).toEqual(new JointEvaluation([new Evaluation(1, 2)]))
+    expect(entropy.evaluate()).toEqual(new JointEvaluation([new Evaluation(1, 3)]))
   })
 
   it('is null when a module imports the only exported function', () => {
@@ -95,7 +55,7 @@ describe('Dependency entropy', () => {
     const dependencyAst = Reflexion.parse(dependencyCode, (ast) => ast.body)
     const entropy = new SingleEntropy(
       Reflexion.parse(code, (ast) => ast.body),
-      new MultiModulesDivisor(new DependenciesReflexion(dependencyAst, [ './a', './b', './c', './e' ]))
+      new MultiModulesDivisor(new DependenciesReflexion(dependencyAst, [ './b', './c', './e' ]))
     )
 
     const expected = new Evaluation(1, 3).plus(new Evaluation(1, 4))

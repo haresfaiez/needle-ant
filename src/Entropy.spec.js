@@ -150,6 +150,42 @@ describe('Function body entropy', () => {
     expect(entropy.evaluate()).toEqual(expectedEvaluation)
   })
 
+  it('with local variables does not affect global scope', () => {
+    const code = `
+      const a = (i) => {
+        const next = i + 1;
+        return next;
+      };
+      a(4, 5);
+    `
+    const entropy = new JointEntropy(
+      Reflexion.parse(code, (ast) => ast.body),
+      new Divisor([])
+    )
+
+    const expectedEvaluation =
+      new Evaluation(2, 4)
+        .plus(new Evaluation(1, 3))
+        .plus(new Evaluation(2, 2))
+    expect(entropy.evaluate()).toEqual(expectedEvaluation)
+  })
+
+  // TODO: uncomment this
+  // it('does not impact another function', () => {
+  //   const code = `
+  //     const increment = (i) => {
+  //       const next = i + 1;
+  //       return next;
+  //     };
+  //     const decrementTwice = (n) => {
+  //       const first = n - 1;
+  //       const second = first - 1;
+  //       return second;
+  //     }
+  //     decrementTwice(increment(20))
+  //   `
+  // })
+
   // TODO: write the same test for NeedleAnt.spec.js
   // it('defined variable does not impace top-level scope', () => {
   //   const code = `
