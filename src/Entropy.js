@@ -98,7 +98,7 @@ export class SingleEntropy extends Entropy {
     }
 
     // TODO: generalize this to all functions
-    if (dividend.type === 'ArrowFunctionExpression') {
+    if (dividendType === 'ArrowFunctionExpression') {
       return new JointEntropy(new Reflexion(dividend.body), divisor)
     }
 
@@ -127,7 +127,15 @@ export class SingleEntropy extends Entropy {
       return new JointEntropy(new Reflexion(dividend.body), divisor)
     }
 
-    throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(_dividend)}`)
+    if (dividendType === 'IfStatement') {
+      return new SumEntropy([
+        new SingleEntropy(new Reflexion(dividend.test), divisor),
+        new JointEntropy(new Reflexion(dividend.consequent), divisor),
+        ...dividend.alternate ? [new JointEntropy(new Reflexion(dividend.alternate), divisor)] : []
+      ])
+    }
+
+    throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
   }
 }
 

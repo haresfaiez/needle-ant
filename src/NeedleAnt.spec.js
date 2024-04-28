@@ -1,17 +1,19 @@
 import { Evaluation } from './Evalution.js'
 import NeedleAnt from './NeedleAnt.js'
 
+describe('Successive statements entropy', () => {
+  it('is the sum of each statement entropy', () => {
+    const code = 'const f = (a) => { if (a > 0) { return true; } return a + 1; }'
+    const actual = new NeedleAnt(code).scan()
 
-// describe('Successive statements entropy', () => {
-//   it('is the sum of each statement entropy', () => {
-//     const code = 'const f = (a) => { if (a > 0) { return true; } return a + 1; }'
-//     const actual = new NeedleAnt(code).scan()
+    const expected = new Evaluation(2, 3)
+      .plus(new Evaluation(1, 3))
+      .plus(new Evaluation(2, 3))
+    expect(actual).toEvaluateTo(expected)
+  })
+})
 
-//     const expected = null
-//     expect(actual).toEqual(expected)
-//   })
-// })
-
+// TODO: Uncomment tests
 // describe('Nested expressions entropy', () => {
 //   it('is the sum of each statement entropy', () => {
 //     const code = `const f = (a) => {

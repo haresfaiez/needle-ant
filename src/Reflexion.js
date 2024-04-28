@@ -82,6 +82,7 @@ class HorizontalReflexion extends Reflexion {
       return new ProgramReflexion(ast)
     }
 
+    // TODO: Remove this and `ConditionalReflexion`
     if (ast.type === 'IfStatement') {
       return new ConditionalReflexion(ast)
     }
