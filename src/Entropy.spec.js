@@ -190,20 +190,33 @@ describe('Function body entropy', () => {
     expect(entropy.evaluate()).toEqual(expectedEvaluation)
   })
 
-  // it('does not impact another function', () => {
-  //   const code = `
-  //     const increment = (i) => {
-  //       const next = i + 1;
-  //       return next;
-  //     };
-  //     const decrementTwice = (n) => {
-  //       const first = n - 1;
-  //       const second = first - 1;
-  //       return second;
-  //     }
-  //     decrementTwice(increment(20))
-  //   `
-  // })
+  it('does not impact another function', () => {
+    const code = `
+      const increment = (i) => {
+        const next = i + 1;
+        return next;
+      };
+      const decrementTwice = (n) => {
+        const first = n - 1;
+        const second = first - 1;
+        return second;
+      }
+      decrementTwice(increment(20))
+    `
+    const entropy = new JointEntropy(
+      Reflexion.parse(code, (ast) => ast.body),
+      new Divisor([])
+    )
+
+    const expectedEvaluation =
+      new Evaluation(2, 4)
+        .plus(new Evaluation(1, 3))
+        .plus(new Evaluation(2, 5))
+        .plus(new Evaluation(2, 6))
+        .plus(new Evaluation(1, 5))
+        .plus(new Evaluation(3, 3))
+    expect(entropy.evaluate()).toEqual(expectedEvaluation)
+  })
 })
 
 
