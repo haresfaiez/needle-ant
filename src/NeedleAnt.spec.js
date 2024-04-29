@@ -13,42 +13,48 @@ describe('Successive statements entropy', () => {
   })
 })
 
-// TODO: Uncomment tests
-// describe('Nested expressions entropy', () => {
-//   it('is the sum of each statement entropy', () => {
-//     const code = `const f = (a) => {
-//       if (a > 0) {
-//         if (a === 1) {
-//           return false;
-//         } else {
-//           return true;
-//         }
-//       }
-//     }`
-//     const actual = new NeedleAnt(code).scan()
+describe('Nested expressions entropy', () => {
+  it('is the sum of each statement entropy', () => {
+    const code = `const f = (a) => {
+      if (a > 0) {
+        if (a === 1) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    }`
+    const actual = new NeedleAnt(code).scan()
 
-//     const expected = null
-//     expect(actual).toEqual(expected)
-//   })
+    const expected = new Evaluation(2, 3)
+      .plus(new Evaluation(2, 3))
+      .plus(new Evaluation(1, 3))
+      .plus(new Evaluation(1, 3))
+    expect(actual).toEvaluateTo(expected)
+  })
 
-//   it('twice is the sum of each statement entropy', () => {
-//     const code = `const f = (a) => {
-//       if (a > 5) {
-//         if (a < 0) {
-//           if (a === 1) {
-//             return false;
-//           } else {
-//             return true;
-//           }
-//         }
-//       }
-//     }`
-//     const actual = new NeedleAnt(code).scan()
+  it('twice is the sum of each statement entropy', () => {
+    const code = `const f = (a) => {
+      if (a > 5) {
+        if (a < 0) {
+          if (a === 1) {
+            return false;
+          } else {
+            return true;
+          }
+        }
+      }
+    }`
+    const actual = new NeedleAnt(code).scan()
 
-//     const expected = null
-//     expect(actual).toEqual(expected)
-//   })
-// })
+    const expected = new Evaluation(2, 3)
+      .plus(new Evaluation(2, 3))
+      .plus(new Evaluation(2, 3))
+      .plus(new Evaluation(1, 3))
+      .plus(new Evaluation(1, 3))
+    expect(actual).toEvaluateTo(expected)
+  })
+})
 
 describe('Function', () => {
   // describe('body entropy', () => {

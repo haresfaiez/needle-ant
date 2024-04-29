@@ -25,6 +25,10 @@ export class Evaluation {
       return this
     }
 
+    if (otherEvaluation.evaluations) {
+      return new JointEvaluation([this, ...otherEvaluation.evaluations])
+    }
+
     return new JointEvaluation([this, otherEvaluation])
   }
 
