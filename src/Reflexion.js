@@ -82,15 +82,6 @@ class HorizontalReflexion extends Reflexion {
       return new ProgramReflexion(ast)
     }
 
-    // TODO: Remove this and `ConditionalReflexion`
-    if (ast.type === 'IfStatement') {
-      return new ConditionalReflexion(ast)
-    }
-
-    if (ast.type === 'ArrowFunctionExpression') {
-      return new FunctionReflexion(ast)
-    }
-
     if (ast.type === 'ReturnStatement'
       || ast.type === 'BinaryExpression'
       || ast.type === 'ExpressionStatement'
@@ -108,24 +99,7 @@ class HorizontalReflexion extends Reflexion {
       return new ExpressionReflexion(ast)
     }
 
-    if (ast.type === 'VariableDeclaration'
-      || ast.type === 'VariableDeclarator') {
-      return new DeclarationReflexion(ast)
-    }
-
-    if (ast.type === 'Literal') {
-      return new IdentityReflexion(ast)
-    }
-
     throw new Error(`Ast type "${ast.type}" not handeled yet! for "${escodegen.generate(ast)}"`)
-  }
-}
-
-class IdentityReflexion extends Reflexion {
-  factorizeEach(ast) {
-    const result = new Set()
-    result.add(ast.raw)
-    return result
   }
 }
 
@@ -133,48 +107,6 @@ class ProgramReflexion extends Reflexion {
   factorizeEach(ast) {
     const typesToExpand = ['ExportNamedDeclaration', 'ArrowFunctionExpression']
     return new HorizontalReflexion(ast.body, typesToExpand).factorize()
-  }
-}
-
-// TODO: should it be merged with DeclarationReflexion
-class FunctionReflexion extends Reflexion {
-  factorizeEach(ast) {
-    if (!Array.isArray(ast.body.body)) {
-      return [ast.body] // function without brackets.
-    }
-
-    return new HorizontalReflexion(ast.body.body, ['IfStatement']).factorize()
-  }
-}
-
-export class DeclarationReflexion extends Reflexion {
-  constructor(sources) {
-    super(sources)
-  }
-
-  factorizeEach(expression) {
-    if (expression.declarations) {
-      return new HorizontalReflexion(expression.declarations).factorize()
-    }
-
-    if (expression.init) {
-      return new HorizontalReflexion(expression.init).factorize()
-    }
-
-    return new HorizontalReflexion(expression).factorize()
-  }
-}
-
-class ConditionalReflexion extends Reflexion {
-  factorizeEach(conditional) {
-    const test = conditional.test
-    const consequent = conditional.consequent?.body || []
-    const alternate = conditional.alternate?.body || []
-    return [
-      test,
-      ...new HorizontalReflexion(consequent, ['IfStatement']).factorize(),
-      ...new HorizontalReflexion(alternate, ['IfStatement']).factorize()
-    ]
   }
 }
 

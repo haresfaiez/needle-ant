@@ -1,4 +1,4 @@
-import { Reflexion, DependenciesReflexion, DeclarationReflexion } from './Reflexion.js'
+import { Reflexion, DependenciesReflexion } from './Reflexion.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
@@ -85,7 +85,7 @@ export class SingleEntropy extends Entropy {
 
     if (dividendType === 'VariableDeclaration') {
       // TODO: why are we ignoring "const"/"let"/"var"/...?
-      return new DeclarationEntropy(new DeclarationReflexion(dividend.declarations), divisor)
+      return new DeclarationEntropy(new Reflexion(dividend.declarations), divisor)
     }
 
     const callee = dividend?.expression?.callee
