@@ -18,8 +18,7 @@ class NeedleAnt {
     this.ast = acorn.parse(this.code, { ecmaVersion: 2023, sourceType: 'module' })
   }
 
-  // TODO: rename to entropy()
-  scan() {
+  entropy() {
     const codeReflexion = Reflexion.parse(this.code, (ast) => ast.body)
     const jointEntropy = new JointEntropy(codeReflexion, new Divisor(this.dependenciesApi))
 

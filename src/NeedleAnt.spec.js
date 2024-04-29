@@ -4,7 +4,7 @@ import NeedleAnt from './NeedleAnt.js'
 describe('Successive statements entropy', () => {
   it('is the sum of each statement entropy', () => {
     const code = 'const f = (a) => { if (a > 0) { return true; } return a + 1; }'
-    const actual = new NeedleAnt(code).scan()
+    const actual = new NeedleAnt(code).entropy()
 
     const expected = new Evaluation(2, 3)
       .plus(new Evaluation(1, 3))
@@ -24,7 +24,7 @@ describe('Nested expressions entropy', () => {
         }
       }
     }`
-    const actual = new NeedleAnt(code).scan()
+    const actual = new NeedleAnt(code).entropy()
 
     const expected = new Evaluation(2, 3)
       .plus(new Evaluation(2, 3))
@@ -45,7 +45,7 @@ describe('Nested expressions entropy', () => {
         }
       }
     }`
-    const actual = new NeedleAnt(code).scan()
+    const actual = new NeedleAnt(code).entropy()
 
     const expected = new Evaluation(2, 3)
       .plus(new Evaluation(2, 3))
@@ -66,7 +66,7 @@ describe('Function', () => {
           return a + 4;
         }
       }`
-      const actual = new NeedleAnt(code).scan()
+      const actual = new NeedleAnt(code).entropy()
 
       const expected = new Evaluation(2, 3)
         .plus(new Evaluation(2, 3))
@@ -77,32 +77,32 @@ describe('Function', () => {
 
   describe('as references are similarely likely', () => {
     it('of function that returns a constant is null', () => {
-      const actual = new NeedleAnt('() => 2').scan()
+      const actual = new NeedleAnt('() => 2').entropy()
 
       expect(actual).toEvaluateTo(new Evaluation(1, 1))
     })
 
     it('of function that takes an argument and returns a constant', () => {
-      const actual = new NeedleAnt('2').scan()
+      const actual = new NeedleAnt('2').entropy()
 
       expect(actual).toEvaluateTo(new Evaluation(1, 1))
     })
 
     // TODO: Uncomment and fix expected values
     // it('of function that increments a number', () => {
-    //   const actual = new NeedleAnt('a + 1').scan()
+    //   const actual = new NeedleAnt('a + 1').entropy()
 
     //   expect(actual).toEvaluateTo(new Evaluation(2, 1))
     // })
 
     // it('of function that pre-increments a number', () => {
-    //   const actual = new NeedleAnt('1 + a').scan()
+    //   const actual = new NeedleAnt('1 + a').entropy()
 
     //   expect(actual).toEvaluateTo(new Evaluation(2, 1))
     // })
 
     // it('of function that sums all available variables', () => {
-    //   const actual = new NeedleAnt('a + b').scan()
+    //   const actual = new NeedleAnt('a + b').entropy()
 
     //   expect(actual).toEvaluateTo(new Evaluation(2, 0))
     // })
@@ -174,7 +174,7 @@ describe('Entropy result', () => {
     `
     const otherJsCode = 'export const a = 1; export const b = 3; export const c = 45;'
 
-    const actual = new NeedleAnt(code, [otherJsCode]).scan()
+    const actual = new NeedleAnt(code, [otherJsCode]).entropy()
 
     const expected =
       new Evaluation(3, 3, 'import{a,b,c}from\'./other.js\';')
@@ -188,7 +188,7 @@ describe('Entropy result', () => {
     const code = 'import * as Other from \'./other.js\';'
     const otherJsCode = 'export const a = 1;'
 
-    const actual = new NeedleAnt(code, [otherJsCode]).scan()
+    const actual = new NeedleAnt(code, [otherJsCode]).entropy()
 
     const expected = new Evaluation(1, 1, 'import*as Other from\'./other.js\';')
     expect(actual).toEqual(expected)
