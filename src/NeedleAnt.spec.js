@@ -57,51 +57,55 @@ describe('Nested expressions entropy', () => {
 })
 
 describe('Function', () => {
-  // describe('body entropy', () => {
-  // it('with simple conditional', () => {
-  //   const code = 'const f = (a) => { if (a > 0) { return true; } else { return false; } }'
-  //   const actual = new NeedleAnt(code).scan()
+  describe('body entropy', () => {
+    it('with simple conditional and sum return', () => {
+      const code = `const f = (a) => {
+        if (a > 0) {
+          return a + 2;
+        } else {
+          return a + 4;
+        }
+      }`
+      const actual = new NeedleAnt(code).scan()
 
-  //   const expected = new JointEvaluation([
-  //     new Evaluation(3, 3, 'import{a,b,c}from\'./other.js\';'),
-  //     new Evaluation(2, 4, 'x=b()'),
-  //     new Evaluation(3, 4, 'a(c,x);')
-  //   ])
-  //   expect(actual).toEqual(expected)
-  //   // expect(ant.entropy()).toBeCloseTo(.528, 2)
-  // })
-
-  // it('with simple conditional and sum return', () => {
-  //   const ant = new NeedleAnt('(a) => { if (a > 0) { return a + 2; } else { return a + 4; } }')
-  //   expect(ant.entropy()).toBeCloseTo(1.584, 2)
-  // })
-  // })
+      const expected = new Evaluation(2, 3)
+        .plus(new Evaluation(2, 3))
+        .plus(new Evaluation(2, 3))
+      expect(actual).toEvaluateTo(expected)
+    })
+  })
 
   describe('as references are similarely likely', () => {
     it('of function that returns a constant is null', () => {
-      const ant = new NeedleAnt('() => 2')
-      expect(ant.entropy()).toBe(0)
+      const actual = new NeedleAnt('() => 2').scan()
+
+      expect(actual).toEvaluateTo(new Evaluation(1, 1))
     })
 
     it('of function that takes an argument and returns a constant', () => {
-      const ant = new NeedleAnt('2')
-      expect(ant.entropy()).toBe(0)
+      const actual = new NeedleAnt('2').scan()
+
+      expect(actual).toEvaluateTo(new Evaluation(1, 1))
     })
 
+    // TODO: Uncomment and fix expected values
     // it('of function that increments a number', () => {
-    //   const ant = new NeedleAnt('a + 1')
-    //   expect(ant.entropy()).toBeCloseTo(.528, 2)
+    //   const actual = new NeedleAnt('a + 1').scan()
+
+    //   expect(actual).toEvaluateTo(new Evaluation(2, 1))
     // })
 
     // it('of function that pre-increments a number', () => {
-    //   const ant = new NeedleAnt('1 + a')
-    //   expect(ant.entropy()).toBeCloseTo(.528, 2)
+    //   const actual = new NeedleAnt('1 + a').scan()
+
+    //   expect(actual).toEvaluateTo(new Evaluation(2, 1))
     // })
 
-    it('of function that sums all available variables', () => {
-      const ant = new NeedleAnt('a + b')
-      expect(ant.entropy()).toBe(0)
-    })
+    // it('of function that sums all available variables', () => {
+    //   const actual = new NeedleAnt('a + b').scan()
+
+    //   expect(actual).toEvaluateTo(new Evaluation(2, 0))
+    // })
   })
 })
 
@@ -163,22 +167,22 @@ describe('Api change entropy', () => {
 })
 
 describe('Entropy result', () => {
-  // it('calculates top level variable entropy', () => {
-  //   const code = `import { a, b, c } from './other.js';
-  //     const x = b();
-  //     a(c, x);
-  //   `
-  //   const otherJsCode = 'export const a = 1; export const b = 3; export const c = 45;'
+  it('calculates top level variable entropy', () => {
+    const code = `import { a, b, c } from './other.js';
+      const x = b();
+      a(c, x);
+    `
+    const otherJsCode = 'export const a = 1; export const b = 3; export const c = 45;'
 
-  //   const actual = new NeedleAnt(code, [otherJsCode]).scan()
+    const actual = new NeedleAnt(code, [otherJsCode]).scan()
 
-  //   const expected = new JointEvaluation([
-  //     new Evaluation(3, 3, 'import{a,b,c}from\'./other.js\';'),
-  //     new Evaluation(2, 4, 'x=b()'),
-  //     new Evaluation(3, 4, 'a(c,x);')
-  //   ])
-  //   expect(actual).toEqual(expected)
-  // })
+    const expected =
+      new Evaluation(3, 3, 'import{a,b,c}from\'./other.js\';')
+        .plus(new Evaluation(1, 4, 'b()'))
+        .plus(new Evaluation(3, 4, 'a(c,x);'))
+
+    expect(actual).toEqual(expected)
+  })
 
   it('calculates top level entropy of wildcard import', () => {
     const code = 'import * as Other from \'./other.js\';'

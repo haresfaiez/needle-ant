@@ -30,13 +30,6 @@ class NeedleAnt {
     return jointEntropy.evaluate(evaluationFactory)
   }
 
-  // TODO: remove this
-  entropy() {
-    const trail = new Reflexion(this.ast)
-    const flatTrail = new Reflexion(trail.odds())
-    return new JointEntropy(flatTrail, new Divisor(flatTrail.identifiers())).calculate()
-  }
-
   coverEntropy(updatedCode) {
     if (this.code === updatedCode)
       return 0

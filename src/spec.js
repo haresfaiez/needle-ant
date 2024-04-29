@@ -7,7 +7,12 @@ beforeAll(() => {
         compare: function(actual, expected) {
           const actualLength = actual.evaluations?.length
           if(!actualLength || (actualLength !== expected.evaluations?.length)) {
-            expect(actual).toEqual(expected)
+            if (!expected.source) {
+              expect(Object.assign(new Evaluation(), actual, { source: undefined}))
+                .toEqual(expected)
+            } else {
+              expect(actual).toEqual(expected)
+            }
             return { pass: true }
           }
 
