@@ -170,7 +170,26 @@ describe('Function body entropy', () => {
     expect(entropy.evaluate()).toEqual(expectedEvaluation)
   })
 
-  // TODO: uncomment this
+  it('defined variable does not impace top-level scope', () => {
+    const code = `
+      const start = 40;
+      const a = (aNumber) => {
+        return start - aNumber;
+      };
+      a(4);
+    `
+    const entropy = new JointEntropy(
+      Reflexion.parse(code, (ast) => ast.body),
+      new Divisor([])
+    )
+
+    const expectedEvaluation =
+      new Evaluation(1, 2)
+        .plus(new Evaluation(2, 3))
+        .plus(new Evaluation(2, 3))
+    expect(entropy.evaluate()).toEqual(expectedEvaluation)
+  })
+
   // it('does not impact another function', () => {
   //   const code = `
   //     const increment = (i) => {
@@ -184,29 +203,6 @@ describe('Function body entropy', () => {
   //     }
   //     decrementTwice(increment(20))
   //   `
-  // })
-
-  // TODO: write the same test for NeedleAnt.spec.js
-  // it('defined variable does not impace top-level scope', () => {
-  //   const code = `
-  //     const start = 40;
-  //     const a = (aNumber) => {
-  //       return start - aNumber;
-  //     };
-  //     a(4);
-  //   `
-  //   const entropy = new JointEntropy(
-  //     Reflexion.parse(code, (ast) => ast.body),
-  //     new Divisor(['40', '4', 'a'])
-  //   )
-
-  //   const expectedEvaluation = new JointEntropy([
-  //     new Evaluation(1, 3),
-  //     new Evaluation(1, 2),
-  //     new Evaluation(2, 3),
-  //     new Evaluation(2, 3)
-  //   ])
-  //   expect(entropy.evaluate()).toEqual(expectedEvaluation)
   // })
 })
 
