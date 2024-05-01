@@ -45,7 +45,7 @@ class SumEntropy extends Entropy {
 
   _evaluate(createEvaluation) {
     return this.dividend.reduce(
-      (acc, eachEntropy) =>{
+      (acc, eachEntropy) => {
         eachEntropy.delegate?.divisor.extend(this.divisor.identifiers())
         return acc.plus(eachEntropy.evaluate(createEvaluation))
       },
@@ -97,6 +97,13 @@ export class SingleEntropy extends Entropy {
       ])
     }
 
+    if (dividendType === 'MemberExpression') {
+      return new SumEntropy([
+        new SingleEntropy(new Reflexion(dividend.object), divisor),
+        new AccessEntropy(new Reflexion(dividend.property), divisor)
+      ])
+    }
+
     // TODO: generalize this to all functions
     if (dividendType === 'ArrowFunctionExpression') {
       return new JointEntropy(new Reflexion(dividend.body), divisor)
@@ -133,6 +140,10 @@ export class SingleEntropy extends Entropy {
         new JointEntropy(new Reflexion(dividend.consequent), divisor),
         ...dividend.alternate ? [new JointEntropy(new Reflexion(dividend.alternate), divisor)] : []
       ])
+    }
+
+    if (dividendType === 'ObjectExpression') {
+      return new ObjectEntropy(new Reflexion(dividend), divisor)
     }
 
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
@@ -183,6 +194,22 @@ class ExpressionEntropy extends Entropy {
   }
 }
 
+class AccessEntropy extends Entropy {
+  _evaluate(createEvaluation) {
+    const nextDivisor = new Divisor(Array.from(this.divisor.accesses))
+    return new SingleEntropy(this.dividend, nextDivisor)._evaluate(createEvaluation)
+  }
+}
+
+class ObjectEntropy extends ExpressionEntropy {
+  _evaluate(createEvaluation) {
+    this.dividend
+      .identifiers()
+      .forEach(eachIdentifier => this.divisor.accesses.add(eachIdentifier))
+    return super._evaluate(createEvaluation)
+  }
+}
+
 class DeclarationEntropy extends Entropy {
   _evaluate(createEvaluation) {
     const declaration = this.dividend.sources[0]
@@ -192,6 +219,7 @@ class DeclarationEntropy extends Entropy {
     const params = new Reflexion(declaration.init.params || []).identifiers()
 
     const declarationDivisor = new Divisor([])
+    declarationDivisor.accesses = this.divisor.accesses
     declarationDivisor.extend(this.divisor.identifiers())
     declarationDivisor.extend(params)
 

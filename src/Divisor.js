@@ -14,6 +14,7 @@ export class Divisor {
     this.importedModules = rawDivisor.importedModuleExports
     this.otherModules = rawDivisor.otherModules
 
+    this.accesses = new Set()
     this.foldingMap = foldingMap || new Map()
   }
 

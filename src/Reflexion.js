@@ -135,6 +135,11 @@ class IdentifiersReflexion extends Reflexion {
   factorizeEach(expression) {
     const result = new Set()
     AcornWalk.simple(expression, {
+      ObjectExpression(node) {
+        node.properties
+          .map(e => e.key.name)
+          .forEach(eachPropertyIdentifier => result.add(eachPropertyIdentifier))
+      },
       Identifier(node) {
         result.add(node.name)
       },

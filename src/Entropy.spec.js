@@ -219,35 +219,47 @@ describe('Function body entropy', () => {
   })
 })
 
+describe('Variable declaration entropy', () => {
+  it('calculates property entropy from accessed properties', () => {
+    const code = 'const a = {x: 3, y: 0}; const tmp = a.x;'
+    const entropy = new JointEntropy(
+      Reflexion.parse(code, (ast) => ast.body),
+      new Divisor([])
+    )
 
-// TODO: uncomment following tests
-// describe('Variable declaration entropy', () => {
-// it('', () => {
-//   const code = 'const a = 1;'
-// })
+    const expected =  new Evaluation(3, 2)
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(1, 2))
+    expect(entropy.evaluate()).toEqual(expected)
+  })
 
-// it('', () => {
-//   const code = 'const a = 1; let b = "Hello world!"'
-// })
+  // it('', () => {
+  //   const code = 'const tmp = a.x.y;'
+  //   const entropy = new JointEntropy(
+  //     Reflexion.parse(code, (ast) => ast.body),
+  //     new Divisor([])
+  //   )
 
-// it('', () => {
-//   const code = 'const a = {x: 3, y: 0};'
-// })
+  //   const expected =  new Evaluation(3, 4)
+  //     .plus(new Evaluation(1, 2))
+  //     .plus(new Evaluation(1, 1))
+  //   expect(entropy.evaluate()).toEqual(expected)
+  // })
 
-// it('', () => {
-//   const code = 'const a = new Example();'
-// })
+  // it('', () => {
+  //   const code = 'class Example {}; const a = new Example();'
+  // })
 
-// it('', () => {
-//   const code = 'const a = new User({ name: "Joe" });'
-// })
-// })
+  // it('', () => {
+  //   const code = 'class User {}; const a = new User({ name: "Joe" });'
+  // })
+})
 
 // describe('Class definition entropy', () => {
 //   it('', () => {
 //     const code = `class A {
 //       meta = {s: []};
-//          // Skip if auditResults is missing a particular audit result
+//         // Skip if auditResults is missing a particular audit result
 
 //       start(passContext) { }
 
