@@ -152,6 +152,7 @@ export class SingleEntropy extends Entropy {
 
 class DependencyEntropy extends Entropy {
   // TODO: improve this
+  // TODO: Remove Divisor creation
   _evaluate(createEvaluation) {
     if (this.divisor.shouldCheckAdjacentModules()) {
       // TODO: fix next line
@@ -196,7 +197,8 @@ class ExpressionEntropy extends Entropy {
 
 class AccessEntropy extends Entropy {
   _evaluate(createEvaluation) {
-    const nextDivisor = new Divisor(Array.from(this.divisor.accesses))
+    // TODO: move all Divisor creation to one place
+    const nextDivisor = Divisor.withAccesses(this.divisor)
     return new SingleEntropy(this.dividend, nextDivisor)._evaluate(createEvaluation)
   }
 }
@@ -218,11 +220,8 @@ class DeclarationEntropy extends Entropy {
 
     const params = new Reflexion(declaration.init.params || []).identifiers()
 
-    const declarationDivisor = new Divisor([])
-    declarationDivisor.accesses = this.divisor.accesses
-    declarationDivisor.extend(this.divisor.identifiers())
-    declarationDivisor.extend(params)
-
+    // TODO: move all Divisor creation to one place
+    const declarationDivisor = Divisor.extend(this.divisor, params)
     const delegateEntropy = new SingleEntropy(new Reflexion(declaration.init), declarationDivisor)
     return delegateEntropy._evaluate(createEvaluation)
   }
