@@ -1,9 +1,13 @@
+import * as escodegen from 'escodegen'
+
 export class Evaluation {
 
   constructor(actualCount, possibleCount, source) {
     this.actualCount = actualCount
     this.possibleCount = possibleCount
-    this.source = source
+    this.source = source?.type
+      ? escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })
+      : source
   }
 
   shouldIgnoreAdding(otherEvaluation) {

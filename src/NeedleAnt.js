@@ -1,9 +1,7 @@
 import * as acorn from 'acorn'
-import * as escodegen from 'escodegen'
 import { JointEntropy } from './Entropy.js'
 import { Reflexion } from './Reflexion.js'
 import { Divisor } from './Divisor.js'
-import { Evaluation } from './Evalution.js'
 
 class NeedleAnt {
   constructor(code, dependencies) {
@@ -22,11 +20,8 @@ class NeedleAnt {
     const codeReflexion = Reflexion.parse(this.code, (ast) => ast.body)
     const jointEntropy = new JointEntropy(codeReflexion, new Divisor(this.dependenciesApi))
 
-    const evaluationFactory =
-      (actual, possibilities, expression)=> new Evaluation(actual, possibilities, expression && escodegen.generate(expression, { format: escodegen.FORMAT_MINIFY }))
-
     // TODO: Use `new MultiModulesDivisor(new DependenciesReflexion(...`
-    return jointEntropy.evaluate(evaluationFactory)
+    return jointEntropy.evaluate()
   }
 
   coverEntropy(updatedCode) {
