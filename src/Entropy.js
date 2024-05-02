@@ -2,46 +2,9 @@ import { Reflexion, DependenciesReflexion } from './Reflexion.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
-class Entropy {
+export class Entropy {
   constructor(dividend, divisor) {
-    this.dividend = new Reflexion(dividend)
     this.divisor = divisor
-  }
-
-  evaluate() {
-    throw new Error('`Entropy#evaluate` not implemented yet in `Entropy`!')
-  }
-}
-
-class SumEntropies {
-  constructor(entropies, divisor) {
-    this.entropies = entropies
-    this.divisor = divisor
-  }
-
-  evaluate() {
-    return this.entropies.reduce(
-      (sumEvalution, eachEntropy) => {
-        eachEntropy.delegate?.divisor.extend(this.divisor.identifiers())
-        return sumEvalution.plus(eachEntropy.evaluate())
-      },
-      new NullEvaluation()
-    )
-  }
-}
-
-export class BodyEntropy extends Entropy {
-  evaluate() {
-    const entropies =
-      this.dividend.sources
-        .map(eachSource => new SingleEntropy(eachSource, this.divisor))
-
-    return new SumEntropies(entropies, this.divisor).evaluate()
-  }
-}
-
-export class SingleEntropy {
-  constructor(dividend, divisor) {
     this.delegate = this.createDelegate(new Reflexion(dividend), divisor)
   }
 
@@ -64,10 +27,10 @@ export class SingleEntropy {
 
     const callee = dividend?.expression?.callee
     if (callee?.type === 'MemberExpression') {
-      return new SumEntropies(
+      return new Entropies(
         [
-          new SingleEntropy(callee.object, divisor),
-          new SingleEntropy(callee.property, divisor.unfold(callee.object.name)),
+          new Entropy(callee.object, divisor),
+          new Entropy(callee.property, divisor.unfold(callee.object.name)),
           new BodyEntropy(dividend?.expression?.arguments, divisor)
         ],
         new Divisor()
@@ -75,9 +38,9 @@ export class SingleEntropy {
     }
 
     if (dividendType === 'MemberExpression') {
-      return new SumEntropies(
+      return new Entropies(
         [
-          new SingleEntropy(dividend.object, divisor),
+          new Entropy(dividend.object, divisor),
           new AccessEntropy(dividend.property, divisor)
         ],
         new Divisor()
@@ -115,9 +78,9 @@ export class SingleEntropy {
     }
 
     if (dividendType === 'IfStatement') {
-      return new SumEntropies(
+      return new Entropies(
         [
-          new SingleEntropy(dividend.test, divisor),
+          new Entropy(dividend.test, divisor),
           new BodyEntropy(dividend.consequent, divisor),
           ...dividend.alternate ? [new BodyEntropy(dividend.alternate, divisor)] : []
         ],
@@ -133,7 +96,45 @@ export class SingleEntropy {
   }
 }
 
-class DependencyEntropy extends Entropy {
+class Entropies {
+  constructor(entropies, divisor) {
+    this.entropies = entropies
+    this.divisor = divisor
+  }
+
+  evaluate() {
+    return this.entropies.reduce(
+      (sumEvalution, eachEntropy) => {
+        eachEntropy.delegate?.divisor.extend(this.divisor.identifiers())
+        return sumEvalution.plus(eachEntropy.evaluate())
+      },
+      new NullEvaluation()
+    )
+  }
+}
+
+class SingleEntropy {
+  constructor(dividend, divisor) {
+    this.dividend = new Reflexion(dividend)
+    this.divisor = divisor
+  }
+
+  evaluate() {
+    throw new Error('`Entropy#evaluate` not implemented yet in `Entropy`!')
+  }
+}
+
+export class BodyEntropy extends SingleEntropy  {
+  evaluate() {
+    const entropies =
+      this.dividend.sources
+        .map(eachSource => new Entropy(eachSource, this.divisor))
+
+    return new Entropies(entropies, this.divisor).evaluate()
+  }
+}
+
+class DependencyEntropy extends SingleEntropy  {
   // TODO: improve this
   // TODO: Remove Divisor creation
   evaluate() {
@@ -143,8 +144,8 @@ class DependencyEntropy extends Entropy {
       const importSpecifiers = importParts[0]
       const importSource = importParts[1]
 
-      return new SingleEntropy(importSpecifiers, new Divisor(this.divisor.importedModulesNames())).evaluate()
-        .plus(new SingleEntropy(importSource, new Divisor(this.divisor.adjacentModules())).evaluate())
+      return new Entropy(importSpecifiers, new Divisor(this.divisor.importedModulesNames())).evaluate()
+        .plus(new Entropy(importSource, new Divisor(this.divisor.adjacentModules())).evaluate())
     }
 
     const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
@@ -166,7 +167,7 @@ class DependencyEntropy extends Entropy {
   }
 }
 
-class ExpressionEntropy extends Entropy {
+class ExpressionEntropy extends SingleEntropy  {
   evaluate() {
     // TODO: Remove this check
     const isImport = this.dividend.sources[0].type.includes('mport')
@@ -178,10 +179,10 @@ class ExpressionEntropy extends Entropy {
   }
 }
 
-class AccessEntropy extends Entropy {
+class AccessEntropy extends SingleEntropy  {
   evaluate() {
     const nextDivisor = Divisor.fromAccesses(this.divisor)
-    return new SingleEntropy(this.dividend, nextDivisor).evaluate()
+    return new Entropy(this.dividend, nextDivisor).evaluate()
   }
 }
 
@@ -192,7 +193,7 @@ class ObjectEntropy extends ExpressionEntropy {
   }
 }
 
-class DeclarationEntropy extends Entropy {
+class DeclarationEntropy extends SingleEntropy  {
   evaluate() {
     const declaration = this.dividend.sources[0]
 
@@ -200,7 +201,7 @@ class DeclarationEntropy extends Entropy {
 
     const paramsAsIdentifiers = new Reflexion(declaration.init.params || []).identifiers()
     const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
-    const delegateEntropy = new SingleEntropy(declaration.init, declarationDivisor)
+    const delegateEntropy = new Entropy(declaration.init, declarationDivisor)
     return delegateEntropy.evaluate()
   }
 }

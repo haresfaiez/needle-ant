@@ -1,12 +1,12 @@
 import { Reflexion } from './Reflexion.js'
-import { SingleEntropy, BodyEntropy } from './Entropy.js'
+import { Entropy, BodyEntropy } from './Entropy.js'
 import { Evaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
 describe('Method invocation entropy', () => {
   it('sums objects entropy and method entropy', () => {
     const code = 'f.c()'
-    const entropy = new SingleEntropy(
+    const entropy = new Entropy(
       Reflexion.parse(code, (ast) => ast.body),
       new Divisor(['f', 'z'])
     )
@@ -17,7 +17,7 @@ describe('Method invocation entropy', () => {
 
   it('sums all invocation when a method invocation argument is a function call', () => {
     const code = 'f.c(b())'
-    const entropy = new SingleEntropy(
+    const entropy = new Entropy(
       Reflexion.parse(code, (ast) => ast.body),
       new Divisor(['f', 'z', 'b', 'c'])
     )
@@ -30,7 +30,7 @@ describe('Method invocation entropy', () => {
 
   it('sums all invocation when a arguments are functions calls', () => {
     const code = 'f.c(b(), c())'
-    const entropy = new SingleEntropy(
+    const entropy = new Entropy(
       Reflexion.parse(code, (ast) => ast.body),
       new Divisor(['f', 'z', 'b', 'c'])
     )
@@ -57,7 +57,7 @@ describe('Call entropy', () => {
   describe('when an argument of a call is also a call', () => {
     it('calculates possible identifiers when calls are nested', () => {
       const code = 'a(b())'
-      const entropy = new SingleEntropy(
+      const entropy = new Entropy(
         Reflexion.parse(code, (ast) => ast.body),
         new Divisor(['a', 'b', 'c'])
       )
@@ -67,7 +67,7 @@ describe('Call entropy', () => {
 
     it('calculates possible identifiers when three calls are nested', () => {
       const code = 'a(b(c()))'
-      const entropy = new SingleEntropy(
+      const entropy = new Entropy(
         Reflexion.parse(code, (ast) => ast.body),
         new Divisor(['a', 'b', 'c', 'd'])
       )
