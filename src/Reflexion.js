@@ -3,8 +3,11 @@ import * as AcornWalk from 'acorn-walk'
 import * as escodegen from 'escodegen'
 
 export class Reflexion {
-  constructor(sources) {
-    this.sources = Array.isArray(sources) ? sources : [sources]
+  constructor(reflexionOrSources) {
+    this.sources =
+      reflexionOrSources.sources
+        ? reflexionOrSources.sources
+        : Array.isArray(reflexionOrSources) ? reflexionOrSources : [reflexionOrSources]
   }
 
   add() {

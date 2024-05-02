@@ -5,7 +5,7 @@ import { Divisor } from './Divisor.js'
 // TODO: Check subclasses, do not ignore divisor
 class Entropy {
   constructor(dividend, divisor) {
-    this.dividend = dividend?.sources ? dividend : new Reflexion(dividend)
+    this.dividend = new Reflexion(dividend)
     this.divisor = divisor
   }
 
