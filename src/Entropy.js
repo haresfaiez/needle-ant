@@ -30,7 +30,7 @@ class SumEntropies {
   }
 }
 
-export class JointEntropy extends Entropy {
+export class BodyEntropy extends Entropy {
   evaluate() {
     const entropies =
       this.dividend.sources
@@ -40,10 +40,9 @@ export class JointEntropy extends Entropy {
   }
 }
 
-export class SingleEntropy extends Entropy {
+export class SingleEntropy {
   constructor(dividend, divisor) {
-    super(dividend, divisor)
-    this.delegate = this.createDelegate(this.dividend, this.divisor)
+    this.delegate = this.createDelegate(new Reflexion(dividend), divisor)
   }
 
   evaluate() {
@@ -69,7 +68,7 @@ export class SingleEntropy extends Entropy {
         [
           new SingleEntropy(callee.object, divisor),
           new SingleEntropy(callee.property, divisor.unfold(callee.object.name)),
-          new JointEntropy(dividend?.expression?.arguments, divisor)
+          new BodyEntropy(dividend?.expression?.arguments, divisor)
         ],
         new Divisor()
       )
@@ -87,7 +86,7 @@ export class SingleEntropy extends Entropy {
 
     // TODO: generalize this to all functions
     if (dividendType === 'ArrowFunctionExpression') {
-      return new JointEntropy(dividend.body, divisor)
+      return new BodyEntropy(dividend.body, divisor)
     }
 
     // TODO: generalize this to all functions
@@ -112,15 +111,15 @@ export class SingleEntropy extends Entropy {
     }
 
     if (dividendType === 'BlockStatement') {
-      return new JointEntropy(dividend.body, divisor)
+      return new BodyEntropy(dividend.body, divisor)
     }
 
     if (dividendType === 'IfStatement') {
       return new SumEntropies(
         [
           new SingleEntropy(dividend.test, divisor),
-          new JointEntropy(dividend.consequent, divisor),
-          ...dividend.alternate ? [new JointEntropy(dividend.alternate, divisor)] : []
+          new BodyEntropy(dividend.consequent, divisor),
+          ...dividend.alternate ? [new BodyEntropy(dividend.alternate, divisor)] : []
         ],
         new Divisor()
       )

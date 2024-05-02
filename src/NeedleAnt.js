@@ -1,5 +1,5 @@
 import * as acorn from 'acorn'
-import { JointEntropy } from './Entropy.js'
+import { BodyEntropy } from './Entropy.js'
 import { Reflexion } from './Reflexion.js'
 import { Divisor } from './Divisor.js'
 
@@ -18,7 +18,7 @@ class NeedleAnt {
 
   entropy() {
     const codeReflexion = Reflexion.parse(this.code, (ast) => ast.body)
-    const jointEntropy = new JointEntropy(codeReflexion, new Divisor(this.dependenciesApi))
+    const jointEntropy = new BodyEntropy(codeReflexion, new Divisor(this.dependenciesApi))
 
     // TODO: Use `new MultiModulesDivisor(new DependenciesReflexion(...`
     return jointEntropy.evaluate()
