@@ -24,7 +24,7 @@ describe('Dependency entropy', () => {
     )
 
     expect(entropy.evaluate()).toEvaluateTo(new Evaluation(1, 1))
-    expect(entropy.calculate()).toBe(0)
+    expect(entropy.evaluate().calculate()).toBe(0)
   })
 
   it('is 1/3 when a module imports of one of three exported functions', () => {
@@ -70,7 +70,7 @@ describe('Dependency entropy', () => {
       new Divisor(Reflexion.parse(dependencyCode))
     )
 
-    expect(entropy.calculate()).toEqual(0)
+    expect(entropy.evaluate().calculate()).toEqual(0)
   })
 })
 

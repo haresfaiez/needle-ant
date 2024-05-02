@@ -1,7 +1,7 @@
 import { Reflexion } from './Reflexion.js'
 
 export class Divisor {
-  constructor(rawDivisor, foldingMap) {
+  constructor(rawDivisor = [], foldingMap) {
     this._identifiers = new Set()
 
     const isReflexion = rawDivisor.odds
@@ -28,7 +28,7 @@ export class Divisor {
   }
 
   // TODO: Merge with constructor too
-  static withAccesses(aDivisor) {
+  static fromAccesses(aDivisor) {
     return new Divisor(aDivisor.accesses)
   }
 

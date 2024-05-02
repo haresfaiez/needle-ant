@@ -4,44 +4,32 @@ import { Divisor } from './Divisor.js'
 
 // TODO: Check subclasses, do not ignore divisor
 class Entropy {
-  constructor(dividend, rawDivisor) {
+  constructor(dividend, divisor) {
     this.dividend = dividend
-    this.divisor = rawDivisor || new Divisor([])
-  }
-
-  plus() {
-    throw new Error('`Entropy#plus` not implemented yet in `Entropy`!')
+    this.divisor = divisor
   }
 
   evaluate() {
     throw new Error('`Entropy#evaluate` not implemented yet in `Entropy`!')
   }
-
-  calculate() {
-    return this.evaluate().calculate()
-  }
-
-  minus(other) {
-    return this.calculate() - other.calculate()
-  }
 }
 
-// TODO: Merge SumEntropy and JointEntropy
-class SumEntropy extends Entropy {
-  constructor(dividend, divisor) {
-    super(dividend, divisor)
+class SumEntropies {
+  constructor(entropies, divisor) {
+    this.entropies = entropies
+    this.divisor = divisor
   }
 
-  plus(anEntropy) {
-    this.dividend = [...this.dividend, anEntropy]
+  plus(anOtherEntropy) {
+    this.entropies = [...this.entropies, anOtherEntropy]
     return this
   }
 
   evaluate() {
-    return this.dividend.reduce(
-      (acc, eachEntropy) => {
+    return this.entropies.reduce(
+      (sumEvalution, eachEntropy) => {
         eachEntropy.delegate?.divisor.extend(this.divisor.identifiers())
-        return acc.plus(eachEntropy.evaluate())
+        return sumEvalution.plus(eachEntropy.evaluate())
       },
       new NullEvaluation()
     )
@@ -51,10 +39,13 @@ class SumEntropy extends Entropy {
 export class JointEntropy extends Entropy {
   evaluate() {
     return this.dividend.sources
-      .reduce((sumEntropy, eachSource) => {
-        const eachEntropy = new SingleEntropy(new Reflexion(eachSource), this.divisor)
-        return sumEntropy.plus(eachEntropy)
-      }, new SumEntropy([], this.divisor))
+      .reduce(
+        (sumEntropy, eachSource) => {
+          const eachEntropy = new SingleEntropy(new Reflexion(eachSource), this.divisor)
+          return sumEntropy.plus(eachEntropy)
+        },
+        new SumEntropies([], this.divisor)
+      )
       .evaluate()
   }
 }
@@ -84,18 +75,24 @@ export class SingleEntropy extends Entropy {
 
     const callee = dividend?.expression?.callee
     if (callee?.type === 'MemberExpression') {
-      return new SumEntropy([
-        new SingleEntropy(new Reflexion(callee.object), divisor),
-        new SingleEntropy(new Reflexion(callee.property), divisor.unfold(callee.object.name)),
-        new JointEntropy(new Reflexion(dividend?.expression?.arguments), divisor)
-      ])
+      return new SumEntropies(
+        [
+          new SingleEntropy(new Reflexion(callee.object), divisor),
+          new SingleEntropy(new Reflexion(callee.property), divisor.unfold(callee.object.name)),
+          new JointEntropy(new Reflexion(dividend?.expression?.arguments), divisor)
+        ],
+        new Divisor()
+      )
     }
 
     if (dividendType === 'MemberExpression') {
-      return new SumEntropy([
-        new SingleEntropy(new Reflexion(dividend.object), divisor),
-        new AccessEntropy(new Reflexion(dividend.property), divisor)
-      ])
+      return new SumEntropies(
+        [
+          new SingleEntropy(new Reflexion(dividend.object), divisor),
+          new AccessEntropy(new Reflexion(dividend.property), divisor)
+        ],
+        new Divisor()
+      )
     }
 
     // TODO: generalize this to all functions
@@ -129,11 +126,14 @@ export class SingleEntropy extends Entropy {
     }
 
     if (dividendType === 'IfStatement') {
-      return new SumEntropy([
-        new SingleEntropy(new Reflexion(dividend.test), divisor),
-        new JointEntropy(new Reflexion(dividend.consequent), divisor),
-        ...dividend.alternate ? [new JointEntropy(new Reflexion(dividend.alternate), divisor)] : []
-      ])
+      return new SumEntropies(
+        [
+          new SingleEntropy(new Reflexion(dividend.test), divisor),
+          new JointEntropy(new Reflexion(dividend.consequent), divisor),
+          ...dividend.alternate ? [new JointEntropy(new Reflexion(dividend.alternate), divisor)] : []
+        ],
+        new Divisor()
+      )
     }
 
     if (dividendType === 'ObjectExpression') {
@@ -192,7 +192,7 @@ class ExpressionEntropy extends Entropy {
 class AccessEntropy extends Entropy {
   evaluate() {
     // TODO: move all Divisor creation to one place
-    const nextDivisor = Divisor.withAccesses(this.divisor)
+    const nextDivisor = Divisor.fromAccesses(this.divisor)
     return new SingleEntropy(this.dividend, nextDivisor).evaluate()
   }
 }
