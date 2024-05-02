@@ -1,6 +1,7 @@
 import { Reflexion, DependenciesReflexion } from './Reflexion.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
+import * as escodegen from 'escodegen'
 
 // TODO: Check subclasses, do not ignore divisor
 class Entropy {
@@ -21,10 +22,10 @@ class Entropy {
     throw new Error('`Entropy#evaluate` not implemented yet in `Entropy`!')
   }
 
-  evaluate(createEvaluation) {
+  evaluate() {
     const evaluationFactory =
-      (actual, possibilities) => new Evaluation(actual, possibilities)
-    return this._evaluate(createEvaluation || evaluationFactory)
+      (actual, possibilities, source) => new Evaluation(actual, possibilities, escodegen.generate(source, { format: escodegen.FORMAT_MINIFY }))
+    return this._evaluate(evaluationFactory)
   }
 
   minus(other) {

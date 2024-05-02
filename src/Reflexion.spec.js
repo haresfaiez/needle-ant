@@ -12,7 +12,7 @@ describe('Dependency entropy', () => {
       new MultiModulesDivisor(new DependenciesReflexion(dependencyAst, [ './B.js', './C.js' ]))
     )
 
-    expect(entropy.evaluate()).toEqual(new JointEvaluation([new Evaluation(1, 3)]))
+    expect(entropy.evaluate()).toEvaluateTo(new JointEvaluation([new Evaluation(1, 3)]))
   })
 
   it('is null when a module imports the only exported function', () => {
@@ -23,7 +23,7 @@ describe('Dependency entropy', () => {
       new Divisor(Reflexion.parse(dependencyCode))
     )
 
-    expect(entropy.evaluate()).toEqual(new Evaluation(1, 1))
+    expect(entropy.evaluate()).toEvaluateTo(new Evaluation(1, 1))
     expect(entropy.calculate()).toBe(0)
   })
 
@@ -35,7 +35,7 @@ describe('Dependency entropy', () => {
       new Divisor(Reflexion.parse(dependencyCode))
     )
 
-    expect(entropy.evaluate()).toEqual(new Evaluation(1, 3))
+    expect(entropy.evaluate()).toEvaluateTo(new Evaluation(1, 3))
   })
 
   it('is 2/3 when a module imports of two of three exported functions', () => {
@@ -46,7 +46,7 @@ describe('Dependency entropy', () => {
       new Divisor(Reflexion.parse(dependencyCode))
     )
 
-    expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
+    expect(entropy.evaluate()).toEvaluateTo(new Evaluation(2, 3))
   })
 
   it('is (1/3)+(1/4) when a module imports of one of three exported functions', () => {
@@ -59,7 +59,7 @@ describe('Dependency entropy', () => {
     )
 
     const expected = new Evaluation(1, 3).plus(new Evaluation(1, 4))
-    expect(entropy.evaluate()).toEqual(expected)
+    expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 
   it('is null when a module imports all exported functions', () => {

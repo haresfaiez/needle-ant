@@ -12,7 +12,7 @@ describe('Method invocation entropy', () => {
     )
 
     const expected = new Evaluation(1, 2).plus(new Evaluation(1, 1))
-    expect(entropy.evaluate()).toEqual(expected)
+    expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 
   it('sums all invocation when a method invocation argument is a function call', () => {
@@ -25,7 +25,7 @@ describe('Method invocation entropy', () => {
     const expected = new Evaluation(1, 4)
       .plus(new Evaluation(1, 1))
       .plus(new Evaluation(1, 4))
-    expect(entropy.evaluate()).toEqual(expected)
+    expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 
   it('sums all invocation when a arguments are functions calls', () => {
@@ -38,7 +38,7 @@ describe('Method invocation entropy', () => {
     const expected = new Evaluation(1, 4)
       .plus(new Evaluation(1, 1))
       .plus(new Evaluation(1, 4).plus(new Evaluation(1, 4)))
-    expect(entropy.evaluate()).toEqual(expected)
+    expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 
   it('considers all methods invocation for each method invocation entropy', () => {
@@ -49,7 +49,7 @@ describe('Method invocation entropy', () => {
     )
 
     const expected = new Evaluation(1, 1).plus(new Evaluation(1, 3)).times(2)
-    expect(entropy.evaluate()).toEqual(expected)
+    expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 })
 
@@ -62,7 +62,7 @@ describe('Call entropy', () => {
         new Divisor(['a', 'b', 'c'])
       )
 
-      expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
+      expect(entropy.evaluate()).toEvaluateTo(new Evaluation(2, 3))
     })
 
     it('calculates possible identifiers when three calls are nested', () => {
@@ -72,7 +72,7 @@ describe('Call entropy', () => {
         new Divisor(['a', 'b', 'c', 'd'])
       )
 
-      expect(entropy.evaluate()).toEqual(new Evaluation(3, 4))
+      expect(entropy.evaluate()).toEvaluateTo(new Evaluation(3, 4))
     })
 
     it('is the sum of both calls entropy when the inner call is extracted', () => {
@@ -84,7 +84,7 @@ describe('Call entropy', () => {
 
       const expected = new Evaluation(1, 3)
         .plus(new Evaluation(2, 3))
-      expect(entropy.evaluate()).toEqual(expected)
+      expect(entropy.evaluate()).toEvaluateTo(expected)
     })
 
     it('is the sum of all calls', () => {
@@ -95,7 +95,7 @@ describe('Call entropy', () => {
       )
 
       const expected = new Evaluation(1, 5).plus(new Evaluation(4, 5))
-      expect(entropy.evaluate()).toEqual(expected)
+      expect(entropy.evaluate()).toEvaluateTo(expected)
     })
   })
 })
@@ -107,7 +107,7 @@ describe('Import statement entropy', () => {
 
     const entropy = new JointEntropy(specifiers, new Divisor(['a', 'b']))
 
-    expect(entropy.evaluate()).toEqual(new Evaluation(1, 2))
+    expect(entropy.evaluate()).toEvaluateTo(new Evaluation(1, 2))
   })
 
   it('calculates entropy of two import specfiers', () => {
@@ -116,7 +116,7 @@ describe('Import statement entropy', () => {
 
     const entropy = new JointEntropy(specifiers, new Divisor(['a', 'b', 'c']))
 
-    expect(entropy.evaluate()).toEqual(new Evaluation(2, 3))
+    expect(entropy.evaluate()).toEvaluateTo(new Evaluation(2, 3))
   })
 
   it('calculates entropy of wildcard import specfier', () => {
@@ -125,7 +125,7 @@ describe('Import statement entropy', () => {
 
     const entropy = new JointEntropy(specifiers, new Divisor(['a', 'b', 'c']))
 
-    expect(entropy.evaluate()).toEqual(new Evaluation(3, 3))
+    expect(entropy.evaluate()).toEvaluateTo(new Evaluation(3, 3))
   })
 
   it('calculates entropy of import source', () => {
@@ -134,7 +134,7 @@ describe('Import statement entropy', () => {
 
     const entropy = new JointEntropy(source, new Divisor(['./a', './b', './c']))
 
-    expect(entropy.evaluate()).toEqual(new Evaluation(1, 3))
+    expect(entropy.evaluate()).toEvaluateTo(new Evaluation(1, 3))
   })
 })
 
@@ -147,7 +147,7 @@ describe('Function body entropy', () => {
     )
 
     const expectedEvaluation = new Evaluation(1, 2)
-    expect(entropy.evaluate()).toEqual(expectedEvaluation)
+    expect(entropy.evaluate()).toEvaluateTo(expectedEvaluation)
   })
 
   it('with local variables does not affect global scope', () => {
@@ -167,7 +167,7 @@ describe('Function body entropy', () => {
       new Evaluation(2, 4)
         .plus(new Evaluation(1, 3))
         .plus(new Evaluation(2, 2))
-    expect(entropy.evaluate()).toEqual(expectedEvaluation)
+    expect(entropy.evaluate()).toEvaluateTo(expectedEvaluation)
   })
 
   it('defined variable does not impace top-level scope', () => {
@@ -187,7 +187,7 @@ describe('Function body entropy', () => {
       new Evaluation(1, 2)
         .plus(new Evaluation(2, 3))
         .plus(new Evaluation(2, 3))
-    expect(entropy.evaluate()).toEqual(expectedEvaluation)
+    expect(entropy.evaluate()).toEvaluateTo(expectedEvaluation)
   })
 
   it('does not impact another function', () => {
@@ -215,7 +215,7 @@ describe('Function body entropy', () => {
         .plus(new Evaluation(2, 6))
         .plus(new Evaluation(1, 5))
         .plus(new Evaluation(3, 3))
-    expect(entropy.evaluate()).toEqual(expectedEvaluation)
+    expect(entropy.evaluate()).toEvaluateTo(expectedEvaluation)
   })
 })
 
@@ -230,7 +230,7 @@ describe('Variable declaration entropy', () => {
     const expected =  new Evaluation(3, 2)
       .plus(new Evaluation(1, 2))
       .plus(new Evaluation(1, 2))
-    expect(entropy.evaluate()).toEqual(expected)
+    expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 
   // it('', () => {
