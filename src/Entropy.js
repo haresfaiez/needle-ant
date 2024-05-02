@@ -5,7 +5,7 @@ import { Divisor } from './Divisor.js'
 // TODO: Check subclasses, do not ignore divisor
 class Entropy {
   constructor(dividend, divisor) {
-    this.dividend = dividend
+    this.dividend = dividend?.sources ? dividend : new Reflexion(dividend)
     this.divisor = divisor
   }
 
@@ -35,7 +35,7 @@ export class JointEntropy extends Entropy {
   evaluate() {
     const entropies =
       this.dividend.sources
-        .map(eachSource => new SingleEntropy(new Reflexion(eachSource), this.divisor))
+        .map(eachSource => new SingleEntropy(eachSource, this.divisor))
 
     return new SumEntropies(entropies, this.divisor).evaluate()
   }
@@ -43,8 +43,8 @@ export class JointEntropy extends Entropy {
 
 export class SingleEntropy extends Entropy {
   constructor(dividend, divisor) {
-    super()
-    this.delegate = this.createDelegate(dividend, divisor)
+    super(dividend, divisor)
+    this.delegate = this.createDelegate(this.dividend, this.divisor)
   }
 
   evaluate() {
@@ -56,21 +56,21 @@ export class SingleEntropy extends Entropy {
     const dividendType = dividend?.type
 
     if (dividendType === 'ImportDeclaration') {
-      return new DependencyEntropy(new Reflexion(dividend), divisor)
+      return new DependencyEntropy(dividend, divisor)
     }
 
     if (dividendType === 'VariableDeclaration') {
       // TODO: why are we ignoring "const"/"let"/"var"/...?
-      return new DeclarationEntropy(new Reflexion(dividend.declarations), divisor)
+      return new DeclarationEntropy(dividend.declarations, divisor)
     }
 
     const callee = dividend?.expression?.callee
     if (callee?.type === 'MemberExpression') {
       return new SumEntropies(
         [
-          new SingleEntropy(new Reflexion(callee.object), divisor),
-          new SingleEntropy(new Reflexion(callee.property), divisor.unfold(callee.object.name)),
-          new JointEntropy(new Reflexion(dividend?.expression?.arguments), divisor)
+          new SingleEntropy(callee.object, divisor),
+          new SingleEntropy(callee.property, divisor.unfold(callee.object.name)),
+          new JointEntropy(dividend?.expression?.arguments, divisor)
         ],
         new Divisor()
       )
@@ -79,8 +79,8 @@ export class SingleEntropy extends Entropy {
     if (dividendType === 'MemberExpression') {
       return new SumEntropies(
         [
-          new SingleEntropy(new Reflexion(dividend.object), divisor),
-          new AccessEntropy(new Reflexion(dividend.property), divisor)
+          new SingleEntropy(dividend.object, divisor),
+          new AccessEntropy(dividend.property, divisor)
         ],
         new Divisor()
       )
@@ -88,12 +88,12 @@ export class SingleEntropy extends Entropy {
 
     // TODO: generalize this to all functions
     if (dividendType === 'ArrowFunctionExpression') {
-      return new JointEntropy(new Reflexion(dividend.body), divisor)
+      return new JointEntropy(dividend.body, divisor)
     }
 
     // TODO: generalize this to all functions
     if (dividendType === 'VariableDeclarator') {
-      return new ExpressionEntropy(new Reflexion(dividend), divisor)
+      return new ExpressionEntropy(dividend, divisor)
     }
 
     const expressionTypes = [
@@ -109,26 +109,26 @@ export class SingleEntropy extends Entropy {
     // TODO: should we handle function definition as DeclarationEntropy
     // TODO: Test declaration with many inits
     if (expressionTypes.includes(dividendType)) {
-      return new ExpressionEntropy(new Reflexion(dividend), divisor)
+      return new ExpressionEntropy(dividend, divisor)
     }
 
     if (dividendType === 'BlockStatement') {
-      return new JointEntropy(new Reflexion(dividend.body), divisor)
+      return new JointEntropy(dividend.body, divisor)
     }
 
     if (dividendType === 'IfStatement') {
       return new SumEntropies(
         [
-          new SingleEntropy(new Reflexion(dividend.test), divisor),
-          new JointEntropy(new Reflexion(dividend.consequent), divisor),
-          ...dividend.alternate ? [new JointEntropy(new Reflexion(dividend.alternate), divisor)] : []
+          new SingleEntropy(dividend.test, divisor),
+          new JointEntropy(dividend.consequent, divisor),
+          ...dividend.alternate ? [new JointEntropy(dividend.alternate, divisor)] : []
         ],
         new Divisor()
       )
     }
 
     if (dividendType === 'ObjectExpression') {
-      return new ObjectEntropy(new Reflexion(dividend), divisor)
+      return new ObjectEntropy(dividend, divisor)
     }
 
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
@@ -145,8 +145,8 @@ class DependencyEntropy extends Entropy {
       const importSpecifiers = importParts[0]
       const importSource = importParts[1]
 
-      return new SingleEntropy(new Reflexion(importSpecifiers), new Divisor(this.divisor.importedModulesNames())).evaluate()
-        .plus(new SingleEntropy(new Reflexion(importSource), new Divisor(this.divisor.adjacentModules())).evaluate())
+      return new SingleEntropy(importSpecifiers, new Divisor(this.divisor.importedModulesNames())).evaluate()
+        .plus(new SingleEntropy(importSource, new Divisor(this.divisor.adjacentModules())).evaluate())
     }
 
     const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
@@ -207,7 +207,7 @@ class DeclarationEntropy extends Entropy {
 
     // TODO: move all Divisor creation to one place
     const declarationDivisor = Divisor.extend(this.divisor, params)
-    const delegateEntropy = new SingleEntropy(new Reflexion(declaration.init), declarationDivisor)
+    const delegateEntropy = new SingleEntropy(declaration.init, declarationDivisor)
     return delegateEntropy.evaluate()
   }
 }
