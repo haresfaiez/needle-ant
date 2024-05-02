@@ -20,11 +20,6 @@ class SumEntropies {
     this.divisor = divisor
   }
 
-  plus(anOtherEntropy) {
-    this.entropies = [...this.entropies, anOtherEntropy]
-    return this
-  }
-
   evaluate() {
     return this.entropies.reduce(
       (sumEvalution, eachEntropy) => {
@@ -38,15 +33,11 @@ class SumEntropies {
 
 export class JointEntropy extends Entropy {
   evaluate() {
-    return this.dividend.sources
-      .reduce(
-        (sumEntropy, eachSource) => {
-          const eachEntropy = new SingleEntropy(new Reflexion(eachSource), this.divisor)
-          return sumEntropy.plus(eachEntropy)
-        },
-        new SumEntropies([], this.divisor)
-      )
-      .evaluate()
+    const entropies =
+      this.dividend.sources
+        .map(eachSource => new SingleEntropy(new Reflexion(eachSource), this.divisor))
+
+    return new SumEntropies(entropies, this.divisor).evaluate()
   }
 }
 
