@@ -18,16 +18,14 @@ export class Divisor {
     this.foldingMap = foldingMap || new Map()
   }
 
-  // TODO: Unite with the constructor
-  static extend(aDivisor, params) {
+  static withNewIdentifiers(aDivisor, newIdentifiers) {
     const result = new Divisor([])
     result.accesses = aDivisor.accesses
     result.extend(aDivisor.identifiers())
-    result.extend(params)
+    result.extend(newIdentifiers)
     return result
   }
 
-  // TODO: Merge with constructor too
   static fromAccesses(aDivisor) {
     return new Divisor(aDivisor.accesses)
   }
@@ -43,6 +41,10 @@ export class Divisor {
 
   extend(newIdentifiers) {
     newIdentifiers.forEach(eachDivisor => this._identifiers.add(eachDivisor))
+  }
+
+  extendAccesses(newAccesses) {
+    newAccesses.forEach(eachAccess => this.accesses.add(eachAccess))
   }
 
   identifiers() {

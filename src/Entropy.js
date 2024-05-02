@@ -2,7 +2,6 @@ import { Reflexion, DependenciesReflexion } from './Reflexion.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
-// TODO: Check subclasses, do not ignore divisor
 class Entropy {
   constructor(dividend, divisor) {
     this.dividend = new Reflexion(dividend)
@@ -182,7 +181,6 @@ class ExpressionEntropy extends Entropy {
 
 class AccessEntropy extends Entropy {
   evaluate() {
-    // TODO: move all Divisor creation to one place
     const nextDivisor = Divisor.fromAccesses(this.divisor)
     return new SingleEntropy(this.dividend, nextDivisor).evaluate()
   }
@@ -190,9 +188,7 @@ class AccessEntropy extends Entropy {
 
 class ObjectEntropy extends ExpressionEntropy {
   evaluate() {
-    this.dividend
-      .identifiers()
-      .forEach(eachIdentifier => this.divisor.accesses.add(eachIdentifier))
+    this.divisor.extendAccesses(this.dividend.identifiers())
     return super.evaluate()
   }
 }
@@ -201,12 +197,10 @@ class DeclarationEntropy extends Entropy {
   evaluate() {
     const declaration = this.dividend.sources[0]
 
-    this.divisor._identifiers.add(declaration.id.name)
+    this.divisor.extend([declaration.id.name])
 
-    const params = new Reflexion(declaration.init.params || []).identifiers()
-
-    // TODO: move all Divisor creation to one place
-    const declarationDivisor = Divisor.extend(this.divisor, params)
+    const paramsAsIdentifiers = new Reflexion(declaration.init.params || []).identifiers()
+    const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
     const delegateEntropy = new SingleEntropy(declaration.init, declarationDivisor)
     return delegateEntropy.evaluate()
   }
