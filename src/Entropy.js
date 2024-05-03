@@ -126,10 +126,7 @@ class SingleEntropy {
 
 export class BodyEntropy extends SingleEntropy  {
   evaluate() {
-    const entropies =
-      this.dividend.sources
-        .map(eachSource => new Entropy(eachSource, this.divisor))
-
+    const entropies = this.dividend.sources.map(eachSource => new Entropy(eachSource, this.divisor))
     return new Entropies(entropies, this.divisor).evaluate()
   }
 }
