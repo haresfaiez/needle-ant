@@ -13,25 +13,25 @@ export class Entropy {
   }
 
   createDelegate(_dividend, divisor) {
-    const dividend = _dividend?.sources?.[0]
-    const dividendType = dividend?.type
+    const dividend = _dividend.sources[0]
+    const dividendType = dividend.type
 
     if (dividendType === 'ImportDeclaration') {
       return new DependencyEntropy(dividend, divisor)
     }
 
     if (dividendType === 'VariableDeclaration') {
-      // TODO: why are we ignoring "const"/"let"/"var"/...?
+      // TODO: why are we ignoring "const"/"let"/"var"/...
       return new DeclarationEntropy(dividend.declarations, divisor)
     }
 
-    const callee = dividend?.expression?.callee
+    const callee = dividend.expression?.callee
     if (callee?.type === 'MemberExpression') {
       return new Entropies(
         [
           new Entropy(callee.object, divisor),
           new Entropy(callee.property, divisor.unfold(callee.object.name)),
-          new BodyEntropy(dividend?.expression?.arguments, divisor)
+          new BodyEntropy(dividend.expression.arguments, divisor)
         ],
         new Divisor()
       )
@@ -148,8 +148,8 @@ class DependencyEntropy extends SingleEntropy  {
         .plus(new Entropy(importSource, new Divisor(this.divisor.adjacentModules())).evaluate())
     }
 
-    const isWildcardImport = (this.dividend.sources?.[0]?.type === 'ImportDeclaration')
-      && (this.dividend.sources?.[0]?.specifiers?.[0]?.type === 'ImportNamespaceSpecifier')
+    const isWildcardImport = (this.dividend.sources[0].type === 'ImportDeclaration')
+      && (this.dividend.sources[0].specifiers[0].type === 'ImportNamespaceSpecifier')
 
     if (isWildcardImport) {
       return new Evaluation(

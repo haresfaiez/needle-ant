@@ -33,7 +33,7 @@ class NeedleAnt {
     if (updatedCode === 'class Country { setCode(codeName, countryName) {} }')
       return 8
 
-    if (this.ast.body?.[0].declarations?.[0].id.name !== updatedAst.body?.[0].declarations?.[0].id.name)
+    if (this.ast.body[0].declarations[0].id.name !== updatedAst.body[0].declarations[0].id.name)
       return 4
 
     // if (this.code === 'import A from "./a"')

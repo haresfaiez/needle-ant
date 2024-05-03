@@ -5,6 +5,7 @@ export class Evaluation {
   constructor(actualCount, possibleCount, source) {
     this.actualCount = actualCount
     this.possibleCount = possibleCount
+    // TODO: Simplify this
     this.source = source?.type
       ? escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })
       : source

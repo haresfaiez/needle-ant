@@ -4,6 +4,7 @@ import * as escodegen from 'escodegen'
 
 export class Reflexion {
   constructor(reflexionOrSources) {
+    // TODO: Simplify this
     this.sources =
       reflexionOrSources.sources
         ? reflexionOrSources.sources
@@ -207,9 +208,10 @@ class ApiReflexion extends Reflexion {
 }
 
 export class DependenciesReflexion extends Reflexion {
+  // TODO: Adapt this to Reflexion
   constructor(sources, modules) {
     super(sources)
-    this.importedModuleExports = sources?.api?.()
+    this.importedModuleExports = sources.api?.()
     this.otherModules = modules
   }
 
