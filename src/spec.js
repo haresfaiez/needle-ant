@@ -1,32 +1,37 @@
-import { Evaluation } from './Evalution.js'
+import { JointEvaluation } from './Evalution.js'
 
 beforeAll(() => {
   jasmine.addMatchers({
-    toEvaluateTo: function() {
+    toEvaluateTo: function(matchersUtil) {
       return {
         compare: function(actual, expected) {
-          const actualLength = actual.evaluations?.length
-          if(!actualLength || (actualLength !== expected.evaluations?.length)) {
+          const result = {}
+          const isJointEvaluation = actual instanceof JointEvaluation
+          if(!isJointEvaluation || (actual.evaluations.length !== expected.evaluations.length)) {
             if (!expected.source) {
-              expect(Object.assign(new Evaluation(), actual, { source: undefined}))
-                .toEqual(expected)
+              result.pass =
+                matchersUtil.equals(actual.actualCount, expected.actualCount)
+                  && matchersUtil.equals(actual.possibleCount, expected.possibleCount)
             } else {
-              expect(actual).toEqual(expected)
+              result.pass = matchersUtil.equals(actual, expected)
             }
-            return { pass: true }
+            return result
           }
 
-          actual.evaluations.forEach((eachActual, i) => {
+          actual.evaluations.find((eachActual, i) => {
             const eachExpected = expected.evaluations[i]
             if (!eachExpected.source) {
-              expect(Object.assign(new Evaluation(), eachActual, { source: undefined}))
-                .toEqual(eachExpected)
+              result.pass =
+                matchersUtil.equals(eachActual.actualCount, eachExpected.actualCount)
+                  && matchersUtil.equals(eachActual.possibleCount, eachExpected.possibleCount)
             } else {
-              expect(eachActual).toEqual(eachExpected)
+              result.pass = matchersUtil.equals(eachActual, eachExpected)
             }
+
+            return !result.pass
           })
 
-          return { pass: true }
+          return result
         }
       }
     }
