@@ -48,7 +48,7 @@ describe('Method invocation entropy', () => {
       Divisor.parse(code, (ast) => ast.body)
     )
 
-    const expected = new Evaluation(1, 1).plus(new Evaluation(1, 3)).times(2)
+    const expected = new Evaluation(1, 1).plus(new Evaluation(1, 2)).times(2)
     expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 })

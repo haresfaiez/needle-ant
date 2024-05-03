@@ -1,7 +1,7 @@
 import { Reflexion } from './Reflexion.js'
 
 export class Divisor {
-  constructor(rawDivisor = [], foldingMap) {
+  constructor(rawDivisor = [], accesses = new Set()) {
     this._identifiers = new Set()
 
     const isReflexion = rawDivisor.odds
@@ -14,8 +14,7 @@ export class Divisor {
     this.importedModules = rawDivisor.importedModuleExports
     this.otherModules = rawDivisor.otherModules
 
-    this.accesses = new Set()
-    this.foldingMap = foldingMap || new Map()
+    this.accesses = accesses
   }
 
   static withNewIdentifiers(aDivisor, newIdentifiers) {
@@ -28,11 +27,6 @@ export class Divisor {
 
   static fromAccesses(aDivisor) {
     return new Divisor(aDivisor.accesses)
-  }
-
-  unfold(callee) {
-    // TODO: remove '|| ...'
-    return new Divisor(this.foldingMap.get(callee) || [callee])
   }
 
   shouldFocusOnCurrentModule() {
@@ -65,13 +59,14 @@ export class Divisor {
 
   static parse(sourceCode, transformer) {
     const ast = Reflexion.parse(sourceCode, transformer)
-    const map = new Map()
-    ast
-      .identifiers()
-      .forEach(eachIdentifier => {
-        map.set(eachIdentifier, ast.properties(eachIdentifier))
-      })
-    return new Divisor(ast.identifiers(), map)
+    const accesses =
+      ast
+        .identifiers()
+        .reduce((acc, eachIdentifier) => {
+          ast.properties(eachIdentifier).forEach(e => acc.push(e))
+          return acc
+        }, [])
+    return new Divisor(ast.identifiers(), new Set(accesses))
   }
 }
 

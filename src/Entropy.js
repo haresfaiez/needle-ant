@@ -30,10 +30,10 @@ export class Entropy {
       return new Entropies(
         [
           new Entropy(callee.object, divisor),
-          new Entropy(callee.property, divisor.unfold(callee.object.name)),
+          new AccessEntropy(callee.property, divisor),
           new BodyEntropy(dividend.expression.arguments, divisor)
         ],
-        new Divisor()
+        divisor
       )
     }
 
@@ -43,7 +43,7 @@ export class Entropy {
           new Entropy(dividend.object, divisor),
           new AccessEntropy(dividend.property, divisor)
         ],
-        new Divisor()
+        divisor
       )
     }
 
@@ -84,7 +84,7 @@ export class Entropy {
           new BodyEntropy(dividend.consequent, divisor),
           ...dividend.alternate ? [new BodyEntropy(dividend.alternate, divisor)] : []
         ],
-        new Divisor()
+        divisor
       )
     }
 
@@ -105,7 +105,7 @@ class Entropies {
   evaluate() {
     return this.entropies.reduce(
       (sumEvalution, eachEntropy) => {
-        eachEntropy.delegate?.divisor.extend(this.divisor.identifiers())
+        eachEntropy.divisor.extend(this.divisor.identifiers())
         return sumEvalution.plus(eachEntropy.evaluate())
       },
       new NullEvaluation()
@@ -181,8 +181,8 @@ class ExpressionEntropy extends SingleEntropy  {
 
 class AccessEntropy extends SingleEntropy  {
   evaluate() {
-    const nextDivisor = Divisor.fromAccesses(this.divisor)
-    return new Entropy(this.dividend, nextDivisor).evaluate()
+    this.divisor.extendAccesses([this.dividend.sources[0].name])
+    return new Entropy(this.dividend, Divisor.fromAccesses(this.divisor)).evaluate()
   }
 }
 
