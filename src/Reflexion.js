@@ -1,6 +1,5 @@
 import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
-import * as escodegen from 'escodegen'
 
 export class Reflexion {
   constructor(reflexionOrSources) {
@@ -71,7 +70,7 @@ class HorizontalReflexion extends Reflexion {
     }
 
     if (ast.type === 'ExpressionStatement') {
-      return this.createDelegate(ast.expression).factorize()
+      return new ExpressionReflexion(ast.expression).factorize()
     }
 
     if (ast.type === 'ImportDeclaration') {
@@ -81,33 +80,7 @@ class HorizontalReflexion extends Reflexion {
       ]
     }
 
-    return this.createDelegate(ast).factorize()
-  }
-
-  createDelegate(ast) {
-    if (ast.type === 'Program') {
-      const typesToExpand = ['ExportNamedDeclaration', 'ArrowFunctionExpression']
-      return new HorizontalReflexion(ast.body, typesToExpand)
-    }
-
-    if (ast.type === 'ReturnStatement'
-      || ast.type === 'BinaryExpression'
-      || ast.type === 'ExpressionStatement'
-      || ast.type === 'ImportSpecifier'
-      || ast.type === 'CallExpression'
-      || ast.type === 'Identifier') {
-      return new ExpressionReflexion(ast)
-    }
-
-    if (ast.type === 'ImportDeclaration') {
-      return new DependenciesReflexion(ast)
-    }
-
-    if (ast.type === 'ExportNamedDeclaration') {
-      return new ExpressionReflexion(ast)
-    }
-
-    throw new Error(`Ast type "${ast.type}" not handeled yet! for "${escodegen.generate(ast)}"`)
+    return new ExpressionReflexion(ast).factorize()
   }
 }
 
@@ -181,18 +154,5 @@ class ApiReflexion extends Reflexion {
       }
     })
     return result
-  }
-}
-
-class DependenciesReflexion extends Reflexion {
-  // TODO: Adapt this to Reflexion
-  constructor(sources, modules) {
-    super(sources)
-    this.importedModuleExports = sources.api?.()
-    this.otherModules = modules
-  }
-
-  factorizeEach(ast) {
-    return ast.specifiers
   }
 }
