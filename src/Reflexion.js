@@ -65,25 +65,6 @@ export class Reflexion {
     return result
   }
 
-  identifiers() {
-    return this.useSources(eachSource => this.factorizeEachIdentifier(eachSource))
-  }
-
-  api() {
-    return this.useSources((eachSource) => this.factorizeEachApi(eachSource))
-  }
-
-  literals() {
-    return this.useSources((eachSource) => this.factorizeEachLiteral(eachSource))
-  }
-
-
-  // TODO: Remove the methods below
-
-  factorizeEach() {
-    throw new Error('Reflexion#factorizeEach is not implemented yet!')
-  }
-
   factorizeEachOdd(expression) {
     const result = new Set()
     AcornWalk.simple(expression, {
@@ -103,13 +84,21 @@ export class Reflexion {
     return result
   }
 
+  identifiers() {
+    return this.useSources(eachSource => this.factorizeEachIdentifier(eachSource))
+  }
+
+  api() {
+    return this.useSources((eachSource) => this.factorizeEachApi(eachSource))
+  }
+
+  literals() {
+    return this.useSources((eachSource) => this.factorizeEachLiteral(eachSource))
+  }
+
   // TODO: Remove this
   odds() {
     return this.useSources((eachSource) => this.factorizeEachOdd(eachSource))
-  }
-
-  factorize() {
-    return this.useSources((eachSource) => this.factorizeEach(eachSource))
   }
 
   static parse(sourceCode, transformer) {
