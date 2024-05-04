@@ -19,6 +19,18 @@ export class Reflexion {
     return [...result]
   }
 
+  factorizeEachApi(expression) {
+    const result = new Set()
+    AcornWalk.simple(expression, {
+      ExportNamedDeclaration(node) {
+        new Reflexion(node)
+          .identifiers()
+          .forEach(name => result.add(name))
+      }
+    })
+    return result
+  }
+
   factorizeEachIdentifier(expression) {
     const result = new Set()
     AcornWalk.simple(expression, {
@@ -43,8 +55,26 @@ export class Reflexion {
     return result
   }
 
+  factorizeEachLiteral(expression) {
+    const result = new Set()
+    AcornWalk.simple(expression, {
+      Literal(node) {
+        result.add(node.value)
+      }
+    })
+    return result
+  }
+
   identifiers() {
     return this.useSources(eachSource => this.factorizeEachIdentifier(eachSource))
+  }
+
+  api() {
+    return this.useSources((eachSource) => this.factorizeEachApi(eachSource))
+  }
+
+  literals() {
+    return this.useSources((eachSource) => this.factorizeEachLiteral(eachSource))
   }
 
 
@@ -57,13 +87,6 @@ export class Reflexion {
   // TODO: Remove this
   odds() {
     return new HorizontalReflexion(this.sources).factorize()
-  }
-  api() {
-    return new ApiReflexion(this.sources).factorize()
-  }
-
-  literals() {
-    return new LiteralsReflexion(this.sources).factorize()
   }
 
   factorize() {
@@ -129,32 +152,6 @@ class ExpressionReflexion extends Reflexion {
       },
       ImportSpecifier(node) {
         result.add(node.imported.name)
-      }
-    })
-    return result
-  }
-}
-
-class LiteralsReflexion extends Reflexion {
-  factorizeEach(expression) {
-    const result = new Set()
-    AcornWalk.simple(expression, {
-      Literal(node) {
-        result.add(node.value)
-      }
-    })
-    return result
-  }
-}
-
-class ApiReflexion extends Reflexion {
-  factorizeEach(expression) {
-    const result = new Set()
-    AcornWalk.simple(expression, {
-      ExportNamedDeclaration(node) {
-        new Reflexion(node)
-          .identifiers()
-          .forEach(name => result.add(name))
       }
     })
     return result
