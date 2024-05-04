@@ -84,61 +84,7 @@ export class Reflexion {
     throw new Error('Reflexion#factorizeEach is not implemented yet!')
   }
 
-  // TODO: Remove this
-  odds() {
-    return new HorizontalReflexion(this.sources).factorize()
-  }
-
-  factorize() {
-    return this.useSources((eachSource) => this.factorizeEach(eachSource))
-  }
-
-  static parse(sourceCode, transformer) {
-    const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
-    return new Reflexion(transformer ? transformer(ast) : ast)
-  }
-}
-
-class HorizontalReflexion extends Reflexion {
-  constructor(source, typesToExpand) {
-    super(source)
-    this.typesToExpand = typesToExpand
-  }
-
-  shouldKeep(ast) {
-    if (!this.typesToExpand) {
-      return false
-    }
-
-    if (ast.type === 'ExpressionStatement') {
-      return !this.typesToExpand.includes(ast.expression.type)
-    }
-
-    return !this.typesToExpand.includes(ast.type)
-  }
-
-  factorizeEach(ast) {
-    if (this.shouldKeep(ast)) {
-      return [ast]
-    }
-
-    if (ast.type === 'ExpressionStatement') {
-      return new ExpressionReflexion(ast.expression).factorize()
-    }
-
-    if (ast.type === 'ImportDeclaration') {
-      return [
-        ast.specifiers,
-        ast.source
-      ]
-    }
-
-    return new ExpressionReflexion(ast).factorize()
-  }
-}
-
-class ExpressionReflexion extends Reflexion {
-  factorizeEach(expression) {
+  factorizeEachOdd(expression) {
     const result = new Set()
     AcornWalk.simple(expression, {
       Identifier(node) {
@@ -155,5 +101,19 @@ class ExpressionReflexion extends Reflexion {
       }
     })
     return result
+  }
+
+  // TODO: Remove this
+  odds() {
+    return this.useSources((eachSource) => this.factorizeEachOdd(eachSource))
+  }
+
+  factorize() {
+    return this.useSources((eachSource) => this.factorizeEach(eachSource))
+  }
+
+  static parse(sourceCode, transformer) {
+    const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
+    return new Reflexion(transformer ? transformer(ast) : ast)
   }
 }
