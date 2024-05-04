@@ -1,4 +1,4 @@
-import { Reflexion, DependenciesReflexion } from './Reflexion.js'
+import { Reflexion } from './Reflexion.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
@@ -128,8 +128,7 @@ class DependencyEntropy extends SingleEntropy  {
   // TODO: improve this
   evaluate() {
     if (this.divisor.shouldCheckAdjacentModules()) {
-      // TODO: fix next line
-      const importParts = new DependenciesReflexion(this.dividend.sources[0]).__factorize()
+      const importParts = new Reflexion(this.dividend.sources[0]).odds()
       const importSpecifiers = importParts[0]
       const importSource = importParts[1]
 

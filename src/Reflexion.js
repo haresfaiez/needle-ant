@@ -11,6 +11,10 @@ export class Reflexion {
         : Array.isArray(reflexionOrSources) ? reflexionOrSources : [reflexionOrSources]
   }
 
+  factorizeEach() {
+    throw new Error('Reflexion#factorizeEach is not implemented yet!')
+  }
+
   // TODO: Remove this
   odds() {
     return new HorizontalReflexion(this.sources).factorize()
@@ -72,6 +76,10 @@ class HorizontalReflexion extends Reflexion {
 
     if (ast.type === 'ExpressionStatement') {
       return this.createDelegate(ast.expression).factorize()
+    }
+
+    if (ast.type === 'ImportDeclaration') {
+      return new DependenciesReflexion(ast).__factorize()
     }
 
     return this.createDelegate(ast).factorize()
@@ -203,7 +211,7 @@ class ApiReflexion extends Reflexion {
   }
 }
 
-export class DependenciesReflexion extends Reflexion {
+class DependenciesReflexion extends Reflexion {
   // TODO: Adapt this to Reflexion
   constructor(sources, modules) {
     super(sources)
