@@ -11,10 +11,6 @@ export class Reflexion {
         : Array.isArray(reflexionOrSources) ? reflexionOrSources : [reflexionOrSources]
   }
 
-  add() {
-    throw new Error('Not implemented yet!')
-  }
-
   // TODO: Remove this
   odds() {
     return new HorizontalReflexion(this.sources).factorize()
