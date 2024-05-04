@@ -10,6 +10,46 @@ export class Reflexion {
         : Array.isArray(reflexionOrSources) ? reflexionOrSources : [reflexionOrSources]
   }
 
+  useSources(collector) {
+    let result = new Set()
+    this.sources
+      .filter(eachSource => eachSource.type !== 'EmptyStatement')
+      .map(eachSource => collector(eachSource))
+      .forEach(ast => ast.forEach(result.add.bind(result)))
+    return [...result]
+  }
+
+  factorizeEachIdentifier(expression) {
+    const result = new Set()
+    AcornWalk.simple(expression, {
+      ObjectExpression(node) {
+        node.properties
+          .map(e => e.key.name)
+          .forEach(eachPropertyIdentifier => result.add(eachPropertyIdentifier))
+      },
+      Identifier(node) {
+        result.add(node.name)
+      },
+      ImportSpecifier(node) {
+        result.add(node.imported.name)
+      },
+      FunctionDeclaration(node) {
+        result.add(node.id.name)
+      },
+      VariableDeclarator(node) {
+        result.add(node.id.name)
+      }
+    })
+    return result
+  }
+
+  identifiers() {
+    return this.useSources(eachSource => this.factorizeEachIdentifier(eachSource))
+  }
+
+
+  // TODO: Remove the methods below
+
   factorizeEach() {
     throw new Error('Reflexion#factorizeEach is not implemented yet!')
   }
@@ -18,11 +58,6 @@ export class Reflexion {
   odds() {
     return new HorizontalReflexion(this.sources).factorize()
   }
-
-  identifiers() {
-    return new IdentifiersReflexion(this.sources).factorize()
-  }
-
   api() {
     return new ApiReflexion(this.sources).factorize()
   }
@@ -32,12 +67,7 @@ export class Reflexion {
   }
 
   factorize() {
-    let result = new Set()
-    this.sources
-      .filter(source => source.type !== 'EmptyStatement')
-      .map(source => this.factorizeEach(source))
-      .forEach(ast => ast.forEach(result.add.bind(result)))
-    return [...result]
+    return this.useSources((eachSource) => this.factorizeEach(eachSource))
   }
 
   static parse(sourceCode, transformer) {
@@ -105,32 +135,6 @@ class ExpressionReflexion extends Reflexion {
   }
 }
 
-class IdentifiersReflexion extends Reflexion {
-  factorizeEach(expression) {
-    const result = new Set()
-    AcornWalk.simple(expression, {
-      ObjectExpression(node) {
-        node.properties
-          .map(e => e.key.name)
-          .forEach(eachPropertyIdentifier => result.add(eachPropertyIdentifier))
-      },
-      Identifier(node) {
-        result.add(node.name)
-      },
-      ImportSpecifier(node) {
-        result.add(node.imported.name)
-      },
-      FunctionDeclaration(node) {
-        result.add(node.id.name)
-      },
-      VariableDeclarator(node) {
-        result.add(node.id.name)
-      }
-    })
-    return result
-  }
-}
-
 class LiteralsReflexion extends Reflexion {
   factorizeEach(expression) {
     const result = new Set()
@@ -148,8 +152,8 @@ class ApiReflexion extends Reflexion {
     const result = new Set()
     AcornWalk.simple(expression, {
       ExportNamedDeclaration(node) {
-        new IdentifiersReflexion(node)
-          .factorize()
+        new Reflexion(node)
+          .identifiers()
           .forEach(name => result.add(name))
       }
     })
