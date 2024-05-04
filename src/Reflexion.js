@@ -8,15 +8,8 @@ export class Reflexion {
       reflexionOrSources.sources
         ? reflexionOrSources.sources
         : Array.isArray(reflexionOrSources) ? reflexionOrSources : [reflexionOrSources]
-  }
-
-  useSources(collector) {
-    let result = new Set()
-    this.sources
-      .filter(eachSource => eachSource.type !== 'EmptyStatement')
-      .map(eachSource => collector(eachSource))
-      .forEach(ast => ast.forEach(result.add.bind(result)))
-    return [...result]
+    // TODO: Should we uncomment this?
+    // this.sources = this.sources.filter(eachSource => eachSource.type !== 'EmptyStatement')
   }
 
   factorizeEachApi(expression) {
@@ -85,24 +78,49 @@ export class Reflexion {
   }
 
   identifiers() {
-    return this.useSources(eachSource => this.factorizeEachIdentifier(eachSource))
+    const bag = new Bag(this.sources)
+    bag.collect(eachSource => this.factorizeEachIdentifier(eachSource))
+    return bag.toArray()
   }
 
   api() {
-    return this.useSources((eachSource) => this.factorizeEachApi(eachSource))
+    const bag = new Bag(this.sources)
+    bag.collect(eachSource => this.factorizeEachApi(eachSource))
+    return bag.toArray()
   }
 
   literals() {
-    return this.useSources((eachSource) => this.factorizeEachLiteral(eachSource))
+    const bag = new Bag(this.sources)
+    bag.collect(eachSource => this.factorizeEachLiteral(eachSource))
+    return bag.toArray()
   }
 
   // TODO: Remove this
   odds() {
-    return this.useSources((eachSource) => this.factorizeEachOdd(eachSource))
+    const bag = new Bag(this.sources)
+    bag.collect(eachSource => this.factorizeEachOdd(eachSource))
+    return bag.toArray()
   }
 
   static parse(sourceCode, transformer) {
     const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
     return new Reflexion(transformer ? transformer(ast) : ast)
+  }
+}
+
+class Bag {
+  constructor(elements) {
+    this.sources = elements
+    this.elements = new Set()
+  }
+
+  collect(collector) {
+    this.sources
+      .map(eachSource => collector(eachSource))
+      .forEach(ast => ast.forEach(this.elements.add.bind(this.elements)))
+  }
+
+  toArray() {
+    return [...this.elements]
   }
 }
