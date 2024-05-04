@@ -217,6 +217,11 @@ describe('Function body entropy', () => {
         .plus(new Evaluation(3, 3))
     expect(entropy.evaluate()).toEvaluateTo(expectedEvaluation)
   })
+
+  // TODO: Uncomment this
+  // it('', () => {
+  //   const code = 'function one() { return 1; }'
+  // })
 })
 
 describe('Variable declaration entropy', () => {
@@ -233,6 +238,7 @@ describe('Variable declaration entropy', () => {
     expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 
+  // TODO: Uncomment this
   // it('', () => {
   //   const code = 'const tmp = a.x.y;'
   //   const entropy = new BodyEntropy(
@@ -252,6 +258,10 @@ describe('Variable declaration entropy', () => {
 
   // it('', () => {
   //   const code = 'class User {}; const a = new User({ name: "Joe" });'
+  // })
+
+  // it('', () => {
+  //   const code = 'const a = 0, b = a'
   // })
 })
 

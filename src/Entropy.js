@@ -16,13 +16,22 @@ export class Entropy {
     const dividend = _dividend.sources[0]
     const dividendType = dividend.type
 
+    if (dividendType === 'BlockStatement') {
+      return new BodyEntropy(dividend.body, divisor)
+    }
+
     if (dividendType === 'ImportDeclaration') {
       return new DependencyEntropy(dividend, divisor)
     }
 
-    if (dividendType === 'VariableDeclaration') {
-      // TODO: why are we ignoring "const"/"let"/"var"/...
-      return new DeclarationEntropy(dividend.declarations, divisor)
+    if (dividendType === 'MemberExpression') {
+      return new Entropies(
+        [
+          new Entropy(dividend.object, divisor),
+          new AccessEntropy(dividend.property, divisor)
+        ],
+        divisor
+      )
     }
 
     const callee = dividend.expression?.callee
@@ -37,24 +46,14 @@ export class Entropy {
       )
     }
 
-    if (dividendType === 'MemberExpression') {
-      return new Entropies(
-        [
-          new Entropy(dividend.object, divisor),
-          new AccessEntropy(dividend.property, divisor)
-        ],
-        divisor
-      )
+    if (dividendType === 'VariableDeclaration') {
+      // TODO: why are we ignoring "const"/"let"/"var"/...
+      return new DeclarationEntropy(dividend.declarations, divisor)
     }
 
     // TODO: generalize this to all functions
     if (dividendType === 'ArrowFunctionExpression') {
       return new BodyEntropy(dividend.body, divisor)
-    }
-
-    // TODO: generalize this to all functions
-    if (dividendType === 'VariableDeclarator') {
-      return new ExpressionEntropy(dividend, divisor)
     }
 
     const expressionTypes = [
@@ -67,14 +66,8 @@ export class Entropy {
       'Literal',
       'ReturnStatement',
     ]
-    // TODO: should we handle function definition as DeclarationEntropy
-    // TODO: Test declaration with many inits
     if (expressionTypes.includes(dividendType)) {
       return new ExpressionEntropy(dividend, divisor)
-    }
-
-    if (dividendType === 'BlockStatement') {
-      return new BodyEntropy(dividend.body, divisor)
     }
 
     if (dividendType === 'IfStatement') {
@@ -133,7 +126,6 @@ export class BodyEntropy extends SingleEntropy  {
 
 class DependencyEntropy extends SingleEntropy  {
   // TODO: improve this
-  // TODO: Remove Divisor creation
   evaluate() {
     if (this.divisor.shouldCheckAdjacentModules()) {
       // TODO: fix next line
