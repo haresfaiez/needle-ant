@@ -12,7 +12,7 @@ export class Reflexion {
     // this.sources = this.sources.filter(eachSource => eachSource.type !== 'EmptyStatement')
   }
 
-  factorizeEachApi(expression) {
+  collectExports(expression) {
     const result = new Set()
     AcornWalk.simple(expression, {
       ExportNamedDeclaration(node) {
@@ -24,7 +24,17 @@ export class Reflexion {
     return result
   }
 
-  factorizeEachIdentifier(expression) {
+  collectLiterals(expression) {
+    const result = new Set()
+    AcornWalk.simple(expression, {
+      Literal(node) {
+        result.add(node.value)
+      }
+    })
+    return result
+  }
+
+  collectIdentifiers(expression) {
     const result = new Set()
     AcornWalk.simple(expression, {
       ObjectExpression(node) {
@@ -43,62 +53,26 @@ export class Reflexion {
       },
       VariableDeclarator(node) {
         result.add(node.id.name)
-      }
-    })
-    return result
-  }
-
-  factorizeEachLiteral(expression) {
-    const result = new Set()
-    AcornWalk.simple(expression, {
-      Literal(node) {
-        result.add(node.value)
-      }
-    })
-    return result
-  }
-
-  factorizeEachOdd(expression) {
-    const result = new Set()
-    AcornWalk.simple(expression, {
-      Identifier(node) {
-        result.add(node)
       },
-      Literal(node) {
-        result.add(node)
-      },
-      ExportNamedDeclaration(node) {
-        result.add(node)
-      },
-      ImportSpecifier(node) {
-        result.add(node.imported.name)
-      }
     })
     return result
   }
 
   identifiers() {
     const bag = new Bag(this.sources)
-    bag.collect(eachSource => this.factorizeEachIdentifier(eachSource))
+    bag.collect(eachSource => this.collectIdentifiers(eachSource))
     return bag.toArray()
   }
 
   api() {
     const bag = new Bag(this.sources)
-    bag.collect(eachSource => this.factorizeEachApi(eachSource))
+    bag.collect(eachSource => this.collectExports(eachSource))
     return bag.toArray()
   }
 
   literals() {
     const bag = new Bag(this.sources)
-    bag.collect(eachSource => this.factorizeEachLiteral(eachSource))
-    return bag.toArray()
-  }
-
-  // TODO: Remove this
-  odds() {
-    const bag = new Bag(this.sources)
-    bag.collect(eachSource => this.factorizeEachOdd(eachSource))
+    bag.collect(eachSource => this.collectLiterals(eachSource))
     return bag.toArray()
   }
 

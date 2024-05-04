@@ -4,9 +4,9 @@ export class Divisor {
   constructor(rawDivisor = [], accesses = new Set()) {
     this._identifiers = new Set()
 
-    const isReflexion = rawDivisor.odds
+    const isReflexion = rawDivisor.api
     if (isReflexion) {
-      rawDivisor.odds().forEach(e => this._identifiers.add(e))
+      rawDivisor.api().forEach(e => this._identifiers.add(e))
     } else {
       rawDivisor.forEach(e => this._identifiers.add(e))
     }

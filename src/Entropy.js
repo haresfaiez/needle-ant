@@ -128,7 +128,7 @@ class DependencyEntropy extends SingleEntropy  {
   // TODO: improve this
   evaluate() {
     if (this.divisor.shouldCheckAdjacentModules()) {
-      const importParts = new Reflexion(this.dividend.sources[0]).odds()
+      const importParts = new Reflexion(this.dividend.sources[0]).api()
       const importSpecifiers = importParts[0]
       const importSource = importParts[1]
 
