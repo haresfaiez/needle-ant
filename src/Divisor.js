@@ -59,14 +59,7 @@ export class Divisor {
 
   static parse(sourceCode, transformer) {
     const ast = Reflexion.parse(sourceCode, transformer)
-    const accesses =
-      ast
-        .identifiers()
-        .reduce((acc, eachIdentifier) => {
-          ast.properties(eachIdentifier).forEach(e => acc.push(e))
-          return acc
-        }, [])
-    return new Divisor(ast.identifiers(), new Set(accesses))
+    return new Divisor(ast.identifiers())
   }
 }
 

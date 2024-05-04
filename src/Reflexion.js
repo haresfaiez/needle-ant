@@ -32,10 +32,6 @@ export class Reflexion {
     return new LiteralsReflexion(this.sources).factorize()
   }
 
-  properties(identifier) {
-    return new PropertiesReflexion(this.sources, identifier).factorize()
-  }
-
   factorize() {
     let result = new Set()
     this.sources
@@ -79,7 +75,10 @@ class HorizontalReflexion extends Reflexion {
     }
 
     if (ast.type === 'ImportDeclaration') {
-      return new DependenciesReflexion(ast).__factorize()
+      return [
+        ast.specifiers,
+        ast.source
+      ]
     }
 
     return this.createDelegate(ast).factorize()
@@ -87,7 +86,8 @@ class HorizontalReflexion extends Reflexion {
 
   createDelegate(ast) {
     if (ast.type === 'Program') {
-      return new ProgramReflexion(ast)
+      const typesToExpand = ['ExportNamedDeclaration', 'ArrowFunctionExpression']
+      return new HorizontalReflexion(ast.body, typesToExpand)
     }
 
     if (ast.type === 'ReturnStatement'
@@ -108,13 +108,6 @@ class HorizontalReflexion extends Reflexion {
     }
 
     throw new Error(`Ast type "${ast.type}" not handeled yet! for "${escodegen.generate(ast)}"`)
-  }
-}
-
-class ProgramReflexion extends Reflexion {
-  factorizeEach(ast) {
-    const typesToExpand = ['ExportNamedDeclaration', 'ArrowFunctionExpression']
-    return new HorizontalReflexion(ast.body, typesToExpand).factorize()
   }
 }
 
@@ -165,26 +158,6 @@ class IdentifiersReflexion extends Reflexion {
   }
 }
 
-class PropertiesReflexion extends Reflexion {
-  constructor(sources, identifier) {
-    super(sources)
-    this.identifier = identifier
-  }
-
-  factorizeEach(expression) {
-    const result = new Set()
-    const targetIdentifier = this.identifier
-    AcornWalk.simple(expression, {
-      MemberExpression(node) {
-        if (node.object.name === targetIdentifier) {
-          result.add(node.property.name)
-        }
-      }
-    })
-    return result
-  }
-}
-
 class LiteralsReflexion extends Reflexion {
   factorizeEach(expression) {
     const result = new Set()
@@ -217,18 +190,6 @@ class DependenciesReflexion extends Reflexion {
     super(sources)
     this.importedModuleExports = sources.api?.()
     this.otherModules = modules
-  }
-
-  odds() {
-    return []
-  }
-
-  // TODO: keep only one factorize()
-  __factorize() {
-    return [
-      this.sources[0].specifiers,
-      this.sources[0].source
-    ]
   }
 
   factorizeEach(ast) {
