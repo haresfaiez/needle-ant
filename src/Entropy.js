@@ -47,14 +47,15 @@ export class Entropy {
       return new DeclarationEntropy(dividend.declarations, divisor)
     }
 
-    if (dividendType === 'ClassDeclaration') {
+    if (dividendType === 'ClassDeclaration' || dividendType === 'MethodDefinition') {
       return new DeclarationEntropy(dividend, divisor)
     }
 
     const bodyTypes = [
       'BlockStatement',
       'ArrowFunctionExpression',
-      'ClassBody'
+      'ClassBody',
+      'FunctionExpression'
     ]
     if (bodyTypes.includes(dividendType)) {
       return new BodyEntropy(dividend.body, divisor)
@@ -188,6 +189,15 @@ class ObjectEntropy extends ExpressionEntropy {
 
 class DeclarationEntropy extends SingleEntropy  {
   evaluate() {
+    const methodDeclaration = this.dividend.sources[0]
+    if (methodDeclaration.type === 'MethodDefinition') {
+      this.divisor.extend([methodDeclaration.key.name])
+
+      const paramsAsIdentifiers = new Reflexion(methodDeclaration.value.params || []).identifiers()
+      const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
+      return new Entropy(methodDeclaration.value, declarationDivisor).evaluate()
+    }
+
     const declarations = this.dividend.sources
 
     // TODO: this.divisor.extend(this.dividend.declarators())
