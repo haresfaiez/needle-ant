@@ -144,10 +144,7 @@ describe('Import statement entropy', () => {
 describe('Function body entropy', () => {
   it('is the body statement entropy for identity function', () => {
     const code = 'const identity = (aNumber) => aNumber;'
-    const entropy = new BodyEntropy(
-      Reflexion.parse(code, (ast) => ast.body),
-      new Divisor([])
-    )
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expectedEvaluation = new Evaluation(1, 2)
     expect(entropy.evaluate()).toEvaluateTo(expectedEvaluation)
@@ -161,10 +158,7 @@ describe('Function body entropy', () => {
       };
       a(4, 5);
     `
-    const entropy = new BodyEntropy(
-      Reflexion.parse(code, (ast) => ast.body),
-      new Divisor([])
-    )
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expectedEvaluation =
       new Evaluation(2, 4)
@@ -181,10 +175,7 @@ describe('Function body entropy', () => {
       };
       a(4);
     `
-    const entropy = new BodyEntropy(
-      Reflexion.parse(code, (ast) => ast.body),
-      new Divisor([])
-    )
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expectedEvaluation =
       new Evaluation(1, 2)
@@ -206,10 +197,7 @@ describe('Function body entropy', () => {
       }
       decrementTwice(increment(20))
     `
-    const entropy = new BodyEntropy(
-      Reflexion.parse(code, (ast) => ast.body),
-      new Divisor([])
-    )
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expectedEvaluation =
       new Evaluation(2, 4)
@@ -230,10 +218,7 @@ describe('Function body entropy', () => {
 describe('Variable declaration entropy', () => {
   it('calculates property entropy from accessed properties', () => {
     const code = 'const a = {x: 3, y: 0}; const tmp = a.x;'
-    const entropy = new BodyEntropy(
-      Reflexion.parse(code, (ast) => ast.body),
-      new Divisor([])
-    )
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expected =  new Evaluation(3, 2)
       .plus(new Evaluation(1, 2))
@@ -243,10 +228,7 @@ describe('Variable declaration entropy', () => {
 
   it('calculates property entropy for member of member access', () => {
     const code = 'const tmp = a.x.y;'
-    const entropy = new BodyEntropy(
-      Reflexion.parse(code, (ast) => ast.body),
-      new Divisor([])
-    )
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expected =  new Evaluation(1, 1)
       .plus(new Evaluation(1, 1))
@@ -256,10 +238,7 @@ describe('Variable declaration entropy', () => {
 
   it('calculates entropy of declaration with two initialization', () => {
     const code = 'const a = 0, b = a'
-    const entropy = new BodyEntropy(
-      Reflexion.parse(code, (ast) => ast.body),
-      new Divisor([])
-    )
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expected =  new Evaluation(1, 3).plus(new Evaluation(1, 2))
     expect(entropy.evaluate()).toEvaluateTo(expected)
@@ -267,10 +246,7 @@ describe('Variable declaration entropy', () => {
 
   it('calculates entropy of class definition and instanciation', () => {
     const code = 'class Example {}; const a = new Example();'
-    const entropy = new BodyEntropy(
-      Reflexion.parse(code, (ast) => ast.body),
-      new Divisor([])
-    )
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expected =  new Evaluation(1, 2)
     expect(entropy.evaluate()).toEvaluateTo(expected)
@@ -278,10 +254,7 @@ describe('Variable declaration entropy', () => {
 
   it('calculates entropy of class definition with a method', () => {
     const code = 'class Example { sayHello(name) { return "Hello " + name } }'
-    const entropy = new BodyEntropy(
-      Reflexion.parse(code, (ast) => ast.body),
-      new Divisor([])
-    )
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expected =  new Evaluation(2, 4)
     expect(entropy.evaluate()).toEvaluateTo(expected)
@@ -289,10 +262,7 @@ describe('Variable declaration entropy', () => {
 
   it('calculates entropy of class definition with two methods', () => {
     const code = 'class Example { sayHello(name) { return "Hello " + name } identity(x) { return x; } }'
-    const entropy = new BodyEntropy(
-      Reflexion.parse(code, (ast) => ast.body),
-      new Divisor([])
-    )
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expected =  new Evaluation(2, 4).plus(new Evaluation(1, 4))
     expect(entropy.evaluate()).toEvaluateTo(expected)

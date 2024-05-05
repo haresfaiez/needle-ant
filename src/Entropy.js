@@ -3,7 +3,7 @@ import { Evaluation, NullEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
 export class Entropy {
-  constructor(dividend, divisor) {
+  constructor(dividend, divisor = new Divisor([])) {
     this.divisor = divisor
     this.delegate = this.createDelegate(new Reflexion(dividend), divisor)
   }
@@ -96,7 +96,7 @@ export class Entropy {
 }
 
 class Entropies {
-  constructor(entropies, divisor) {
+  constructor(entropies, divisor = new Divisor([])) {
     this.entropies = entropies
     this.divisor = divisor
   }
@@ -113,7 +113,7 @@ class Entropies {
 }
 
 class SingleEntropy {
-  constructor(dividend, divisor) {
+  constructor(dividend, divisor = new Divisor([])) {
     this.dividend = new Reflexion(dividend)
     this.divisor = divisor
   }
