@@ -241,30 +241,37 @@ describe('Variable declaration entropy', () => {
     expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 
+  it('calculates property entropy for member of member access', () => {
+    const code = 'const tmp = a.x.y;'
+    const entropy = new BodyEntropy(
+      Reflexion.parse(code, (ast) => ast.body),
+      new Divisor([])
+    )
+
+    const expected =  new Evaluation(1, 1)
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 2))
+    expect(entropy.evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of declaration with two initialization', () => {
+    const code = 'const a = 0, b = a'
+    const entropy = new BodyEntropy(
+      Reflexion.parse(code, (ast) => ast.body),
+      new Divisor([])
+    )
+
+    const expected =  new Evaluation(1, 3).plus(new Evaluation(1, 2))
+    expect(entropy.evaluate()).toEvaluateTo(expected)
+  })
+
   // TODO: Uncomment this
-  // it('', () => {
-  //   const code = 'const tmp = a.x.y;'
-  //   const entropy = new BodyEntropy(
-  //     Reflexion.parse(code, (ast) => ast.body),
-  //     new Divisor([])
-  //   )
-
-  //   const expected =  new Evaluation(3, 4)
-  //     .plus(new Evaluation(1, 2))
-  //     .plus(new Evaluation(1, 1))
-  //   expect(entropy.evaluate()).toEqual(expected)
-  // })
-
   // it('', () => {
   //   const code = 'class Example {}; const a = new Example();'
   // })
 
   // it('', () => {
   //   const code = 'class User {}; const a = new User({ name: "Joe" });'
-  // })
-
-  // it('', () => {
-  //   const code = 'const a = 0, b = a'
   // })
 })
 

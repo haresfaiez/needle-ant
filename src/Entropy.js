@@ -183,13 +183,18 @@ class ObjectEntropy extends ExpressionEntropy {
 
 class DeclarationEntropy extends SingleEntropy  {
   evaluate() {
-    const declaration = this.dividend.sources[0]
+    const declarations = this.dividend.sources
 
-    this.divisor.extend([declaration.id.name])
+    // TODO: this.divisor.extend(this.dividend.declarators())
+    declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
 
-    const paramsAsIdentifiers = new Reflexion(declaration.init.params || []).identifiers()
-    const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
-    const delegateEntropy = new Entropy(declaration.init, declarationDivisor)
-    return delegateEntropy.evaluate()
+
+    const entropies = declarations.map(eachDeclaration => {
+      const paramsAsIdentifiers = new Reflexion(eachDeclaration.init.params || []).identifiers()
+      const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
+      return new Entropy(eachDeclaration.init, declarationDivisor)
+    })
+
+    return new Entropies(entropies, this.divisor).evaluate()
   }
 }
