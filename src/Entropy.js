@@ -16,10 +16,6 @@ export class Entropy {
     const dividend = _dividend.sources[0]
     const dividendType = dividend.type
 
-    if (dividendType === 'BlockStatement') {
-      return new BodyEntropy(dividend.body, divisor)
-    }
-
     if (dividendType === 'ImportDeclaration') {
       return new DependencyEntropy(dividend, divisor)
     }
@@ -51,8 +47,16 @@ export class Entropy {
       return new DeclarationEntropy(dividend.declarations, divisor)
     }
 
-    // TODO: generalize this to all functions
-    if (dividendType === 'ArrowFunctionExpression') {
+    if (dividendType === 'ClassDeclaration') {
+      return new DeclarationEntropy(dividend, divisor)
+    }
+
+    const bodyTypes = [
+      'BlockStatement',
+      'ArrowFunctionExpression',
+      'ClassBody'
+    ]
+    if (bodyTypes.includes(dividendType)) {
       return new BodyEntropy(dividend.body, divisor)
     }
 
@@ -65,6 +69,7 @@ export class Entropy {
       'ImportSpecifier',
       'Literal',
       'ReturnStatement',
+      'NewExpression'
     ]
     if (expressionTypes.includes(dividendType)) {
       return new ExpressionEntropy(dividend, divisor)
@@ -190,6 +195,10 @@ class DeclarationEntropy extends SingleEntropy  {
 
 
     const entropies = declarations.map(eachDeclaration => {
+      if (eachDeclaration.type === 'ClassDeclaration') {
+        return new Entropy(eachDeclaration.body, this.divisor)
+      }
+
       const paramsAsIdentifiers = new Reflexion(eachDeclaration.init.params || []).identifiers()
       const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
       return new Entropy(eachDeclaration.init, declarationDivisor)

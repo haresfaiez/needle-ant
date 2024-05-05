@@ -265,9 +265,27 @@ describe('Variable declaration entropy', () => {
     expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 
+  it('calculates entropy of class definition and instanciation', () => {
+    const code = 'class Example {}; const a = new Example();'
+    const entropy = new BodyEntropy(
+      Reflexion.parse(code, (ast) => ast.body),
+      new Divisor([])
+    )
+
+    const expected =  new Evaluation(1, 2)
+    expect(entropy.evaluate()).toEvaluateTo(expected)
+  })
+
   // TODO: Uncomment this
-  // it('', () => {
-  //   const code = 'class Example {}; const a = new Example();'
+  // it('calculates entropy of class definition with a method', () => {
+  //   const code = 'class Example { sayHello(name) { return "Hello " + name }}'
+  //   const entropy = new BodyEntropy(
+  //     Reflexion.parse(code, (ast) => ast.body),
+  //     new Divisor([])
+  //   )
+
+  //   const expected =  new Evaluation(1, 3).plus(new Evaluation(1, 2))
+  //   expect(entropy.evaluate()).toEvaluateTo(expected)
   // })
 
   // it('', () => {
