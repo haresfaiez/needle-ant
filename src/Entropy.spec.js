@@ -209,10 +209,13 @@ describe('Function body entropy', () => {
     expect(entropy.evaluate()).toEvaluateTo(expectedEvaluation)
   })
 
-  // TODO: Uncomment this
-  // it('', () => {
-  //   const code = 'function one() { return 1; }'
-  // })
+  it('calculates named function entropy', () => {
+    const code = 'function one() { return 1; }'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expectedEvaluation = new Evaluation(1, 2)
+    expect(entropy.evaluate()).toEvaluateTo(expectedEvaluation)
+  })
 })
 
 describe('Variable declaration entropy', () => {
