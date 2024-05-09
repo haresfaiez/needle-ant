@@ -247,7 +247,7 @@ describe('Variable declaration entropy', () => {
     expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 
-  it('calculates entropy of class definition and instanciation', () => {
+  it('calculates entropy of class definition and instantiation', () => {
     const code = 'class Example {}; const a = new Example();'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
@@ -271,12 +271,24 @@ describe('Variable declaration entropy', () => {
     expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 
-  // TODO: Uncomment this
-  // it('', () => {
-  //   const code = 'class User {}; const a = new User({ name: "Joe" });'
-  // })
+  it('calculates entropy of class instantiation with an object', () => {
+    const code = 'class User {}; const a = new User({ name: "Joe" });'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected =  new Evaluation(1, 2).plus(new Evaluation(1, 4))
+    expect(entropy.evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of class instantiation with an object with two attributes', () => {
+    const code = 'class User {}; const a = new User({ name: "Joe", lastName: "James" });'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected =  new Evaluation(1, 2).plus(new Evaluation(1, 5)).plus(new Evaluation(1, 5))
+    expect(entropy.evaluate()).toEvaluateTo(expected)
+  })
 })
 
+// TODO: Uncomment these tests
 // describe('Class definition entropy', () => {
 //   it('', () => {
 //     const code = `class A {

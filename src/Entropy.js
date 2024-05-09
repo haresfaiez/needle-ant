@@ -42,6 +42,20 @@ export class Entropy {
       )
     }
 
+    if (dividendType === 'ObjectExpression') {
+      return new ObjectEntropy(dividend, divisor)
+    }
+
+    if (dividendType === 'NewExpression') {
+      return new Entropies(
+        [
+          new Entropy(dividend.callee, divisor),
+          ...(dividend.arguments.length ? [new Entropy(dividend.arguments, divisor)] : [])
+        ],
+        divisor
+      )
+    }
+
     if (dividendType === 'VariableDeclaration') {
       // TODO: why are we ignoring "const"/"let"/"var"/...
       return new DeclarationEntropy(dividend.declarations, divisor)
@@ -75,7 +89,6 @@ export class Entropy {
       'ImportSpecifier',
       'Literal',
       'ReturnStatement',
-      'NewExpression'
     ]
     if (expressionTypes.includes(dividendType)) {
       return new ExpressionEntropy(dividend, divisor)
@@ -90,10 +103,6 @@ export class Entropy {
         ],
         divisor
       )
-    }
-
-    if (dividendType === 'ObjectExpression') {
-      return new ObjectEntropy(dividend, divisor)
     }
 
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
@@ -188,7 +197,13 @@ class AccessEntropy extends SingleEntropy  {
 class ObjectEntropy extends ExpressionEntropy {
   evaluate() {
     this.divisor.extendAccesses(this.dividend.identifiers())
-    return super.evaluate()
+    const propertyDivsor = Divisor.fromAccesses(this.divisor)
+    propertyDivsor.extend(this.divisor.identifiers())
+
+    return new Entropies(
+      this.dividend.sources[0].properties.map(eachSource => new Entropy(eachSource.value, propertyDivsor)),
+      this.divisor
+    ).evaluate()
   }
 }
 
