@@ -194,11 +194,8 @@ class ObjectEntropy extends ExpressionEntropy {
 
 class DeclarationEntropy extends SingleEntropy  {
   evaluate() {
-    const methodDeclaration = this.dividend.sources[0]
-    if (methodDeclaration.type === 'FunctionDeclaration') {
-      this.divisor.extend([methodDeclaration.id.name])
-      return new Entropy(methodDeclaration.body, this.divisor).evaluate()
-    }
+    const declarations = this.dividend.sources
+    const methodDeclaration = declarations[0]
 
     if (methodDeclaration.type === 'MethodDefinition') {
       this.divisor.extend([methodDeclaration.key.name])
@@ -208,20 +205,17 @@ class DeclarationEntropy extends SingleEntropy  {
       return new Entropy(methodDeclaration.value, declarationDivisor).evaluate()
     }
 
-    const declarations = this.dividend.sources
-
     // TODO: this.divisor.extend(this.dividend.declarators())
     declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
 
-
     const entropies = declarations.map(eachDeclaration => {
-      if (eachDeclaration.type === 'ClassDeclaration') {
-        return new Entropy(eachDeclaration.body, this.divisor)
+      if (eachDeclaration.type === 'VariableDeclarator') {
+        const paramsAsIdentifiers = new Reflexion(eachDeclaration.init.params || []).identifiers()
+        const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
+        return new Entropy(eachDeclaration.init, declarationDivisor)
       }
 
-      const paramsAsIdentifiers = new Reflexion(eachDeclaration.init.params || []).identifiers()
-      const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
-      return new Entropy(eachDeclaration.init, declarationDivisor)
+      return new Entropy(eachDeclaration.body, this.divisor)
     })
 
     return new Entropies(entropies, this.divisor).evaluate()
