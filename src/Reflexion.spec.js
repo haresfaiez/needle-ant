@@ -14,7 +14,7 @@ describe('Dependency entropy', () => {
   //     new MultiModulesDivisor(new DependenciesReflexion(dependencyAst, [ './B.js', './C.js' ]))
   //   )
 
-  //   expect(entropy.evaluate()).toEvaluateTo(new JointEvaluation([new Evaluation(1, 3)]))
+  //   expect(entropy.evaluate()).toEvaluateTo(new Evaluations([new Evaluation(1, 3)]))
   // })
 
   it('is null when a module imports the only exported function', () => {

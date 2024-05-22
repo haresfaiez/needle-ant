@@ -1,4 +1,4 @@
-import { JointEvaluation } from './Evalution.js'
+import { Evaluations } from './Evalution.js'
 
 beforeAll(() => {
   jasmine.addMatchers({
@@ -6,8 +6,8 @@ beforeAll(() => {
       return {
         compare: function(actual, expected) {
           const result = {}
-          const isJointEvaluation = actual instanceof JointEvaluation
-          if(!isJointEvaluation || (actual.evaluations.length !== expected.evaluations.length)) {
+          const isEvaluations = actual instanceof Evaluations
+          if(!isEvaluations || (actual.evaluations.length !== expected.evaluations.length)) {
             if (!expected.source) {
               result.pass =
                 matchersUtil.equals(actual.actualCount, expected.actualCount)

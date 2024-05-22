@@ -31,10 +31,10 @@ export class Evaluation {
     }
 
     if (otherEvaluation.evaluations) {
-      return new JointEvaluation([this, ...otherEvaluation.evaluations])
+      return new Evaluations([this, ...otherEvaluation.evaluations])
     }
 
-    return new JointEvaluation([this, otherEvaluation])
+    return new Evaluations([this, otherEvaluation])
   }
 
   possibilitiesCount(primitiveAndGlobalsCount = 0) {
@@ -97,7 +97,7 @@ export class Evaluation {
   }
 }
 
-export class JointEvaluation extends Evaluation {
+export class Evaluations extends Evaluation {
   constructor(evaluations) {
     super()
     this.evaluations = evaluations.filter(eachEvaluation => !this.shouldIgnoreAdding(eachEvaluation))
