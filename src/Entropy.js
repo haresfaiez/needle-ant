@@ -21,13 +21,10 @@ export class Entropy {
     }
 
     if (dividendType === 'MemberExpression') {
-      return new Entropies(
-        [
-          new Entropy(dividend.object, divisor),
-          new ObjectAccessEntropy(dividend.property, divisor)
-        ],
-        divisor
-      )
+      return new Entropies([
+        new Entropy(dividend.object, divisor),
+        new ObjectAccessEntropy(dividend.property, divisor)
+      ])
     }
 
     if (dividendType === 'ObjectExpression') {
@@ -35,13 +32,10 @@ export class Entropy {
     }
 
     if (dividendType === 'NewExpression') {
-      return new Entropies(
-        [
-          new Entropy(dividend.callee, divisor),
-          ...(dividend.arguments.length ? [new Entropy(dividend.arguments, divisor)] : [])
-        ],
-        divisor
-      )
+      return new Entropies([
+        new Entropy(dividend.callee, divisor),
+        ...(dividend.arguments.length ? [new Entropy(dividend.arguments, divisor)] : [])
+      ])
     }
 
     if (dividendType === 'VariableDeclaration') {
@@ -83,14 +77,11 @@ export class Entropy {
     }
 
     if (dividendType === 'IfStatement') {
-      return new Entropies(
-        [
-          new Entropy(dividend.test, divisor),
-          new BodyEntropy(dividend.consequent, divisor),
-          ...dividend.alternate ? [new BodyEntropy(dividend.alternate, divisor)] : []
-        ],
-        divisor
-      )
+      return new Entropies([
+        new Entropy(dividend.test, divisor),
+        new BodyEntropy(dividend.consequent, divisor),
+        ...dividend.alternate ? [new BodyEntropy(dividend.alternate, divisor)] : []
+      ])
     }
 
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
@@ -98,17 +89,13 @@ export class Entropy {
 }
 
 class Entropies {
-  constructor(entropies, divisor = new Divisor([])) {
+  constructor(entropies) {
     this.entropies = entropies
-    this.divisor = divisor
   }
 
   evaluate() {
     return this.entropies.reduce(
-      (sumEvalution, eachEntropy) => {
-        eachEntropy.divisor.extend(this.divisor.identifiers())
-        return sumEvalution.plus(eachEntropy.evaluate())
-      },
+      (sumEvalution, eachEntropy) => sumEvalution.plus(eachEntropy.evaluate()),
       new NullEvaluation()
     )
   }
@@ -128,7 +115,7 @@ class SingleEntropy {
 export class BodyEntropy extends SingleEntropy  {
   evaluate() {
     const entropies = this.dividend.sources.map(eachSource => new Entropy(eachSource, this.divisor))
-    return new Entropies(entropies, this.divisor).evaluate()
+    return new Entropies(entropies).evaluate()
   }
 }
 
@@ -169,14 +156,11 @@ class ExpressionEntropy extends SingleEntropy  {
     const dividend = this.dividend.sources[0]
 
     if (dividend.expression?.callee?.type === 'MemberExpression') {
-      return new Entropies(
-        [
-          new Entropy(dividend.expression.callee.object, this.divisor),
-          new ObjectAccessEntropy(dividend.expression.callee.property, this.divisor),
-          new BodyEntropy(dividend.expression.arguments, this.divisor)
-        ],
-        this.divisor
-      ).evaluate()
+      return new Entropies([
+        new Entropy(dividend.expression.callee.object, this.divisor),
+        new ObjectAccessEntropy(dividend.expression.callee.property, this.divisor),
+        new BodyEntropy(dividend.expression.arguments, this.divisor)
+      ]).evaluate()
     }
 
     // TODO: Remove this check
@@ -204,8 +188,9 @@ class ObjectAccessEntropy extends ExpressionEntropy {
     propertyDivsor.extend(this.divisor.identifiers())
 
     return new Entropies(
-      this.dividend.sources[0].properties.map(eachSource => new Entropy(eachSource.value, propertyDivsor)),
-      this.divisor
+      this.dividend.sources[0]
+        .properties
+        .map(eachSource => new Entropy(eachSource.value, propertyDivsor))
     ).evaluate()
   }
 }
@@ -236,6 +221,6 @@ class DeclarationEntropy extends SingleEntropy  {
       return new Entropy(eachDeclaration.body, this.divisor)
     })
 
-    return new Entropies(entropies, this.divisor).evaluate()
+    return new Entropies(entropies).evaluate()
   }
 }
