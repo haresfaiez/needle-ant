@@ -30,18 +30,6 @@ export class Entropy {
       )
     }
 
-    const callee = dividend.expression?.callee
-    if (callee?.type === 'MemberExpression') {
-      return new Entropies(
-        [
-          new Entropy(callee.object, divisor),
-          new AccessEntropy(callee.property, divisor),
-          new BodyEntropy(dividend.expression.arguments, divisor)
-        ],
-        divisor
-      )
-    }
-
     if (dividendType === 'ObjectExpression') {
       return new ObjectEntropy(dividend, divisor)
     }
@@ -176,14 +164,28 @@ class DependencyEntropy extends SingleEntropy  {
 }
 
 class ExpressionEntropy extends SingleEntropy  {
+  // TODO: Simplify this
   evaluate() {
+    const dividend = this.dividend.sources[0]
+
+    if (dividend.expression?.callee?.type === 'MemberExpression') {
+      return new Entropies(
+        [
+          new Entropy(dividend.expression.callee.object, this.divisor),
+          new AccessEntropy(dividend.expression.callee.property, this.divisor),
+          new BodyEntropy(dividend.expression.arguments, this.divisor)
+        ],
+        this.divisor
+      ).evaluate()
+    }
+
     // TODO: Remove this check
-    const isImport = this.dividend.sources[0].type.includes('mport')
+    const isImport = dividend.type.includes('mport')
     const literalsWeight = !isImport && this.dividend.literals().length ? 1 : 0
     const allPossibilitiesCount = this.divisor.identifiers().length + literalsWeight
     const actualCount = this.dividend.identifiers().length + literalsWeight
 
-    return new Evaluation(actualCount, allPossibilitiesCount, this.dividend.sources[0])
+    return new Evaluation(actualCount, allPossibilitiesCount, dividend)
   }
 }
 
@@ -195,6 +197,7 @@ class AccessEntropy extends SingleEntropy  {
 }
 
 class ObjectEntropy extends ExpressionEntropy {
+  // TODO: Simplify this
   evaluate() {
     this.divisor.extendAccesses(this.dividend.identifiers())
     const propertyDivsor = Divisor.fromAccesses(this.divisor)
