@@ -24,14 +24,14 @@ export class Entropy {
       return new Entropies(
         [
           new Entropy(dividend.object, divisor),
-          new AccessEntropy(dividend.property, divisor)
+          new ObjectAccessEntropy(dividend.property, divisor)
         ],
         divisor
       )
     }
 
     if (dividendType === 'ObjectExpression') {
-      return new ObjectEntropy(dividend, divisor)
+      return new ObjectAccessEntropy(dividend, divisor)
     }
 
     if (dividendType === 'NewExpression') {
@@ -172,7 +172,7 @@ class ExpressionEntropy extends SingleEntropy  {
       return new Entropies(
         [
           new Entropy(dividend.expression.callee.object, this.divisor),
-          new AccessEntropy(dividend.expression.callee.property, this.divisor),
+          new ObjectAccessEntropy(dividend.expression.callee.property, this.divisor),
           new BodyEntropy(dividend.expression.arguments, this.divisor)
         ],
         this.divisor
@@ -189,17 +189,17 @@ class ExpressionEntropy extends SingleEntropy  {
   }
 }
 
-class AccessEntropy extends SingleEntropy  {
-  evaluate() {
-    this.divisor.extendAccesses([this.dividend.sources[0].name])
-    return new Entropy(this.dividend, Divisor.fromAccesses(this.divisor)).evaluate()
-  }
-}
-
-class ObjectEntropy extends ExpressionEntropy {
+class ObjectAccessEntropy extends ExpressionEntropy {
   // TODO: Simplify this
   evaluate() {
     this.divisor.extendAccesses(this.dividend.identifiers())
+
+    const dividendType = this.dividend.sources[0].type
+
+    if (dividendType === 'Identifier') {
+      return new Entropy(this.dividend, Divisor.fromAccesses(this.divisor)).evaluate()
+    }
+
     const propertyDivsor = Divisor.fromAccesses(this.divisor)
     propertyDivsor.extend(this.divisor.identifiers())
 
