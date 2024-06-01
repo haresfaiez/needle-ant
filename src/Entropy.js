@@ -46,7 +46,8 @@ export class Entropy {
     const declarationTypes = [
       'ClassDeclaration',
       'MethodDefinition',
-      'FunctionDeclaration'
+      'FunctionDeclaration',
+      'PropertyDefinition',
     ]
     if (declarationTypes.includes(dividendType)) {
       return new DeclarationEntropy(dividend, divisor)
@@ -114,6 +115,10 @@ class SingleEntropy {
 
 export class BodyEntropy extends SingleEntropy  {
   evaluate() {
+    this.dividend.sources
+      .filter(eachDeclaration => ['MethodDefinition', 'PropertyDefinition'].includes(eachDeclaration.type))
+      .forEach(eachDeclaration => this.divisor.extend([eachDeclaration.key.name]))
+
     const entropies = this.dividend.sources.map(eachSource => new Entropy(eachSource, this.divisor))
     return new Entropies(entropies).evaluate()
   }
@@ -200,9 +205,7 @@ class DeclarationEntropy extends SingleEntropy  {
     const declarations = this.dividend.sources
     const methodDeclaration = declarations[0]
 
-    if (methodDeclaration.type === 'MethodDefinition') {
-      this.divisor.extend([methodDeclaration.key.name])
-
+    if (['MethodDefinition', 'PropertyDefinition'].includes(methodDeclaration.type)) {
       const paramsAsIdentifiers = new Reflexion(methodDeclaration.value.params || []).identifiers()
       const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
       return new Entropy(methodDeclaration.value, declarationDivisor).evaluate()
@@ -212,7 +215,8 @@ class DeclarationEntropy extends SingleEntropy  {
     declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
 
     const entropies = declarations.map(eachDeclaration => {
-      if (eachDeclaration.type === 'VariableDeclarator') {
+      const eachDeclarationType = eachDeclaration.type
+      if (eachDeclarationType === 'VariableDeclarator') {
         const paramsAsIdentifiers = new Reflexion(eachDeclaration.init.params || []).identifiers()
         const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
         return new Entropy(eachDeclaration.init, declarationDivisor)
