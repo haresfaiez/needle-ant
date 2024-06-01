@@ -85,6 +85,10 @@ export class Entropy {
       ])
     }
 
+    if (dividendType === 'VariableDeclarator') {
+      return new DeclarationEntropy(dividend, this.divisor)
+    }
+
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
   }
 }
@@ -203,28 +207,27 @@ class ObjectAccessEntropy extends ExpressionEntropy {
 class DeclarationEntropy extends SingleEntropy  {
   evaluate() {
     const declarations = this.dividend.sources
-    const methodDeclaration = declarations[0]
+    const declaration = declarations[0]
 
-    if (['MethodDefinition', 'PropertyDefinition'].includes(methodDeclaration.type)) {
-      const paramsAsIdentifiers = new Reflexion(methodDeclaration.value.params || []).identifiers()
+    const isInsideClass = ['MethodDefinition', 'PropertyDefinition'].includes(declaration.type)
+    const isVariable = declarations.length === 1 && declaration.type === 'VariableDeclarator'
+
+    // isInsideClass was already handeled by BodyEntropy
+    !isInsideClass && declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
+
+    if (isInsideClass || isVariable) {
+      const value = isInsideClass ? declaration.value : isVariable ? declaration.init : null
+      const paramsAsIdentifiers = new Reflexion(value.params || []).identifiers()
       const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
-      return new Entropy(methodDeclaration.value, declarationDivisor).evaluate()
+      return new Entropy(value, declarationDivisor).evaluate()
     }
 
-    // TODO: this.divisor.extend(this.dividend.declarators())
-    declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
-
-    const entropies = declarations.map(eachDeclaration => {
-      const eachDeclarationType = eachDeclaration.type
-      if (eachDeclarationType === 'VariableDeclarator') {
-        const paramsAsIdentifiers = new Reflexion(eachDeclaration.init.params || []).identifiers()
-        const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
-        return new Entropy(eachDeclaration.init, declarationDivisor)
+    declarations.forEach((eachDeclaration, i) => {
+      if (['ClassDeclaration', 'FunctionDeclaration'].includes(eachDeclaration.type)) {
+        declarations[i] = eachDeclaration.body
       }
-
-      return new Entropy(eachDeclaration.body, this.divisor)
     })
 
-    return new Entropies(entropies).evaluate()
+    return new BodyEntropy(declarations, this.divisor).evaluate()
   }
 }
