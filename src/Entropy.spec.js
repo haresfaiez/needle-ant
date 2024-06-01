@@ -44,14 +44,12 @@ describe('Method invocation entropy', () => {
   it('considers all methods invocation for each method invocation entropy', () => {
     const code = 'f.aMethod(); f.anOtherMethod();'
     const divisor = Divisor.parse(code, (ast) => ast.body)
-    divisor.accesses.add('aMethod')
-    divisor.accesses.add('anOtherMethod')
     const entropy = new BodyEntropy(
       Reflexion.parse(code, (ast) => ast.body),
       divisor
     )
 
-    const expected = new Evaluation(1, 1).plus(new Evaluation(1, 2)).times(2)
+    const expected = new Evaluation(1, 1).times(3).plus(new Evaluation(1, 2))
     expect(entropy.evaluate()).toEvaluateTo(expected)
   })
 })

@@ -177,20 +177,20 @@ class ObjectAccessEntropy extends ExpressionEntropy {
   // TODO: Simplify this
   evaluate() {
     this.divisor.extendAccesses(this.dividend.identifiers())
+    const nextDivisor = Divisor.fromAccesses(this.divisor)
 
     const dividendType = this.dividend.sources[0].type
 
     if (dividendType === 'Identifier') {
-      return new Entropy(this.dividend, Divisor.fromAccesses(this.divisor)).evaluate()
+      return new Entropy(this.dividend, nextDivisor).evaluate()
     }
 
-    const propertyDivsor = Divisor.fromAccesses(this.divisor)
-    propertyDivsor.extend(this.divisor.identifiers())
+    nextDivisor.extend(this.divisor.identifiers())
 
     return new Entropies(
       this.dividend.sources[0]
         .properties
-        .map(eachSource => new Entropy(eachSource.value, propertyDivsor))
+        .map(eachSource => new Entropy(eachSource.value, nextDivisor))
     ).evaluate()
   }
 }
