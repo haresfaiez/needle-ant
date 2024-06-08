@@ -8,7 +8,6 @@ export class Reflexion {
       reflexionOrSources.sources
         ? reflexionOrSources.sources
         : Array.isArray(reflexionOrSources) ? reflexionOrSources : [reflexionOrSources]
-    // TODO: Should we uncomment this?
     this.sources = this.sources.filter(eachSource => eachSource.type !== 'EmptyStatement')
   }
 
