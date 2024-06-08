@@ -168,7 +168,10 @@ class ExpressionEntropy extends SingleEntropy  {
   evaluate() {
     const dividend = this.dividend.sources[0]
 
-    if (dividend.expression?.callee?.type === 'MemberExpression') {
+    const isMethodInvocation = dividend.expression?.callee?.type === 'MemberExpression'
+    const isMemberAccess = dividend.expression?.left?.type === 'MemberExpression'
+
+    if (isMethodInvocation) {
       return new Entropies([
         new Entropy(dividend.expression.callee.object, this.divisor),
         new ObjectAccessEntropy(dividend.expression.callee.property, this.divisor),
@@ -176,7 +179,7 @@ class ExpressionEntropy extends SingleEntropy  {
       ]).evaluate()
     }
 
-    if (dividend.expression?.left?.type === 'MemberExpression') {
+    if (isMemberAccess) {
       return new Entropies([
         new Entropy(dividend.expression.left.object, this.divisor),
         new ObjectAccessEntropy(dividend.expression.left.property, this.divisor),
