@@ -10,8 +10,8 @@ beforeAll(() => {
           if(!isEvaluations || (actual.evaluations.length !== expected.evaluations.length)) {
             if (!expected.source) {
               result.pass =
-                matchersUtil.equals(actual.actualCount, expected.actualCount)
-                  && matchersUtil.equals(actual.possibleCount, expected.possibleCount)
+                matchersUtil.equals(actual.actual, expected.actual)
+                  && matchersUtil.equals(actual.possible, expected.possible)
             } else {
               result.pass = matchersUtil.equals(actual, expected)
             }
@@ -22,8 +22,8 @@ beforeAll(() => {
             const eachExpected = expected.evaluations[i]
             if (!eachExpected.source) {
               result.pass =
-                matchersUtil.equals(eachActual.actualCount, eachExpected.actualCount)
-                  && matchersUtil.equals(eachActual.possibleCount, eachExpected.possibleCount)
+                matchersUtil.equals(eachActual.actual, eachExpected.actual)
+                  && matchersUtil.equals(eachActual.possible, eachExpected.possible)
             } else {
               result.pass = matchersUtil.equals(eachActual, eachExpected)
             }

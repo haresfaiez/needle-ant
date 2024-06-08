@@ -2,19 +2,23 @@ import * as escodegen from 'escodegen'
 
 export class Evaluation {
 
-  constructor(actualCount, possibleCount, source) {
-    this.actualCount = actualCount
-    this.possibleCount = possibleCount
+  constructor(actual, possible, source) {
+    this.actual = actual
+    this.possible = possible
     // TODO: Simplify this
     this.source = source?.type
       ? escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })
       : source
   }
 
+  evaluate() {
+    return new Evaluation(this.actual.length, this.possible.length, this.source)
+  }
+
   shouldIgnoreAdding(otherEvaluation) {
     return !otherEvaluation.evaluations
-      && !otherEvaluation.actualCount
-      && !otherEvaluation.possibleCount
+      && !otherEvaluation.actual
+      && !otherEvaluation.possible
   }
 
   times(multiplier) {
@@ -41,21 +45,21 @@ export class Evaluation {
   }
 
   possibilitiesCount(primitiveAndGlobalsCount = 0) {
-    if (this.actualCount) {
+    if (this.actual) {
       primitiveAndGlobalsCount = 1
     }
 
     const combinationsCount =
-      this.actualCount > 1
-        ? this.combination(this.possibleCount + primitiveAndGlobalsCount, this.actualCount)
+      this.actual > 1
+        ? this.combination(this.possible + primitiveAndGlobalsCount, this.actual)
         : 0
   
     const possibilitiesWeight =
-      this.actualCount < this.possibleCount
-        ? this.possibleCount
+      this.actual < this.possible
+        ? this.possible
         : 0
 
-    return (this.actualCount || possibilitiesWeight) + combinationsCount
+    return (this.actual || possibilitiesWeight) + combinationsCount
   }
 
   probability() {
@@ -63,7 +67,7 @@ export class Evaluation {
   }
 
   calculate() {
-    if (this.actualCount === this.possibleCount)
+    if (this.actual === this.possible)
       return 0
 
     if (this.probability() === 1)
@@ -104,6 +108,10 @@ export class Evaluations extends Evaluation {
   constructor(evaluations) {
     super()
     this.evaluations = evaluations.filter(eachEvaluation => !this.shouldIgnoreAdding(eachEvaluation))
+  }
+
+  evaluate() {
+    return new Evaluations(this.evaluations.map(each => each.evaluate()))
   }
 
   plus(otherEvaluation) {

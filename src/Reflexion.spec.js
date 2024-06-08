@@ -14,7 +14,7 @@ describe('Dependency entropy', () => {
   //     new MultiModulesDivisor(new DependenciesReflexion(dependencyAst, [ './B.js', './C.js' ]))
   //   )
 
-  //   expect(entropy.evaluate()).toEvaluateTo(new Evaluations([new Evaluation(1, 3)]))
+  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(new Evaluations([new Evaluation(1, 3)]))
   // })
 
   it('is null when a module imports the only exported function', () => {
@@ -25,8 +25,8 @@ describe('Dependency entropy', () => {
       new Divisor(Reflexion.parse(dependencyCode))
     )
 
-    expect(entropy.evaluate()).toEvaluateTo(new Evaluation(1, 1))
-    expect(entropy.evaluate().calculate()).toBe(0)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(new Evaluation(1, 1))
+    expect(entropy.evaluate().evaluate().calculate()).toBe(0)
   })
 
   it('is 1/3 when a module imports of one of three exported functions', () => {
@@ -37,7 +37,7 @@ describe('Dependency entropy', () => {
       new Divisor(Reflexion.parse(dependencyCode))
     )
 
-    expect(entropy.evaluate()).toEvaluateTo(new Evaluation(1, 3))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(new Evaluation(1, 3))
   })
 
   it('is 2/3 when a module imports of two of three exported functions', () => {
@@ -48,7 +48,7 @@ describe('Dependency entropy', () => {
       new Divisor(Reflexion.parse(dependencyCode))
     )
 
-    expect(entropy.evaluate()).toEvaluateTo(new Evaluation(2, 3))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(new Evaluation(2, 3))
   })
 
   // it('is (1/3)+(1/4) when a module imports of one of three exported functions', () => {
@@ -61,7 +61,7 @@ describe('Dependency entropy', () => {
   //   )
 
   //   const expected = new Evaluation(1, 3).plus(new Evaluation(1, 4))
-  //   expect(entropy.evaluate()).toEvaluateTo(expected)
+  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   // })
 
   it('is null when a module imports all exported functions', () => {
@@ -72,7 +72,7 @@ describe('Dependency entropy', () => {
       new Divisor(Reflexion.parse(dependencyCode))
     )
 
-    expect(entropy.evaluate().calculate()).toEqual(0)
+    expect(entropy.evaluate().evaluate().calculate()).toEqual(0)
   })
 })
 

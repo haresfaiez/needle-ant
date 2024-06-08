@@ -145,8 +145,8 @@ class DependencyEntropy extends SingleEntropy  {
 
     if (isWildcardImport) {
       return new Evaluation(
-        this.divisor.identifiers().length,
-        this.divisor.identifiers().length,
+        this.divisor.identifiers(),
+        this.divisor.identifiers(),
         this.dividend.sources[0]
       )
     }
@@ -174,11 +174,11 @@ class ExpressionEntropy extends SingleEntropy  {
 
     // TODO: Remove this check
     const isImport = dividend.type.includes('mport')
-    const literalsWeight = !isImport && this.dividend.literals().length ? 1 : 0
-    const allPossibilitiesCount = this.divisor.identifiers().length + literalsWeight
-    const actualCount = this.dividend.identifiers().length + literalsWeight
+    const literalsWeight = !isImport && this.dividend.literals().length ? [1] : []
+    const possibles = [...this.divisor.identifiers(), ...literalsWeight]
+    const actuals = [...this.dividend.identifiers(), ...literalsWeight]
 
-    return new Evaluation(actualCount, allPossibilitiesCount, dividend)
+    return new Evaluation(actuals, possibles, dividend)
   }
 }
 
