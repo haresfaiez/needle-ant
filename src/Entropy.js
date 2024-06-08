@@ -72,6 +72,7 @@ export class Entropy {
       'ImportSpecifier',
       'Literal',
       'ReturnStatement',
+      'ThisExpression',
     ]
     if (expressionTypes.includes(dividendType)) {
       return new ExpressionEntropy(dividend, divisor)
@@ -118,10 +119,13 @@ class SingleEntropy {
 }
 
 export class BodyEntropy extends SingleEntropy  {
+  static IGNORED_IDENTIFIERS = ['constructor']
+
   evaluate() {
     this.dividend.sources
       .filter(eachDeclaration => ['MethodDefinition', 'PropertyDefinition'].includes(eachDeclaration.type))
-      .forEach(eachDeclaration => this.divisor.extend([eachDeclaration.key.name]))
+      .filter(eachDeclaration => !BodyEntropy.IGNORED_IDENTIFIERS.includes(eachDeclaration.key.name))
+      .forEach(eachDeclaration => this.divisor.extendAccesses([eachDeclaration.key.name]))
 
     const entropies = this.dividend.sources.map(eachSource => new Entropy(eachSource, this.divisor))
     return new Entropies(entropies).evaluate()
@@ -172,11 +176,20 @@ class ExpressionEntropy extends SingleEntropy  {
       ]).evaluate()
     }
 
+    if (dividend.expression?.left?.type === 'MemberExpression') {
+      return new Entropies([
+        new Entropy(dividend.expression.left.object, this.divisor),
+        new ObjectAccessEntropy(dividend.expression.left.property, this.divisor),
+        new Entropy(dividend.expression.right, this.divisor)
+      ]).evaluate()
+    }
+
     // TODO: Remove this check
     const isImport = dividend.type.includes('mport')
     const literalsWeight = !isImport && this.dividend.literals().length ? [1] : []
+    const thisExpression = dividend.type === 'ThisExpression' ? ['this'] : []
     const possibles = [...this.divisor.identifiers(), ...literalsWeight]
-    const actuals = [...this.dividend.identifiers(), ...literalsWeight]
+    const actuals = [...this.dividend.identifiers(), ...literalsWeight, ...thisExpression]
 
     return new Evaluation(actuals, possibles, dividend)
   }

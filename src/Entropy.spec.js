@@ -257,7 +257,7 @@ describe('Variable declaration entropy', () => {
     const code = 'class Example { sayHello(name) { return "Hello " + name } }'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected =  new Evaluation(2, 4)
+    const expected =  new Evaluation(2, 3)
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -265,7 +265,7 @@ describe('Variable declaration entropy', () => {
     const code = 'class Example { sayHello(name) { return "Hello " + name } identity(x) { return x; } }'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected =  new Evaluation(2, 5).plus(new Evaluation(1, 4))
+    const expected =  new Evaluation(2, 3).plus(new Evaluation(1, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -304,42 +304,32 @@ describe('Class definition entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  // TODO: Uncomment this test
-  // it('calculates entropy of class definition, instanciation, and usage', () => {
-  //   const code = `class A {
-  //     constructor(a) {
-  //       this.a = a;
-  //     }
+  it('calculates entropy of class definition, instanciation, and usage', () => {
+    const code = `class A {
+      constructor(argument) {
+        this.a = argument;
+      }
 
-  //     read() {}
+      read() {}
 
-  //     write() {}
-  //   }
-  //   const instance = new A(12)
-  //   instance.write()
-  //   `
-  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+      write() {}
+    }
+    const instance = new A(12)
+    instance.write()
+    `
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-  //   const expected =  new Evaluation(1, 5).plus(new Evaluation(1, 5)).plus(new Evaluation(1, 5))
-  //   expect(entropy.evaluate()).toEqual(expected)
-  // })
+    const expected =  new Evaluation(1, 2)
+      .plus(new Evaluation(1, 3))
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(1, 3))
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(1, 3))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 
   // TODO: Uncomment these tests
-  // it('', () => {
-  //   const code = `class A {
-  //     constructor(a) {
-  //       this.a = a;
-  //     }
-  //   }
-  //   const instance = new A(12)
-  //   instance.write()
-  //   `
-  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
-
-  //   const expected =  new Evaluation(1, 2).plus(new Evaluation(1, 5)).plus(new Evaluation(1, 5))
-  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  // })
-
   // it('', () => {
   //   const code = 'class A extends B {}'
   //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
