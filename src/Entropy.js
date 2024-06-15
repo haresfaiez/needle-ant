@@ -73,6 +73,7 @@ export class Entropy {
       'Literal',
       'ReturnStatement',
       'ThisExpression',
+      'UpdateExpression',
     ]
     if (expressionTypes.includes(dividendType)) {
       return new ExpressionEntropy(dividend, divisor)
@@ -88,6 +89,10 @@ export class Entropy {
 
     if (dividendType === 'VariableDeclarator') {
       return new DeclarationEntropy(dividend, this.divisor)
+    }
+
+    if (dividendType === 'ForStatement') {
+      return new BodyEntropy([dividend.init, dividend.test, dividend.update, dividend.body])
     }
 
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
@@ -187,9 +192,12 @@ class ExpressionEntropy extends SingleEntropy  {
       ]).evaluate()
     }
 
+    // TODO: Add other bit-shifting operators
+    const isBitShiftingOperation = dividend.expression && ['++', '--'].includes(dividend.expression.operator)
+
     // TODO: Remove this check
     const isImport = dividend.type.includes('mport')
-    const literalsWeight = !isImport && this.dividend.literals().length ? [1] : []
+    const literalsWeight = !isImport && (this.dividend.literals().length || isBitShiftingOperation) ? [1] : []
     const thisExpression = dividend.type === 'ThisExpression' ? ['this'] : []
     const possibles = [...this.divisor.identifiers(), ...literalsWeight]
     const actuals = [...this.dividend.identifiers(), ...literalsWeight, ...thisExpression]

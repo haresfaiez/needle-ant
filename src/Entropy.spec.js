@@ -346,10 +346,59 @@ describe('Class definition entropy', () => {
   })
 })
 
+describe('Update expression entropy', () => {
+  it('calculates "++" entropy', () => {
+    const code = 'i++'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected =  new Evaluation(2, 1)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates "--" entropy', () => {
+    const code = 'i--'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected =  new Evaluation(2, 1)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+})
+
+
+describe('Assignment entropy', () => {
+   it('calculates inline assignment entropy', () => {
+    const code = 'let a = 0; a = 2'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected =  new Evaluation(1, 2).plus(new Evaluation(1, 2))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+})
+
+
+describe('Loop entropy', () => {
+  it('calculates entropy of for-loop', () => {
+    const code = 'for (let i = 0; i < 10; i++) { }'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2)
+      .plus(new Evaluation(2, 2))
+      .plus(new Evaluation(1, 1))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
 // TODO: Uncomment these tests
-// describe('Loop entropy', () => {
-//   // TODO: check all forms of loops
-// })
+//   it('calculates entropy of while-loop', () => {
+//   })
+//
+//   it('calculates entropy of do-while-loop', () => {
+//   })
+//
+//   it('calculates entropy of for-each iterator', () => {
+//   })
+ })
+
+// TODO: update expresison ++/--
 // describe('Array definition entropy', () => {
 //   // TODO: check all forms of loops
 // })
