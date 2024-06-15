@@ -244,6 +244,14 @@ class DeclarationEntropy extends SingleEntropy  {
       }
     })
 
-    return new BodyEntropy(declarations, this.divisor).evaluate()
+    const declarationsEvaluation = new BodyEntropy(declarations, this.divisor).evaluate()
+
+    // class A extends B
+    if (declaration.type === 'ClassDeclaration' && declaration.superClass) {
+      this.divisor.extend([declaration.superClass.name])
+      return new Evaluation([declaration.id.name], this.divisor.identifiers()).plus(declarationsEvaluation)
+    }
+
+    return declarationsEvaluation
   }
 }

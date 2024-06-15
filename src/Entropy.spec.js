@@ -329,23 +329,21 @@ describe('Class definition entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  // TODO: Uncomment these tests
-  // it('', () => {
-  //   const code = 'class A extends B {}'
-  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+  it('calculates entropy of class extension', () => {
+    const code = 'class A extends B {}'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-  //   const expected =  new Evaluation(1, 2).plus(new Evaluation(1, 5)).plus(new Evaluation(1, 5))
-  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  // })
+    const expected =  new Evaluation(1, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 
-  // it('', () => {
-  //   const code = 'class B {}; class A extends B {}'
-  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+  it('calculates entropy of class definition and extension', () => {
+    const code = 'class Other{}; class B {}; class A extends B {}'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-  //   const expected =  new Evaluation(1, 2).plus(new Evaluation(1, 5)).plus(new Evaluation(1, 5))
-  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  // })
-  // TODO: test that ignores `this`
+    const expected =  new Evaluation(1, 3)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 })
 
 // TODO: Uncomment these tests
