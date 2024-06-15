@@ -74,6 +74,7 @@ export class Entropy {
       'ReturnStatement',
       'ThisExpression',
       'UpdateExpression',
+      'BreakStatement',
     ]
     if (expressionTypes.includes(dividendType)) {
       return new ExpressionEntropy(dividend, divisor)
@@ -92,7 +93,11 @@ export class Entropy {
     }
 
     if (dividendType === 'ForStatement') {
-      return new BodyEntropy([dividend.init, dividend.test, dividend.update, dividend.body])
+      return new BodyEntropy([dividend.init, dividend.test, dividend.update, dividend.body], divisor)
+    }
+
+    if (dividendType === 'SequenceExpression') {
+      return new BodyEntropy(dividend.expressions, divisor)
     }
 
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)

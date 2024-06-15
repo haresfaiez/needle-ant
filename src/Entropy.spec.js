@@ -221,9 +221,7 @@ describe('Variable declaration entropy', () => {
     const code = 'const a = {x: 3, y: 0}; const tmp = a.x;'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected =  new Evaluation(3, 2)
-      .plus(new Evaluation(1, 2))
-      .plus(new Evaluation(1, 2))
+    const expected =  new Evaluation(1, 4).times(2).plus(new Evaluation(1, 2).times(2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -377,7 +375,7 @@ describe('Assignment entropy', () => {
 
 
 describe('Loop entropy', () => {
-  it('calculates entropy of for-loop', () => {
+  it('calculates entropy of empty for-loop', () => {
     const code = 'for (let i = 0; i < 10; i++) { }'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
@@ -386,6 +384,22 @@ describe('Loop entropy', () => {
       .plus(new Evaluation(1, 1))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
+
+  it('calculates entropy of for-loop with two variables and a body', () => {
+    const code = 'for (let i = 0, j = 10; i < 10; i++, j--) { if (i == j) { break; } }'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 3)
+      .times(2)
+      .plus(new Evaluation(2, 3))
+      .plus(new Evaluation(1, 2).times(2))
+      .plus(new Evaluation(2, 2))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+    // TOOD: should not add for-scoped variables to main scope
+    // TODO: test: for (let i = 0, j = 10; i < 10; i++, j--) { if (i == j) { break; } } const a = 2; log(a + b)
+
 
 // TODO: Uncomment these tests
 //   it('calculates entropy of while-loop', () => {

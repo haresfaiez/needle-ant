@@ -18,7 +18,6 @@ export class Evaluation {
   shouldIgnoreAdding(otherEvaluation) {
     return !otherEvaluation.evaluations
       && !otherEvaluation.actual
-      && !otherEvaluation.possible
   }
 
   times(multiplier) {
