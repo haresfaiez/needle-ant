@@ -39,7 +39,7 @@ ${failedComparisonMessage(actual, expected)}`
             return result
           }
 
-          const failingComparisonIndex = actual.evaluations.find((eachActual, i) => {
+          const failingComparisonIndex = actual.evaluations.findIndex((eachActual, i) => {
             const eachExpected = expected.evaluations[i]
             if (!eachExpected.source) {
               result.pass =
@@ -49,7 +49,7 @@ ${failedComparisonMessage(actual, expected)}`
               result.pass = matchersUtil.equals(eachActual, eachExpected)
             }
 
-            return !result.pass && i
+            return !result.pass
           })
 
           if (!result.pass) {
