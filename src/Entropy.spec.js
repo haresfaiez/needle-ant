@@ -397,9 +397,17 @@ describe('Loop entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-    // TOOD: should not add for-scoped variables to main scope
-    // TODO: test: for (let i = 0, j = 10; i < 10; i++, j--) { if (i == j) { break; } } const a = 2; log(a + b)
+  it('encloses loop init variables inside the loop scope', () => {
+    const code = 'for (let i = 0; i < 10; i++) { } const a = 2; const c = a + 19;'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
+    const expected = new Evaluation(1, 2)
+      .plus(new Evaluation(2, 2))
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(2, 3))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 
 // TODO: Uncomment these tests
 //   it('calculates entropy of while-loop', () => {
