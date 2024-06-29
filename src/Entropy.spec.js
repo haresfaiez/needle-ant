@@ -342,6 +342,31 @@ describe('Class definition entropy', () => {
     const expected =  new Evaluation(1, 3)
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
+
+  it('calculates entropy class extension', () => {
+    const code = 'class A extends B {}'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected =  new Evaluation(1, 1)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  // TODO: Uncomment these
+  // it('calculates entropy class extension of defined class', () => {
+  //   const code = 'class C {}; class B {}; class A extends B {}'
+  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+  //   const expected =  new Evaluation(1, 3)
+  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  // })
+
+  // it('calculates entropy class extension of a parentclass defined after child', () => {
+  //   const code = 'class A extends B {}; class B {}'
+  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+  //   const expected =  new Evaluation(1, 2)
+  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  // })
 })
 
 describe('Update expression entropy', () => {

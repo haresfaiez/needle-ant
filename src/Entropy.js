@@ -132,12 +132,26 @@ export class BodyEntropy extends SingleEntropy  {
   static IGNORED_IDENTIFIERS = ['constructor']
 
   evaluate() {
-    this.dividend.sources
+    // TODO: Move this to ClassEntropy
+    const members = this.dividend.sources
       .filter(eachDeclaration => ['MethodDefinition', 'PropertyDefinition'].includes(eachDeclaration.type))
       .filter(eachDeclaration => !BodyEntropy.IGNORED_IDENTIFIERS.includes(eachDeclaration.key.name))
-      .forEach(eachDeclaration => this.divisor.extendAccesses([eachDeclaration.key.name]))
+      .map(eachDeclaration => eachDeclaration.key.name)
+
+    const superClasses = this.dividend.sources
+      .filter(eachDeclaration => ['ClassDeclaration'].includes(eachDeclaration.type))
+      .filter(eachDeclaration => eachDeclaration.superClass)
+      .map(eachDeclaration => eachDeclaration.superClass.name)
+
+    this.divisor.extendAccesses(members)
+    this.divisor.extend(superClasses)
 
     const entropies = this.dividend.sources.map(eachSource => new Entropy(eachSource, this.divisor))
+
+    if (superClasses.length) {
+      return new Evaluation(superClasses, this.divisor.identifiers()).plus(new Entropies(entropies).evaluate())
+    }
+
     return new Entropies(entropies).evaluate()
   }
 }
@@ -234,15 +248,19 @@ class ObjectAccessEntropy extends ExpressionEntropy {
 }
 
 class DeclarationEntropy extends SingleEntropy  {
+  // TODO: refactor and make obvious/clear
   evaluate() {
     const declarations = this.dividend.sources
     const declaration = declarations[0]
 
+    // Method or Property of a class definition
     const isInsideClass = ['MethodDefinition', 'PropertyDefinition'].includes(declaration.type)
     const isVariable = declarations.length === 1 && declaration.type === 'VariableDeclarator'
 
     // isInsideClass was already handeled by BodyEntropy
-    !isInsideClass && declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
+    if (!isInsideClass) {
+      declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
+    }
 
     if (isInsideClass || isVariable) {
       const value = isInsideClass ? declaration.value : isVariable ? declaration.init : null
