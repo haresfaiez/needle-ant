@@ -327,7 +327,6 @@ describe('Class definition entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-
   it('calculates entropy of class extension', () => {
     const code = 'class A extends B {}'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
@@ -336,20 +335,11 @@ describe('Class definition entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  // TODO: Uncomment these
   // it('calculates entropy class extension of defined class', () => {
   //   const code = 'class C {}; class B {}; class A extends B {}'
   //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
   //   const expected =  new Evaluation(1, 3)
-  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  // })
-
-  // it('calculates entropy class extension of a parentclass defined after child', () => {
-  //   const code = 'class A extends B {}; class B {}'
-  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
-
-  //   const expected =  new Evaluation(1, 2)
   //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   // })
 })
@@ -374,7 +364,7 @@ describe('Update expression entropy', () => {
 
 
 describe('Assignment entropy', () => {
-   it('calculates inline assignment entropy', () => {
+  it('calculates inline assignment entropy', () => {
     const code = 'let a = 0; a = 2'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
@@ -428,7 +418,7 @@ describe('Loop entropy', () => {
 //
 //   it('calculates entropy of for-each iterator', () => {
 //   })
- })
+})
 
 // TODO: update expresison ++/--
 // describe('Array definition entropy', () => {
