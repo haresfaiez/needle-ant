@@ -381,7 +381,6 @@ describe('Assignment entropy', () => {
   })
 })
 
-
 describe('Loop entropy', () => {
   it('calculates entropy of empty for-loop', () => {
     const code = 'for (let i = 0; i < 10; i++) { }'
