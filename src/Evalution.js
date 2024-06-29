@@ -15,6 +15,7 @@ export class Evaluation {
     return new Evaluation(this.actual.length, this.possible.length, this.source)
   }
 
+  // TODO: Ignore adding null Evaluation (actual == 0)
   shouldIgnoreAdding(otherEvaluation) {
     return !otherEvaluation.evaluations
       && !otherEvaluation.actual

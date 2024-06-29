@@ -44,13 +44,16 @@ export class Entropy {
     }
 
     const declarationTypes = [
-      'ClassDeclaration',
       'MethodDefinition',
       'FunctionDeclaration',
       'PropertyDefinition',
     ]
     if (declarationTypes.includes(dividendType)) {
       return new DeclarationEntropy(dividend, divisor)
+    }
+
+    if (dividendType === 'ClassDeclaration') {
+      return new ClassEntropy(dividend, divisor)
     }
 
     const bodyTypes = [
@@ -138,19 +141,9 @@ export class BodyEntropy extends SingleEntropy  {
       .filter(eachDeclaration => !BodyEntropy.IGNORED_IDENTIFIERS.includes(eachDeclaration.key.name))
       .map(eachDeclaration => eachDeclaration.key.name)
 
-    const superClasses = this.dividend.sources
-      .filter(eachDeclaration => ['ClassDeclaration'].includes(eachDeclaration.type))
-      .filter(eachDeclaration => eachDeclaration.superClass)
-      .map(eachDeclaration => eachDeclaration.superClass.name)
-
     this.divisor.extendAccesses(members)
-    this.divisor.extend(superClasses)
 
     const entropies = this.dividend.sources.map(eachSource => new Entropy(eachSource, this.divisor))
-
-    if (superClasses.length) {
-      return new Evaluation(superClasses, this.divisor.identifiers()).plus(new Entropies(entropies).evaluate())
-    }
 
     return new Entropies(entropies).evaluate()
   }
@@ -269,11 +262,9 @@ class DeclarationEntropy extends SingleEntropy  {
       return new Entropy(value, declarationDivisor).evaluate()
     }
 
-    declarations.forEach((eachDeclaration, i) => {
-      if (['ClassDeclaration', 'FunctionDeclaration'].includes(eachDeclaration.type)) {
-        declarations[i] = eachDeclaration.body
-      }
-    })
+    declarations
+      .filter(eachDeclaration => eachDeclaration.type === 'FunctionDeclaration')
+      .forEach((eachDeclaration, i) => declarations[i] = eachDeclaration.body)
 
     const declarationsEvaluation = new BodyEntropy(declarations, this.divisor).evaluate()
 
@@ -284,5 +275,29 @@ class DeclarationEntropy extends SingleEntropy  {
     }
 
     return declarationsEvaluation
+  }
+}
+
+class ClassEntropy extends SingleEntropy {
+  evaluate() {
+    const superClasses = this.dividend.sources
+      .filter(eachDeclaration => ['ClassDeclaration'].includes(eachDeclaration.type))
+      .filter(eachDeclaration => eachDeclaration.superClass)
+      .map(eachDeclaration => eachDeclaration.superClass.name)
+
+    this.divisor.extend(superClasses)
+
+    const superClassEvaluation = new Evaluation(superClasses, this.divisor.identifiers())
+
+    const declarations = this.dividend.sources
+    const dividends = declarations.map(eachDeclaration => eachDeclaration.body)
+    declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
+    const mainEntropy = new BodyEntropy(dividends, this.divisor).evaluate()
+
+    // TODO: Generalize this to one `return`
+    if (superClasses.length) {
+      return mainEntropy.plus(superClassEvaluation)
+    }
+    return mainEntropy
   }
 }
