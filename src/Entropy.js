@@ -44,12 +44,18 @@ export class Entropy {
     }
 
     const declarationTypes = [
-      'MethodDefinition',
       'FunctionDeclaration',
-      'PropertyDefinition',
     ]
     if (declarationTypes.includes(dividendType)) {
       return new DeclarationEntropy(dividend, divisor)
+    }
+
+    const classMemberTypes = [
+      'MethodDefinition',
+      'PropertyDefinition',
+    ]
+    if (classMemberTypes.includes(dividendType)) {
+      return new ClassMemberEntropy(dividend, divisor)
     }
 
     if (dividendType === 'ClassDeclaration') {
@@ -232,22 +238,15 @@ class ObjectAccessEntropy extends ExpressionEntropy {
 }
 
 class DeclarationEntropy extends SingleEntropy  {
-  // TODO: refactor and make obvious/clear
   evaluate() {
     const declarations = this.dividend.sources
     const declaration = declarations[0]
 
-    // Method or Property of a class definition
-    const isInsideClass = ['MethodDefinition', 'PropertyDefinition'].includes(declaration.type)
     const isVariable = declarations.length === 1 && declaration.type === 'VariableDeclarator'
+    declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
 
-    // isInsideClass was already handeled by BodyEntropy
-    if (!isInsideClass) {
-      declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
-    }
-
-    if (isInsideClass || isVariable) {
-      const value = isInsideClass ? declaration.value : isVariable ? declaration.init : null
+    if (isVariable) {
+      const value = declaration.init
       const paramsAsIdentifiers = new Reflexion(value.params || []).identifiers()
       const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
       return new Entropy(value, declarationDivisor).evaluate()
@@ -301,5 +300,16 @@ class ClassEntropy extends SingleEntropy {
       return mainEntropy.plus(superClassEvaluation)
     }
     return mainEntropy
+  }
+}
+
+class ClassMemberEntropy extends DeclarationEntropy {
+  evaluate() {
+    const declarations = this.dividend.sources
+    const declaration = declarations[0]
+
+    const paramsAsIdentifiers = new Reflexion(declaration.value.params || []).identifiers()
+    const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
+    return new Entropy(declaration.value, declarationDivisor).evaluate()
   }
 }
