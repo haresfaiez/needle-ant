@@ -139,9 +139,10 @@ class SingleEntropy {
 
 export class BodyEntropy extends SingleEntropy  {
   evaluate() {
+    const newDivisor = Divisor.clone(this.divisor)
     const entropies = this.dividend
       .sources
-      .map(eachSource => new Entropy(eachSource, this.divisor))
+      .map(eachSource => new Entropy(eachSource, newDivisor))
     return new Entropies(entropies).evaluate()
   }
 }
@@ -248,7 +249,7 @@ class DeclarationEntropy extends SingleEntropy  {
     if (isVariable) {
       const value = declaration.init
       const paramsAsIdentifiers = new Reflexion(value.params || []).identifiers()
-      const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
+      const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
       return new Entropy(value, declarationDivisor).evaluate()
     }
 
@@ -309,7 +310,7 @@ class ClassMemberEntropy extends DeclarationEntropy {
     const declaration = declarations[0]
 
     const paramsAsIdentifiers = new Reflexion(declaration.value.params || []).identifiers()
-    const declarationDivisor = Divisor.withNewIdentifiers(this.divisor, paramsAsIdentifiers)
+    const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
     return new Entropy(declaration.value, declarationDivisor).evaluate()
   }
 }

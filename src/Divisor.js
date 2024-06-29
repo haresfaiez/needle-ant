@@ -17,7 +17,7 @@ export class Divisor {
     this.accesses = accesses
   }
 
-  static withNewIdentifiers(aDivisor, newIdentifiers) {
+  static clone(aDivisor, newIdentifiers = []) {
     const result = new Divisor([])
     result.accesses = aDivisor.accesses
     result.extend(aDivisor.identifiers())

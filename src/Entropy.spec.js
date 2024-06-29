@@ -148,6 +148,14 @@ describe('Function body entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expectedEvaluation)
   })
 
+  it('forgets function params after function definition', () => {
+    const code = 'const identity = (aNumber) => {const b = aNumber}; const a = 3'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expectedEvaluation = new Evaluation(1, 3).plus(new Evaluation(1, 3))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expectedEvaluation)
+  })
+
   it('with local variables does not affect global scope', () => {
     const code = `
       const a = (i) => {
@@ -397,19 +405,19 @@ describe('Loop entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
+  it('encloses loop init variables inside the loop scope', () => {
+    const code = 'for (let i = 0; i < 10; i++) { } const a = 2; const c = a + 19;'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2)
+      .plus(new Evaluation(2, 2))
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(2, 3))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
   // TODO: Uncomment these tests
-  // it('encloses loop init variables inside the loop scope', () => {
-  //   const code = 'for (let i = 0; i < 10; i++) { } const a = 2; const c = a + 19;'
-  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
-
-  //   const expected = new Evaluation(1, 2)
-  //     .plus(new Evaluation(2, 2))
-  //     .plus(new Evaluation(1, 1))
-  //     .plus(new Evaluation(1, 2))
-  //     .plus(new Evaluation(2, 3))
-  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  // })
-
 //   it('calculates entropy of while-loop', () => {
 //   })
 //
