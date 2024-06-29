@@ -132,19 +132,10 @@ class SingleEntropy {
 }
 
 export class BodyEntropy extends SingleEntropy  {
-  static IGNORED_IDENTIFIERS = ['constructor']
-
   evaluate() {
-    // TODO: Move this to ClassEntropy
-    const members = this.dividend.sources
-      .filter(eachDeclaration => ['MethodDefinition', 'PropertyDefinition'].includes(eachDeclaration.type))
-      .filter(eachDeclaration => !BodyEntropy.IGNORED_IDENTIFIERS.includes(eachDeclaration.key.name))
-      .map(eachDeclaration => eachDeclaration.key.name)
-
-    this.divisor.extendAccesses(members)
-
-    const entropies = this.dividend.sources.map(eachSource => new Entropy(eachSource, this.divisor))
-
+    const entropies = this.dividend
+      .sources
+      .map(eachSource => new Entropy(eachSource, this.divisor))
     return new Entropies(entropies).evaluate()
   }
 }
@@ -279,6 +270,8 @@ class DeclarationEntropy extends SingleEntropy  {
 }
 
 class ClassEntropy extends SingleEntropy {
+  static IGNORED_IDENTIFIERS = ['constructor']
+
   evaluate() {
     const superClasses = this.dividend.sources
       .filter(eachDeclaration => ['ClassDeclaration'].includes(eachDeclaration.type))
@@ -290,9 +283,18 @@ class ClassEntropy extends SingleEntropy {
     const superClassEvaluation = new Evaluation(superClasses, this.divisor.identifiers())
 
     const declarations = this.dividend.sources
-    const dividends = declarations.map(eachDeclaration => eachDeclaration.body)
+    const bodyAsDividends = declarations.map(eachDeclaration => eachDeclaration.body)
     declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
-    const mainEntropy = new BodyEntropy(dividends, this.divisor).evaluate()
+
+
+    const members = bodyAsDividends[0].body
+      .filter(eachDeclaration => ['MethodDefinition', 'PropertyDefinition'].includes(eachDeclaration.type))
+      .filter(eachDeclaration => !ClassEntropy.IGNORED_IDENTIFIERS.includes(eachDeclaration.key.name))
+      .map(eachDeclaration => eachDeclaration.key.name)
+
+    this.divisor.extendAccesses(members)
+
+    const mainEntropy = new BodyEntropy(bodyAsDividends, this.divisor).evaluate()
 
     // TODO: Generalize this to one `return`
     if (superClasses.length) {
