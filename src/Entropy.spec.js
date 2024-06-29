@@ -335,13 +335,13 @@ describe('Class definition entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  // it('calculates entropy class extension of defined class', () => {
-  //   const code = 'class C {}; class B {}; class A extends B {}'
-  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+  it('calculates entropy class extension of defined class', () => {
+    const code = 'class C {}; class B {}; class A extends B {}'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-  //   const expected =  new Evaluation(1, 3)
-  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  // })
+    const expected =  new Evaluation(1, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 })
 
 describe('Update expression entropy', () => {
