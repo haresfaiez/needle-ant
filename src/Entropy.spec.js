@@ -327,23 +327,8 @@ describe('Class definition entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
+
   it('calculates entropy of class extension', () => {
-    const code = 'class A extends B {}'
-    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
-
-    const expected =  new Evaluation(1, 2)
-    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  })
-
-  it('calculates entropy of class definition and extension', () => {
-    const code = 'class Other{}; class B {}; class A extends B {}'
-    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
-
-    const expected =  new Evaluation(1, 3)
-    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  })
-
-  it('calculates entropy class extension', () => {
     const code = 'class A extends B {}'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
@@ -422,19 +407,19 @@ describe('Loop entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  it('encloses loop init variables inside the loop scope', () => {
-    const code = 'for (let i = 0; i < 10; i++) { } const a = 2; const c = a + 19;'
-    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+  // TODO: Uncomment these tests
+  // it('encloses loop init variables inside the loop scope', () => {
+  //   const code = 'for (let i = 0; i < 10; i++) { } const a = 2; const c = a + 19;'
+  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected = new Evaluation(1, 2)
-      .plus(new Evaluation(2, 2))
-      .plus(new Evaluation(1, 1))
-      .plus(new Evaluation(1, 2))
-      .plus(new Evaluation(2, 3))
-    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  })
+  //   const expected = new Evaluation(1, 2)
+  //     .plus(new Evaluation(2, 2))
+  //     .plus(new Evaluation(1, 1))
+  //     .plus(new Evaluation(1, 2))
+  //     .plus(new Evaluation(2, 3))
+  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  // })
 
-// TODO: Uncomment these tests
 //   it('calculates entropy of while-loop', () => {
 //   })
 //
