@@ -467,17 +467,23 @@ describe('Loop entropy', () => {
   })
 })
 
-// describe('Update expression', () => {
-//   it('calculates entropy `++` expression', () => {
-//     const code = 'let obj; for (let key of obj) {}'
-//     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+describe('Unitary operator entropy', () => {
+  it('calculates entropy of `++` expression', () => {
+    const code = 'let i; i++'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-//     const expected = new Evaluation(1, 2)
-//     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-//   })
+    const expected = new Evaluation(2, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 
-//   // TODO: `--`, ...
-// })
+  it('calculates entropy of `--` expression', () => {
+    const code = 'let i; (i--)'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(2, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+})
 
 // describe('Undefined variable', () => {
 // TODO: undefined variable usage, code = 'a'
