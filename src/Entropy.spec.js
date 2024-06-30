@@ -485,10 +485,6 @@ describe('Unitary operator entropy', () => {
   })
 })
 
-// describe('Undefined variable', () => {
-// TODO: undefined variable usage, code = 'a'
-// })
-
 // describe('Array entropy', () => {
 // TODO: []
 // TODO: let a, b; [a]
