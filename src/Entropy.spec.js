@@ -416,15 +416,30 @@ describe('Loop entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
+  it('calculates entropy of while-loop', () => {
+    const code = 'let a; while (a < 10) {}'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(2, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of do-while-loop', () => {
+    const code = 'let a; do { } while (a < 10)'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(2, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
   // TODO: Uncomment these tests
-//   it('calculates entropy of while-loop', () => {
-//   })
-//
-//   it('calculates entropy of do-while-loop', () => {
-//   })
-//
-//   it('calculates entropy of for-each iterator', () => {
-//   })
+  // it('calculates entropy of for-each iterator', () => {
+  //   const code = 'let a = [1, 2, 3]; a.forEach((each, i) => a[i] = each + 1)'
+  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+  //   const expected = new Evaluation(2, 2)
+  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  // })
 })
 
 // TODO: update expresison ++/--

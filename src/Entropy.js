@@ -105,6 +105,14 @@ export class Entropy {
       return new BodyEntropy([dividend.init, dividend.test, dividend.update, dividend.body], divisor)
     }
 
+    const loopTypes = [
+      'WhileStatement',
+      'DoWhileStatement',
+    ]
+    if (loopTypes.includes(dividendType)) {
+      return new BodyEntropy([dividend.test, dividend.body], divisor)
+    }
+
     if (dividendType === 'SequenceExpression') {
       return new BodyEntropy(dividend.expressions, divisor)
     }
@@ -245,6 +253,10 @@ class DeclarationEntropy extends SingleEntropy  {
 
     const isVariable = declarations.length === 1 && declaration.type === 'VariableDeclarator'
     declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
+
+    if (isVariable && !declaration.init) {
+      return new NullEvaluation()
+    }
 
     if (isVariable) {
       const value = declaration.init
