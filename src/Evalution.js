@@ -111,7 +111,8 @@ export class Evaluations extends Evaluation {
   }
 
   evaluate() {
-    return new Evaluations(this.evaluations.map(each => each.evaluate()))
+    const result = new Evaluations(this.evaluations.map(each => each.evaluate()))
+    return (result.evaluations.length === 1) ? result.evaluations[0] : result
   }
 
   plus(otherEvaluation) {

@@ -83,7 +83,10 @@ export class Entropy {
       'ReturnStatement',
       'ThisExpression',
       'UpdateExpression',
+
+      // TODO: Continue ignoring these?
       'BreakStatement',
+      'ContinueStatement',
     ]
     if (expressionTypes.includes(dividendType)) {
       return new ExpressionEntropy(dividend, divisor)
@@ -111,6 +114,14 @@ export class Entropy {
     ]
     if (loopTypes.includes(dividendType)) {
       return new BodyEntropy([dividend.test, dividend.body], divisor)
+    }
+
+    const structuredLoopTypes = [
+      'ForInStatement',
+      'ForOfStatement',
+    ]
+    if (structuredLoopTypes.includes(dividendType)) {
+      return new BodyEntropy([dividend.left, dividend.right, dividend.body], divisor)
     }
 
     if (dividendType === 'SequenceExpression') {

@@ -442,14 +442,34 @@ describe('Loop entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  // TODO: for .. in
-  // TODO: for .. of
-  // TODO: continue;
+  it('calculates entropy of for-in loop', () => {
+    const code = 'let obj; for (let key in obj) { obj; }'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2).times(2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of for-of loop', () => {
+    const code = 'let obj; for (let key of obj) {}'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('ignores `continue;` inside a loop', () => {
+    const code = 'let obj; for (let key in obj) { continue; }'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 })
 
 // TODO:
 // a[i] = 
 // Arrays (def, ..., ..)
-// undefined variable code = 'a'
+// undefined variable usage, code = 'a'
 // TODO: update expresison ++/--
 // switch case
