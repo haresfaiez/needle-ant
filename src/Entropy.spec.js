@@ -432,17 +432,24 @@ describe('Loop entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  // TODO: Uncomment these tests
-  // it('calculates entropy of for-each iterator', () => {
-  //   const code = 'let a = [1, 2, 3]; a.forEach((each, i) => a[i] = each + 1)'
-  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+  it('calculates entropy of for-each iterator', () => {
+    const code = 'let a; a.forEach(each => each)'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-  //   const expected = new Evaluation(2, 2)
-  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  // })
+    const expected = new Evaluation(1, 1)
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 2))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  // TODO: for .. in
+  // TODO: for .. of
+  // TODO: continue;
 })
 
+// TODO:
+// a[i] = 
+// Arrays (def, ..., ..)
+// undefined variable code = 'a'
 // TODO: update expresison ++/--
-// describe('Array definition entropy', () => {
-//   // TODO: check all forms of loops
-// })
+// switch case

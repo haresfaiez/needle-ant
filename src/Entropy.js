@@ -45,6 +45,7 @@ export class Entropy {
 
     const declarationTypes = [
       'FunctionDeclaration',
+      'ArrowFunctionExpression',
     ]
     if (declarationTypes.includes(dividendType)) {
       return new DeclarationEntropy(dividend, divisor)
@@ -64,7 +65,6 @@ export class Entropy {
 
     const bodyTypes = [
       'BlockStatement',
-      'ArrowFunctionExpression',
       'ClassBody',
       'FunctionExpression'
     ]
@@ -247,12 +247,22 @@ class ObjectAccessEntropy extends ExpressionEntropy {
 }
 
 class DeclarationEntropy extends SingleEntropy  {
+
+  // TODO: simplify this
   evaluate() {
     const declarations = this.dividend.sources
     const declaration = declarations[0]
 
     const isVariable = declarations.length === 1 && declaration.type === 'VariableDeclarator'
-    declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
+    declarations
+      .filter(eachDeclaration => eachDeclaration.id)
+      .forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
+
+    if (declaration.type === 'ArrowFunctionExpression') {
+      const paramsAsIdentifiers = new Reflexion(declaration.params || []).identifiers()
+      const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
+      return new BodyEntropy(declaration.body, declarationDivisor).evaluate()
+    }
 
     if (isVariable && !declaration.init) {
       return new NullEvaluation()
@@ -284,6 +294,7 @@ class DeclarationEntropy extends SingleEntropy  {
 class ClassEntropy extends SingleEntropy {
   static IGNORED_IDENTIFIERS = ['constructor']
 
+  // TODO: simplify this
   evaluate() {
     const superClasses = this.dividend.sources
       .filter(eachDeclaration => ['ClassDeclaration'].includes(eachDeclaration.type))
@@ -297,7 +308,6 @@ class ClassEntropy extends SingleEntropy {
     const declarations = this.dividend.sources
     const bodyAsDividends = declarations.map(eachDeclaration => eachDeclaration.body)
     declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
-
 
     const members = bodyAsDividends[0].body
       .filter(eachDeclaration => ['MethodDefinition', 'PropertyDefinition'].includes(eachDeclaration.type))
