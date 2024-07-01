@@ -75,7 +75,6 @@ export class Entropy {
     const expressionTypes = [
       'BinaryExpression',
       'CallExpression',
-      'ExpressionStatement',
       'Identifier',
       'ImportNamespaceSpecifier',
       'ImportSpecifier',
@@ -83,6 +82,7 @@ export class Entropy {
       'ReturnStatement',
       'ThisExpression',
       'UpdateExpression',
+      'ArrayExpression',
 
       // TODO: Continue ignoring these?
       'BreakStatement',
@@ -90,6 +90,10 @@ export class Entropy {
     ]
     if (expressionTypes.includes(dividendType)) {
       return new ExpressionEntropy(dividend, divisor)
+    }
+
+    if (dividendType === 'ExpressionStatement') {
+      return new Entropy(dividend.expression, divisor)
     }
 
     if (dividendType === 'IfStatement') {
@@ -126,6 +130,10 @@ export class Entropy {
 
     if (dividendType === 'SequenceExpression') {
       return new BodyEntropy(dividend.expressions, divisor)
+    }
+
+    if (dividendType === 'AssignmentExpression') {
+      return new BodyEntropy([dividend.left, dividend.right], divisor)
     }
 
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
@@ -202,27 +210,27 @@ class ExpressionEntropy extends SingleEntropy  {
   evaluate() {
     const dividend = this.dividend.sources[0]
 
-    const isMethodInvocation = dividend.expression?.callee?.type === 'MemberExpression'
-    const isMemberAccess = dividend.expression?.left?.type === 'MemberExpression'
+    const isMethodInvocation = dividend?.callee?.type === 'MemberExpression'
+    const isMemberAccess = dividend?.left?.type === 'MemberExpression'
 
     if (isMethodInvocation) {
       return new Entropies([
-        new Entropy(dividend.expression.callee.object, this.divisor),
-        new ObjectAccessEntropy(dividend.expression.callee.property, this.divisor),
-        new BodyEntropy(dividend.expression.arguments, this.divisor)
+        new Entropy(dividend.callee.object, this.divisor),
+        new ObjectAccessEntropy(dividend.callee.property, this.divisor),
+        new BodyEntropy(dividend.arguments, this.divisor)
       ]).evaluate()
     }
 
     if (isMemberAccess) {
       return new Entropies([
-        new Entropy(dividend.expression.left.object, this.divisor),
-        new ObjectAccessEntropy(dividend.expression.left.property, this.divisor),
-        new Entropy(dividend.expression.right, this.divisor)
+        new Entropy(dividend.left.object, this.divisor),
+        new ObjectAccessEntropy(dividend.left.property, this.divisor),
+        new Entropy(dividend.right, this.divisor)
       ]).evaluate()
     }
 
     // TODO: Add other bit-shifting operators
-    const isBitShiftingOperation = dividend.expression && ['++', '--'].includes(dividend.expression.operator)
+    const isBitShiftingOperation = ['++', '--'].includes(dividend.operator)
 
     // TODO: Remove this check
     const isImport = dividend.type.includes('mport')

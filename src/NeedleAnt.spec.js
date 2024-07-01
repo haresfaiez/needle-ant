@@ -182,7 +182,7 @@ describe('Entropy result', () => {
     const expected =
       new Evaluation(3, 3, 'import{a,b,c}from\'./other.js\';')
         .plus(new Evaluation(1, 4, 'b()'))
-        .plus(new Evaluation(3, 4, 'a(c,x);'))
+        .plus(new Evaluation(3, 4, 'a(c,x)'))
 
     expect(actual.evaluate()).toEqual(expected)
   })

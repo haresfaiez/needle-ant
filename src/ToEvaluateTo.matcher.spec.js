@@ -4,10 +4,10 @@ const failedComparisonMessage = (actual, expected, failingComparisonIndex) => {
   return `Evaluations are not the same (Comparison failed at evaluation with index: ${failingComparisonIndex}).
 \n
   - expected:
-    ${expected.evaluations.map(JSON.stringify).join(',\n    ')}
+    ${(expected.evaluations || [expected]).map(JSON.stringify).join(',\n    ')}
 \n
   - got:
-    ${actual.evaluations.map(JSON.stringify).join(',\n    ')}`
+    ${(actual.evaluations || [actual] ).map(JSON.stringify).join(',\n    ')}`
 }
 
 beforeAll(() => {
@@ -24,6 +24,9 @@ beforeAll(() => {
                   && matchersUtil.equals(actual.possible, expected.possible)
             } else {
               result.pass = matchersUtil.equals(actual, expected)
+            }
+            if (!result.pass) {
+              result.message = `${failedComparisonMessage(actual, expected)}`
             }
             return result
           }

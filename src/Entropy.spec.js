@@ -376,7 +376,9 @@ describe('Assignment entropy', () => {
     const code = 'let a = 0; a = 2'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected =  new Evaluation(1, 2).plus(new Evaluation(1, 2))
+    const expected =  new Evaluation(1, 2)
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 })
@@ -388,7 +390,7 @@ describe('Loop entropy', () => {
 
     const expected = new Evaluation(1, 2)
       .plus(new Evaluation(2, 2))
-      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(2, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -399,7 +401,7 @@ describe('Loop entropy', () => {
     const expected = new Evaluation(1, 3)
       .times(2)
       .plus(new Evaluation(2, 3))
-      .plus(new Evaluation(1, 2).times(2))
+      .plus(new Evaluation(2, 3).times(2))
       .plus(new Evaluation(2, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
@@ -410,7 +412,7 @@ describe('Loop entropy', () => {
 
     const expected = new Evaluation(1, 2)
       .plus(new Evaluation(2, 2))
-      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(2, 2))
       .plus(new Evaluation(1, 2))
       .plus(new Evaluation(2, 3))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
@@ -494,11 +496,39 @@ describe('Array entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  // TODO: let a, b; [a]
-  // TODO: let a, b, c; [a, b]
-  // TODO: let a; ['e']
-  // TODO: let a; ['e', 9, a]
-  // TODO: ['e', (a) => a]
+  it('calculates used varibales from scope', () => {
+    const code = 'let a, b, c; [a, b]'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(2, 3)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates singleton strings array', () => {
+    const code = 'let a; ["e"]'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  // fit('calculates array of strings and variables', () => {
+  //   const code = 'let a; ["e", 9, a]'
+  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+  //   const expected = new Evaluation(1, 2).times(2).plus(new Evaluation(1, 1))
+  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  // })
+
+  // TODO: Uncomment these
+  // it('adds entropy of function element', () => {
+  //   const code = '["e", (a) => a]'
+  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+  //   const expected = new Evaluation(1, 1).times(2)
+  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  // })
+
   // TODO: let x; [0, ...x]
   // TODO: [2, ...[3, 5]]
   // TODO: let a; a[4] = 5
