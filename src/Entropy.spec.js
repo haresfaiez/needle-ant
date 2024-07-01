@@ -520,14 +520,13 @@ describe('Array entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  // TODO: Uncomment these
-  // it('adds entropy of function element', () => {
-  //   const code = '["e", (a) => a]'
-  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+  it('adds entropy of function element', () => {
+    const code = '["e", (a) => a]'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-  //   const expected = new Evaluation(1, 1).times(2)
-  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  // })
+    const expected = new Evaluation(1, 1).times(2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 
   // TODO: let x; [0, ...x]
   // TODO: [2, ...[3, 5]]
