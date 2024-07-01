@@ -1,6 +1,6 @@
 import { Reflexion } from './Reflexion.js'
 import { Entropy, BodyEntropy } from './Entropy.js'
-import { Evaluation } from './Evalution.js'
+import { Evaluation, NullEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
 describe('Method invocation entropy', () => {
@@ -485,18 +485,25 @@ describe('Unitary operator entropy', () => {
   })
 })
 
-// describe('Array entropy', () => {
-// TODO: []
-// TODO: let a, b; [a]
-// TODO: let a, b, c; [a, b]
-// TODO: let a; ['e']
-// TODO: let a; ['e', 9, a]
-// TODO: ['e', (a) => a]
-// TODO: let x; [0, ...x]
-// TODO: [2, ...[3, 5]]
-// TODO: let a; a[4] = 5
-// TODO: let a, b = 4; a[b] = 3
-// })
+describe('Array entropy', () => {
+  it('of empty array is null', () => {
+    const code = '[]'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new NullEvaluation()
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  // TODO: let a, b; [a]
+  // TODO: let a, b, c; [a, b]
+  // TODO: let a; ['e']
+  // TODO: let a; ['e', 9, a]
+  // TODO: ['e', (a) => a]
+  // TODO: let x; [0, ...x]
+  // TODO: [2, ...[3, 5]]
+  // TODO: let a; a[4] = 5
+  // TODO: let a, b = 4; a[b] = 3
+})
 
 // TODO:
 // switch case

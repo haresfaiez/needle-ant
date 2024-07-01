@@ -2,7 +2,7 @@ import * as escodegen from 'escodegen'
 
 export class Evaluation {
 
-  constructor(actual, possible, source) {
+  constructor(actual = 0, possible = 0, source) {
     this.actual = actual
     this.possible = possible
     // TODO: Simplify this
