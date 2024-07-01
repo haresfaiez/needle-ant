@@ -82,7 +82,6 @@ export class Entropy {
       'ReturnStatement',
       'ThisExpression',
       'UpdateExpression',
-      'ArrayExpression',
 
       // TODO: Continue ignoring these?
       'BreakStatement',
@@ -90,6 +89,10 @@ export class Entropy {
     ]
     if (expressionTypes.includes(dividendType)) {
       return new ExpressionEntropy(dividend, divisor)
+    }
+
+    if (dividendType === 'ArrayExpression') {
+      return new BodyEntropy(dividend.elements, divisor)
     }
 
     if (dividendType === 'ExpressionStatement') {

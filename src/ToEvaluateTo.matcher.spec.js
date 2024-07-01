@@ -31,14 +31,15 @@ beforeAll(() => {
             return result
           }
 
-          if(actual.evaluations.length !== expected.evaluations.length) {
+          const isExpectedAnEvaluations = expected instanceof Evaluations
+          if(!isExpectedAnEvaluations || (actual.evaluations.length !== expected.evaluations.length)) {
             result.message = `Evaluations length is not the same.
-  - expected: ${expected.evaluations.length}
+  - expected: ${expected.evaluations?.length}
   - got: ${actual.evaluations.length}
 \n\n
 ${failedComparisonMessage(actual, expected)}`
 
-            result.pass = matchersUtil.equals(actual.evaluations.length, expected.evaluations.length)
+            result.pass = matchersUtil.equals(actual.evaluations.length, expected.evaluations?.length)
             return result
           }
 

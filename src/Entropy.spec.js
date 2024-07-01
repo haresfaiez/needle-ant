@@ -500,7 +500,7 @@ describe('Array entropy', () => {
     const code = 'let a, b, c; [a, b]'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected = new Evaluation(2, 3)
+    const expected = new Evaluation(1, 3).times(2)
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -512,13 +512,13 @@ describe('Array entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  // fit('calculates array of strings and variables', () => {
-  //   const code = 'let a; ["e", 9, a]'
-  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+  it('calculates array of strings and variables', () => {
+    const code = 'let a; ["e", 9, a]'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-  //   const expected = new Evaluation(1, 2).times(2).plus(new Evaluation(1, 1))
-  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  // })
+    const expected = new Evaluation(1, 2).times(2).plus(new Evaluation(1, 1))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 
   // TODO: Uncomment these
   // it('adds entropy of function element', () => {
