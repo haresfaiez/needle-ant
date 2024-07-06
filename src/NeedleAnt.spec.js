@@ -88,24 +88,23 @@ describe('Function', () => {
       expect(actual.evaluate()).toEvaluateTo(new Evaluation(1, 1))
     })
 
-    // TODO: Uncomment and fix expected values
-    // it('of function that increments a number', () => {
-    //   const actual = new NeedleAnt('a + 1').entropy()
+    it('of function that increments a number', () => {
+      const actual = new NeedleAnt('a + 1').entropy()
 
-    //   expect(actual.evaluate()).toEvaluateTo(new Evaluation(2, 1))
-    // })
+      expect(actual.evaluate()).toEvaluateTo(new Evaluation(2, 1))
+    })
 
-    // it('of function that pre-increments a number', () => {
-    //   const actual = new NeedleAnt('1 + a').entropy()
+    it('of function that pre-increments a number', () => {
+      const actual = new NeedleAnt('1 + a').entropy()
 
-    //   expect(actual.evaluate()).toEvaluateTo(new Evaluation(2, 1))
-    // })
+      expect(actual.evaluate()).toEvaluateTo(new Evaluation(2, 1))
+    })
 
-    // it('of function that sums all available variables', () => {
-    //   const actual = new NeedleAnt('a + b').entropy()
+    it('of function that sums all available variables', () => {
+      const actual = new NeedleAnt('a + b').entropy()
 
-    //   expect(actual.evaluate()).toEvaluateTo(new Evaluation(2, 0))
-    // })
+      expect(actual.evaluate()).toEvaluateTo(new Evaluation(2, 0))
+    })
   })
 })
 
