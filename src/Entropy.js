@@ -240,7 +240,6 @@ class ExpressionEntropy extends SingleEntropy  {
       ]).evaluate()
     }
 
-    // TODO: Add other bit-shifting operators
     const isBitShiftingOperation = ['++', '--'].includes(dividend.operator)
 
     // TODO: Remove this check

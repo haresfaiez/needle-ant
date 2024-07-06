@@ -1,8 +1,6 @@
 import { Evaluation } from './Evalution.js'
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: Add property tests
-
 describe('Successive statements entropy', () => {
   it('is the sum of each statement entropy', () => {
     const code = 'const f = (a) => { if (a > 0) { return true; } return a + 1; }'

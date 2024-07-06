@@ -569,3 +569,4 @@ describe('Array entropy', () => {
 
 // TODO:
 // switch case
+// other bit-shifting operator
