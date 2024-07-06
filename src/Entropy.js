@@ -139,6 +139,10 @@ export class Entropy {
       return new BodyEntropy([dividend.left, dividend.right], divisor)
     }
 
+    if (dividendType === 'SpreadElement') {
+      return new Entropy(dividend.argument, divisor)
+    }
+
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
   }
 }

@@ -528,10 +528,39 @@ describe('Array entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  // TODO: let x; [0, ...x]
-  // TODO: [2, ...[3, 5]]
-  // TODO: let a; a[4] = 5
-  // TODO: let a, b = 4; a[b] = 3
+  it('calculates entropy of spreading operator', () => {
+    const code = 'let x; [0, ...x]'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2).plus(new Evaluation(1, 1))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of spreading operator on a literal array', () => {
+    const code = '[2, ...[3, 5]]'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 1)
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 1))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  // it('calculates entropy of array element assignment', () => {
+  //   const code = 'let a; a[4] = 5'
+  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+  //   const expected = new Evaluation(1, 1)
+  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  // })
+
+  // it('calculates entropy of a dynamic array element assignment', () => {
+  //   const code = 'let a, b = 4; a[b] = 3'
+  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+  //   const expected = new Evaluation(1, 1)
+  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  // })
 })
 
 // TODO:
