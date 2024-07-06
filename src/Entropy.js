@@ -158,6 +158,10 @@ export class Entropy {
       ], divisor)
     }
 
+    if (dividendType === 'UnaryExpression') {
+      return new Entropy(dividend.argument, divisor)
+    }
+
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
   }
 }

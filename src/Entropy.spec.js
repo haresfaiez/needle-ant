@@ -581,5 +581,40 @@ describe('Switch case entropy', () => {
   })
 })
 
-// TODO:
-// other bit-shifting operator
+describe('Bit-shifting operator entropy', () => {
+  it('calcuates entorpy of "&"', () => {
+    const code = 'let a, b; a & 2;'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(2, 3)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+  it('calcuates entorpy of "|"', () => {
+    const code = 'let a, b; a | 2;'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(2, 3)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+  it('calcuates entorpy of "~"', () => {
+    const code = 'let a, b; ~a;'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+  it('calcuates entorpy of "<<"', () => {
+    const code = 'let a, b; a << 2;'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(2, 3)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+  it('calcuates entorpy of "^"', () => {
+    const code = 'let a, b; a ^ 2;'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(2, 3)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+})
