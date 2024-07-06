@@ -147,6 +147,17 @@ export class Entropy {
       return new Entropy(dividend.argument, divisor)
     }
 
+    if (dividendType === 'SwitchStatement') {
+      return new BodyEntropy([dividend.discriminant, ...dividend.cases], divisor)
+    }
+
+    if (dividendType === 'SwitchCase') {
+      return new BodyEntropy([
+        ...dividend.test ? [dividend.test] : [],
+        ...dividend.consequent
+      ], divisor)
+    }
+
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
   }
 }

@@ -567,6 +567,19 @@ describe('Array entropy', () => {
   })
 })
 
+describe('Switch case entropy', () => {
+  it('calcuates entorpy of simple case/switch statement', () => {
+    const code = 'let a; switch (a) { case 2: a + 1; break; default: a + 3; }'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 1)
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(2, 2))
+      .plus(new Evaluation(2, 2))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+
+  })
+})
+
 // TODO:
-// switch case
 // other bit-shifting operator
