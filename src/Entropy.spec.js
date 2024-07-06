@@ -370,7 +370,6 @@ describe('Update expression entropy', () => {
   })
 })
 
-
 describe('Assignment entropy', () => {
   it('calculates inline assignment entropy', () => {
     const code = 'let a = 0; a = 2'
@@ -546,21 +545,26 @@ describe('Array entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  // it('calculates entropy of array element assignment', () => {
-  //   const code = 'let a; a[4] = 5'
-  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+  it('calculates entropy of array element assignment', () => {
+    const code = 'let a; a[4] = 5'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-  //   const expected = new Evaluation(1, 1)
-  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  // })
+    const expected = new Evaluation(1, 1)
+      .plus(new Evaluation(1, 2).times(2))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 
-  // it('calculates entropy of a dynamic array element assignment', () => {
-  //   const code = 'let a, b = 4; a[b] = 3'
-  //   const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+  it('calculates entropy of a dynamic array element assignment', () => {
+    const code = 'let a, c = 2, b = 4; a[b] = 3'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-  //   const expected = new Evaluation(1, 1)
-  //   expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-  // })
+    const expected = new Evaluation(1, 4)
+      .times(2)
+      .plus(new Evaluation(1, 3))
+      .plus(new Evaluation(1, 3))
+      .plus(new Evaluation(1, 4))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 })
 
 // TODO:

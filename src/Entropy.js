@@ -21,9 +21,13 @@ export class Entropy {
     }
 
     if (dividendType === 'MemberExpression') {
+      const accessEntropy = dividend.computed
+        ? new Entropy(dividend.property, divisor)
+        : new ObjectAccessEntropy(dividend.property, divisor)
+
       return new Entropies([
         new Entropy(dividend.object, divisor),
-        new ObjectAccessEntropy(dividend.property, divisor)
+        accessEntropy
       ])
     }
 
