@@ -108,7 +108,7 @@ describe('Function', () => {
   })
 })
 
-// TODO: uncomment this
+// TODO: uncomment this (next. release)
 // describe('Declarations entropy', () => {
 //   it('equals 0 if the string is empty both before and after', () => {
 //     const ant = new NeedleAnt('')
@@ -156,7 +156,7 @@ describe('Function', () => {
 //   })
 // })
 
-// TODO: Uncomment this
+// TODO: Uncomment this (next. release)
 // describe('Api change entropy', () => {
 //   it('equals one declaration change unit when an argument is added to the Api', () => {
 //     const initialCode = 'class Country { setCode(codeName) {} }'
