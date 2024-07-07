@@ -208,8 +208,10 @@ export class BodyEntropy extends SingleEntropy  {
 class DependencyEntropy extends SingleEntropy  {
   // TODO: improve this
   evaluate() {
+    const dividend = this.dividend.sources[0]
+
     if (this.divisor.shouldCheckAdjacentModules()) {
-      const importParts = new Reflexion(this.dividend.sources[0]).api()
+      const importParts = new Reflexion(dividend).api()
       const importSpecifiers = importParts[0]
       const importSource = importParts[1]
 
@@ -217,19 +219,22 @@ class DependencyEntropy extends SingleEntropy  {
         .plus(new Entropy(importSource, new Divisor(this.divisor.adjacentModules())).evaluate())
     }
 
-    const isWildcardImport = (this.dividend.sources[0].type === 'ImportDeclaration')
-      && (this.dividend.sources[0].specifiers[0].type === 'ImportNamespaceSpecifier')
+    const isWildcardImport = (dividend.type === 'ImportDeclaration')
+      && (dividend.specifiers[0].type === 'ImportNamespaceSpecifier')
 
     if (isWildcardImport) {
       return new Evaluation(
         this.divisor.identifiers(),
         this.divisor.identifiers(),
-        this.dividend.sources[0]
+        dividend
       )
     }
 
     if (this.divisor.shouldFocusOnCurrentModule()) {
-      return new ExpressionEntropy(this.dividend, new Divisor(this.divisor.identifiers())).evaluate()
+      this.divisor.extend(this.dividend.identifiers())
+
+      const nextDivisor = new Divisor(this.divisor.identifiers())
+      return new ExpressionEntropy(this.dividend, nextDivisor).evaluate()
     }
 
     throw ('DepencyEntropy#evaluate does not handle this case yet')
