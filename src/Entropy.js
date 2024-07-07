@@ -149,7 +149,9 @@ export class Entropy {
       'ReturnStatement',
     ]
     if (argumentBasedTypes.includes(dividendType)) {
-      return new Entropy(dividend.argument, divisor)
+      return dividend.argument
+        ? new Entropy(dividend.argument, divisor)
+        : new BodyEntropy([], divisor)
     }
 
     if (dividendType === 'SwitchStatement') {
