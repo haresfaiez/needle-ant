@@ -77,7 +77,6 @@ export class Entropy {
     }
 
     const expressionTypes = [
-      'BinaryExpression',
       'CallExpression',
       'Identifier',
       'ImportNamespaceSpecifier',
@@ -139,7 +138,9 @@ export class Entropy {
       return new BodyEntropy(dividend.expressions, divisor)
     }
 
-    if (dividendType === 'AssignmentExpression') {
+    if (dividendType === 'AssignmentExpression' || dividendType === 'BinaryExpression') {
+      // TODO: Why ignored dividend.operator?
+      // TODO: Why ignoring depth? `a + 2` vs `a + (a * 2)`
       return new BodyEntropy([dividend.left, dividend.right], divisor)
     }
 
@@ -160,6 +161,10 @@ export class Entropy {
 
     if (dividendType === 'UnaryExpression') {
       return new Entropy(dividend.argument, divisor)
+    }
+
+    if (dividendType === 'LogicalExpression') {
+      return new BodyEntropy([dividend.left, dividend.right], divisor)
     }
 
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)

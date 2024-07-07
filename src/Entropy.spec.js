@@ -167,7 +167,8 @@ describe('Function body entropy', () => {
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expectedEvaluation =
-      new Evaluation(2, 4)
+      new Evaluation(1, 3)
+        .plus(new Evaluation(1, 4))
         .plus(new Evaluation(1, 3))
         .plus(new Evaluation(2, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expectedEvaluation)
@@ -206,10 +207,13 @@ describe('Function body entropy', () => {
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expectedEvaluation =
-      new Evaluation(2, 4)
+      new Evaluation(1, 3)
+        .plus(new Evaluation(1, 4))
         .plus(new Evaluation(1, 3))
-        .plus(new Evaluation(2, 5))
-        .plus(new Evaluation(2, 6))
+        .plus(new Evaluation(1, 4))
+        .plus(new Evaluation(1, 5))
+        .plus(new Evaluation(1, 5))
+        .plus(new Evaluation(1, 6))
         .plus(new Evaluation(1, 5))
         .plus(new Evaluation(3, 3))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expectedEvaluation)
@@ -388,7 +392,8 @@ describe('Loop entropy', () => {
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expected = new Evaluation(1, 2)
-      .plus(new Evaluation(2, 2))
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 2))
       .plus(new Evaluation(2, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
@@ -399,9 +404,10 @@ describe('Loop entropy', () => {
 
     const expected = new Evaluation(1, 3)
       .times(2)
-      .plus(new Evaluation(2, 3))
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(1, 3))
       .plus(new Evaluation(2, 3).times(2))
-      .plus(new Evaluation(2, 2))
+      .plus(new Evaluation(1, 2).times(2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -410,10 +416,12 @@ describe('Loop entropy', () => {
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expected = new Evaluation(1, 2)
-      .plus(new Evaluation(2, 2))
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 2))
       .plus(new Evaluation(2, 2))
       .plus(new Evaluation(1, 2))
-      .plus(new Evaluation(2, 3))
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(1, 3))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -421,7 +429,7 @@ describe('Loop entropy', () => {
     const code = 'let a; while (a < 10) {}'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected = new Evaluation(2, 2)
+    const expected = new Evaluation(1, 1).plus(new Evaluation(1, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -429,7 +437,7 @@ describe('Loop entropy', () => {
     const code = 'let a; do { } while (a < 10)'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected = new Evaluation(2, 2)
+    const expected = new Evaluation(1, 1).plus(new Evaluation(1, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -565,6 +573,20 @@ describe('Array entropy', () => {
       .plus(new Evaluation(1, 4))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
+
+  it('calculates entropy of "in" operator expression', () => {
+    const code = 'let a; "t" in a.b;'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2)
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 1))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of deep access', () => {
+    // TODO: metricsAudit.details.items[0]
+  })
 })
 
 describe('Switch case entropy', () => {
@@ -574,8 +596,10 @@ describe('Switch case entropy', () => {
 
     const expected = new Evaluation(1, 1)
       .plus(new Evaluation(1, 2))
-      .plus(new Evaluation(2, 2))
-      .plus(new Evaluation(2, 2))
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
 
   })
@@ -586,14 +610,14 @@ describe('Bit-shifting operator entropy', () => {
     const code = 'let a, b; a & 2;'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected = new Evaluation(2, 3)
+    const expected = new Evaluation(1, 2).plus(new Evaluation(1, 3))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
   it('calcuates entorpy of "|"', () => {
     const code = 'let a, b; a | 2;'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected = new Evaluation(2, 3)
+    const expected = new Evaluation(1, 2).plus(new Evaluation(1, 3))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
   it('calcuates entorpy of "~"', () => {
@@ -607,14 +631,28 @@ describe('Bit-shifting operator entropy', () => {
     const code = 'let a, b; a << 2;'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected = new Evaluation(2, 3)
+    const expected = new Evaluation(1, 2).plus(new Evaluation(1, 3))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
   it('calcuates entorpy of "^"', () => {
     const code = 'let a, b; a ^ 2;'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected = new Evaluation(2, 3)
+    const expected = new Evaluation(1, 2).plus(new Evaluation(1, 3))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
+})
+
+describe('Divisor identifiers', () => {
+  it('counts default import', () => {})
+
+  it('counts named imports', () => {})
+
+  it('counts wildcard import', () => {})
+
+  it('counts default import with "as"', () => {})
+
+  it('counts named imports with "as"', () => {})
+
+  it('counts wildcard import with "as"', () => {})
 })
