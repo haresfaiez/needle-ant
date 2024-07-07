@@ -1,6 +1,7 @@
 import lighthouse from '../spec/fixtures/lighthouse.js'
 import NeedleAnt from './NeedleAnt.js'
 import { Evaluation, NullEvaluation } from './Evalution.js'
+import metricTraceEvents from '../spec/fixtures/metricTraceEvents.js'
 
 describe('Module entropy', () => {
   it('calculates entropy of one function defintion', () => {
@@ -14,39 +15,17 @@ describe('Module entropy', () => {
       )
     expect(actual.evaluate()).toEvaluateTo(expected)
   })
-  
-  xit('', () => {
-    const code = `
-      class MetricTraceEvents {
-        constructor(traceEvents, auditResults) {
-          this._traceEvents = traceEvents;
-          this._auditResults = auditResults;
-        }
 
-        static get metricsDefinitions() {
-          return [
-            {
-              name: 'Time Origin',
-              id: 'timeorigin',
-              tsKey: 'observedTimeOriginTs',
-            },
-            {
-              name: 'First Contentful Paint',
-              id: 'ttfcp',
-              tsKey: 'observedFirstContentfulPaintTs',
-            },
-          ];
-        }
-      }
+  // TODO: turn-on and fix these
+  xit('calculates entropy of class definition', () => {
+    const actual = new NeedleAnt(metricTraceEvents.code).entropy()
 
-      export {MetricTraceEvents};
-    `
-    const actual = new NeedleAnt(code).entropy()
-
-    const expected = new Evaluation(2, 3)
-      .plus(new Evaluation(2, 3))
-      .plus(new Evaluation(1, 3))
-      .plus(new Evaluation(1, 3))
+    const expected = metricTraceEvents
+      .expected
+      .reduce(
+        (acc, e) =>acc.plus(new Evaluation(e.actual, e.possible, e.source)),
+        new NullEvaluation()
+      )
     expect(actual.evaluate()).toEvaluateTo(expected)
   })
 
