@@ -585,7 +585,14 @@ describe('Array entropy', () => {
   })
 
   it('calculates entropy of deep access', () => {
-    // TODO: metricsAudit.details.items[0]
+    const code = 'metricsAudit.details.items[0]'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 0)
+      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(1, 1))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 })
 
@@ -643,16 +650,23 @@ describe('Bit-shifting operator entropy', () => {
   })
 })
 
-describe('Divisor identifiers', () => {
-  it('counts default import', () => {})
+// TODO: Uncomment these
+// describe('Divisor identifiers', () => {
+//   it('counts default import', () => {
+//     const code = 'import a from "./a"; let b; a + b;'
+//     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-  it('counts named imports', () => {})
+//     const expected = new Evaluation(1, 2).times(2)
+//     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+//   })
 
-  it('counts wildcard import', () => {})
+//   it('counts named imports', () => {})
 
-  it('counts default import with "as"', () => {})
+//   it('counts wildcard import', () => {})
 
-  it('counts named imports with "as"', () => {})
+//   it('counts default import with "as"', () => {})
 
-  it('counts wildcard import with "as"', () => {})
-})
+//   it('counts named imports with "as"', () => {})
+
+//   it('counts wildcard import with "as"', () => {})
+// })
