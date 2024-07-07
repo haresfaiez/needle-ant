@@ -222,17 +222,9 @@ class DependencyEntropy extends SingleEntropy  {
     const isWildcardImport = (dividend.type === 'ImportDeclaration')
       && (dividend.specifiers[0].type === 'ImportNamespaceSpecifier')
 
-    if (isWildcardImport) {
-      return new Evaluation(
-        this.divisor.identifiers(),
-        this.divisor.identifiers(),
-        dividend
-      )
-    }
+    this.divisor.extend(this.dividend.identifiers())
 
-    if (this.divisor.shouldFocusOnCurrentModule()) {
-      this.divisor.extend(this.dividend.identifiers())
-
+    if (isWildcardImport || this.divisor.shouldFocusOnCurrentModule()) {
       const nextDivisor = new Divisor(this.divisor.identifiers())
       return new ExpressionEntropy(this.dividend, nextDivisor).evaluate()
     }

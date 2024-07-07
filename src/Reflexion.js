@@ -47,6 +47,9 @@ export class Reflexion {
       ImportDefaultSpecifier(node) {
         result.add(node.local.name)
       },
+      ImportNamespaceSpecifier(node) {
+        result.add(node.local.name)
+      },
       ImportSpecifier(node) {
         result.add(node.imported.name)
       },
