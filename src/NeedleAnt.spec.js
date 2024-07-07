@@ -9,7 +9,8 @@ describe('Successive statements entropy', () => {
     const expected = new Evaluation(1, 2)
       .plus(new Evaluation(1, 3))
       .plus(new Evaluation(1, 3))
-      .plus(new Evaluation(2, 3))
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(1, 3))
     expect(actual.evaluate()).toEvaluateTo(expected)
   })
 })
@@ -76,8 +77,10 @@ describe('Function', () => {
 
       const expected = new Evaluation(1, 2)
         .plus(new Evaluation(1, 3))
-        .plus(new Evaluation(2, 3))
-        .plus(new Evaluation(2, 3))
+        .plus(new Evaluation(1, 2))
+        .plus(new Evaluation(1, 3))
+        .plus(new Evaluation(1, 2))
+        .plus(new Evaluation(1, 3))
       expect(actual.evaluate()).toEvaluateTo(expected)
     })
   })
@@ -210,27 +213,27 @@ describe('Entropy result', () => {
 // BASED ON: https://github.com/GoogleChrome/lighthouse/blob/main/core/lib/traces/metric-trace-events.js
 //TODO: Uncomment this
 // describe('Module entropy', () => {
-// it('calculates entropy of one function defintion', () => {
-//   const code = `
-//     import log from 'lighthouse-logger';
-//     import {TraceProcessor} from '../tracehouse/trace-processor.js';
+//   it('calculates entropy of one function defintion', () => {
+//     const code = `
+//       import log from 'lighthouse-logger';
+//       import {TraceProcessor} from '../tracehouse/trace-processor.js';
 
-//     function getUberMetrics(auditResults) {
-//       const metricsAudit = auditResults.metrics;
-//       if (!metricsAudit || !metricsAudit.details || !('items' in metricsAudit.details))
-//         return;
+//       function getUberMetrics(auditResults) {
+//         const metricsAudit = auditResults.metrics;
+//         if (!metricsAudit || !metricsAudit.details || !('items' in metricsAudit.details))
+//           return;
 
-//       return metricsAudit.details.items[0];
-//     }
-//   `
-//   const actual = new NeedleAnt(code).entropy()
+//         return metricsAudit.details.items[0];
+//       }
+//     `
+//     const actual = new NeedleAnt(code).entropy()
 
-//   const expected = new Evaluation(2, 3)
-//     .plus(new Evaluation(2, 3))
-//     .plus(new Evaluation(1, 3))
-//     .plus(new Evaluation(1, 3))
-//   expect(actual.evaluate()).toEvaluateTo(expected)
-// })
+//     const expected = new Evaluation(2, 3)
+//       .plus(new Evaluation(2, 3))
+//       .plus(new Evaluation(1, 3))
+//       .plus(new Evaluation(1, 3))
+//     expect(actual.evaluate()).toEvaluateTo(expected)
+//   })
 
 //TODO: Uncomment these
 //   it('', () => {

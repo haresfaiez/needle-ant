@@ -188,7 +188,8 @@ describe('Function body entropy', () => {
 
     const expectedEvaluation =
       new Evaluation(1, 2)
-        .plus(new Evaluation(2, 3))
+        .plus(new Evaluation(1, 3))
+        .plus(new Evaluation(1, 3))
         .plus(new Evaluation(2, 3))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expectedEvaluation)
   })
@@ -269,7 +270,7 @@ describe('Variable declaration entropy', () => {
     const code = 'class Example { sayHello(name) { return "Hello " + name } }'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected =  new Evaluation(2, 3)
+    const expected =  new Evaluation(1, 3).plus(new Evaluation(1, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -277,7 +278,9 @@ describe('Variable declaration entropy', () => {
     const code = 'class Example { sayHello(name) { return "Hello " + name } identity(x) { return x; } }'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected =  new Evaluation(2, 3).plus(new Evaluation(1, 2))
+    const expected =  new Evaluation(1, 3)
+      .plus(new Evaluation(1, 2))
+      .plus(new Evaluation(1, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -586,14 +589,14 @@ describe('Array entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  it('calculates entropy of deep access', () => {
-    const code = 'metricsAudit.details.items[0]'
+  it('calculates entropy of deep access return', () => {
+    const code = 'function f() { return metricsAudit.details.items[0] }'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected = new Evaluation(1, 0)
+    const expected = new Evaluation(1, 1)
       .plus(new Evaluation(1, 1))
       .plus(new Evaluation(1, 2))
-      .plus(new Evaluation(1, 1))
+      .plus(new Evaluation(1, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 })

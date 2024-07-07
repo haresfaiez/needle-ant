@@ -82,7 +82,6 @@ export class Entropy {
       'ImportNamespaceSpecifier',
       'ImportSpecifier',
       'Literal',
-      'ReturnStatement',
       'ThisExpression',
       'UpdateExpression',
 
@@ -144,7 +143,12 @@ export class Entropy {
       return new BodyEntropy([dividend.left, dividend.right], divisor)
     }
 
-    if (dividendType === 'SpreadElement') {
+    const argumentBasedTypes = [
+      'SpreadElement',
+      'UnaryExpression',
+      'ReturnStatement',
+    ]
+    if (argumentBasedTypes.includes(dividendType)) {
       return new Entropy(dividend.argument, divisor)
     }
 
@@ -157,10 +161,6 @@ export class Entropy {
         ...dividend.test ? [dividend.test] : [],
         ...dividend.consequent
       ], divisor)
-    }
-
-    if (dividendType === 'UnaryExpression') {
-      return new Entropy(dividend.argument, divisor)
     }
 
     if (dividendType === 'LogicalExpression') {
