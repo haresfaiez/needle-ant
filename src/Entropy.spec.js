@@ -688,3 +688,16 @@ describe('Divisor identifiers', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 })
+
+describe('Export statement entropy', () => {
+  // TODO: export {MetricTraceEvents};
+  // TODO: export const name1 = 1;
+  // TODO: export { variable1 as name1, variable2 as name2 };
+  // TODO: export { variable1 as "string name" };
+  // TODO: export { name1 as default };
+  // TODO: export default expression;
+  // TODO: export default function functionName() { }
+  // TODO: export * from "module-name";
+  // TODO: export * as name1 from "module-name";
+  // TODO: export { name1 } from "module-name";
+})
