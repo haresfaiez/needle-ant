@@ -690,14 +690,22 @@ describe('Divisor identifiers', () => {
 })
 
 describe('Export statement entropy', () => {
-  // TODO: export {MetricTraceEvents};
-  // TODO: export const name1 = 1;
-  // TODO: export { variable1 as name1, variable2 as name2 };
-  // TODO: export { variable1 as "string name" };
-  // TODO: export { name1 as default };
-  // TODO: export default expression;
-  // TODO: export default function functionName() { }
-  // TODO: export * from "module-name";
-  // TODO: export * as name1 from "module-name";
-  // TODO: export { name1 } from "module-name";
+  it('calculates entropy of named export', () => {
+    const code = 'let a, b; export { a };'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+
+  })
+
+// TODO: export const name1 = 1;
+// TODO: export { variable1 as name1, variable2 as name2 };
+// TODO: export { variable1 as "string name" };
+// TODO: export { name1 as default };
+// TODO: export default expression;
+// TODO: export default function functionName() { }
+// TODO: export * from "module-name";
+// TODO: export * as name1 from "module-name";
+// TODO: export { name1 } from "module-name";
 })
