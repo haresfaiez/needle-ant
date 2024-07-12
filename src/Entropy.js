@@ -170,7 +170,11 @@ export class Entropy {
     }
 
     if (dividendType === 'ExportNamedDeclaration') {
-      return new BodyEntropy(dividend.specifiers, divisor)
+      const elements = [
+        ...(dividend.declaration ? [dividend.declaration] : []),
+        ...dividend.specifiers
+      ]
+      return new BodyEntropy(elements, divisor)
     }
 
     if (dividendType === 'ExportSpecifier') {

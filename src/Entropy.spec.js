@@ -690,19 +690,47 @@ describe('Divisor identifiers', () => {
 })
 
 describe('Export statement entropy', () => {
-  it('calculates entropy of named export', () => {
+  it('calculates entropy of export', () => {
     const code = 'let a, b; export { a };'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expected = new Evaluation(1, 2)
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
-
   })
 
-// TODO: export const name1 = 1;
-// TODO: export { variable1 as name1, variable2 as name2 };
-// TODO: export { variable1 as "string name" };
-// TODO: export { name1 as default };
+  it('calculates entropy of named export', () => {
+    const code = 'let a, b; export const name1 = 1 + a;'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 4).plus(new Evaluation(1, 3))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of export with "as"', () => {
+    const code = 'let variable1, variable2; export { variable1 as name1, variable2 as name2 };'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2).times(2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of export with "as" string', () => {
+    const code = 'let variable1, variable2; export { variable1 as "name1" };'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of export with "as" default', () => {
+    const code = 'let variable1, variable2; export { variable1 as default };'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+// TODO:
 // TODO: export default expression;
 // TODO: export default function functionName() { }
 // TODO: export * from "module-name";
