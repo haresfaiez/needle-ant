@@ -730,9 +730,28 @@ describe('Export statement entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
+  it('calculates entropy of default export', () => {
+    const code = 'let variable1, variable2; export default variable1;'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of default function export', () => {
+    const code = `
+      let a, b;
+      export default function functionName(arg) {
+        return a + arg + functionName;
+      };
+    `
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 4).times(3)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
 // TODO:
-// TODO: export default expression;
-// TODO: export default function functionName() { }
 // TODO: export * from "module-name";
 // TODO: export * as name1 from "module-name";
 // TODO: export { name1 } from "module-name";

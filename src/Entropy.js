@@ -177,6 +177,10 @@ export class Entropy {
       return new BodyEntropy(elements, divisor)
     }
 
+    if (dividendType === 'ExportDefaultDeclaration') {
+      return new Entropy(dividend.declaration, divisor)
+    }
+
     if (dividendType === 'ExportSpecifier') {
       return new Entropy(dividend.local, divisor)
     }
@@ -318,7 +322,11 @@ class DeclarationEntropy extends SingleEntropy  {
       .filter(eachDeclaration => eachDeclaration.id)
       .forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
 
-    if (declaration.type === 'ArrowFunctionExpression') {
+    const functionsTypes = [
+      'ArrowFunctionExpression',
+      'FunctionDeclaration'
+    ]
+    if (functionsTypes.includes(declaration.type)) {
       const paramsAsIdentifiers = new Reflexion(declaration.params || []).identifiers()
       const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
       return new BodyEntropy(declaration.body, declarationDivisor).evaluate()
