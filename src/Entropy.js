@@ -169,7 +169,7 @@ export class Entropy {
       return new BodyEntropy([dividend.left, dividend.right], divisor)
     }
 
-    if (dividendType === 'ExportNamedDeclaration') {
+    if (dividendType === 'ExportNamedDeclaration' && !dividend.source) {
       const elements = [
         ...(dividend.declaration ? [dividend.declaration] : []),
         ...dividend.specifiers
@@ -183,6 +183,12 @@ export class Entropy {
 
     if (dividendType === 'ExportSpecifier') {
       return new Entropy(dividend.local, divisor)
+    }
+
+    // TODO: Avoid duplication (ExportNamedDeclaration is handled twice)
+    if (dividendType === 'ExportAllDeclaration' || dividendType === 'ExportNamedDeclaration') {
+      // TODO: Handle this export (currently, exports are ignored)
+      return new BodyEntropy([], divisor)
     }
 
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)

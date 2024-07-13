@@ -751,8 +751,27 @@ describe('Export statement entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-// TODO:
-// TODO: export * from "module-name";
-// TODO: export * as name1 from "module-name";
-// TODO: export { name1 } from "module-name";
+  it('calculates entropy of export/from other module', () => {
+    const code = 'export * from "module-name";'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new NullEvaluation()
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of export/from/as other module', () => {
+    const code = 'export * as name1 from "module-name";'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new NullEvaluation()
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of named export/from other module', () => {
+    const code = 'export { name1 } from "module-name";'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new NullEvaluation()
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 })
