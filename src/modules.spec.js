@@ -29,6 +29,7 @@ describe('Module entropy', () => {
     expect(actual.evaluate()).toEvaluateTo(expected)
   })
 
+  // TODO: turn-on and fix these
   xit('', () => {
     const code = `
     class MetricTraceEvents {

@@ -774,4 +774,18 @@ describe('Export statement entropy', () => {
     const expected = new NullEvaluation()
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
+
+  it('calculates entropy of class definition and export', () => {
+    const code = `
+      class Test {}
+      class Other {}
+      let a;
+
+      export { Test };
+    `
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new Evaluation(1, 3)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
 })
