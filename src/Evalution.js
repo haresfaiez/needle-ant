@@ -1,8 +1,6 @@
 import * as escodegen from 'escodegen'
 
 class Evaluation {
-  constructor() {}
-
   plus(otherEvaluation) {
     if (this.shouldIgnoreAdding(otherEvaluation)) {
       return this
@@ -31,6 +29,10 @@ class Evaluation {
     return !otherEvaluation.evaluations
       && !otherEvaluation.actual
   }
+
+  evaluate() {
+    throw new Error('Cannot evaluate this instance. Check Evalutaion sub-class used here.')
+  }
 }
 
 export class IdentifiersEvaluation extends Evaluation {
@@ -45,9 +47,8 @@ export class IdentifiersEvaluation extends Evaluation {
       : source
   }
 
-  // TODO: __> NEXT --> : FIND calls to `evaluate`
   evaluate() {
-    return new NumericEvaluation(this.actual.length, this.possible.length, this.source)
+    return new NumericEvaluation(this.actual.length, this.possible.length, this.source, this)
   }
 }
 
@@ -55,10 +56,11 @@ export class NumericEvaluation extends Evaluation {
 
   // TODO: Make this always take an array
   // TODO: Keeop the actual/possible names inside test failures
-  constructor(actual = 0, possible = 0, source) {
+  constructor(actual = 0, possible = 0, source, raw) {
     super()
     this.actual = actual
     this.possible = possible
+    this.raw = raw
     // TODO: Simplify this
     this.source = source?.type
       ? escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })

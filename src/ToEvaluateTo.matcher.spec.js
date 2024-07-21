@@ -20,10 +20,13 @@ beforeAll(() => {
           if(!isEvaluations) {
             if (!expected.source) {
               result.pass =
-                matchersUtil.equals(actual.actual, expected.actual)
-                  && matchersUtil.equals(actual.possible, expected.possible)
+              matchersUtil.equals(actual.actual, expected.actual)
+                && matchersUtil.equals(actual.possible, expected.possible)
             } else {
-              result.pass = matchersUtil.equals(actual, expected)
+              result.pass =
+              matchersUtil.equals(actual.actual, expected.actual)
+                && matchersUtil.equals(actual.possible, expected.possible)
+                && matchersUtil.equals(actual.source, expected.source)
             }
             if (!result.pass) {
               result.message = `${failedComparisonMessage(actual, expected)}`
@@ -50,7 +53,10 @@ ${failedComparisonMessage(actual, expected)}`
                 matchersUtil.equals(eachActual.actual, eachExpected.actual)
                   && matchersUtil.equals(eachActual.possible, eachExpected.possible)
             } else {
-              result.pass = matchersUtil.equals(eachActual, eachExpected)
+              result.pass =
+              matchersUtil.equals(eachActual.actual, eachExpected.actual)
+                && matchersUtil.equals(eachActual.possible, eachExpected.possible)
+                && matchersUtil.equals(eachActual.source, eachExpected.source)
             }
 
             return !result.pass

@@ -2,18 +2,19 @@ import { NumericEvaluation, NullEvaluation, IdentifiersEvaluation } from './Eval
 
 describe('Evaluations', () => {
   it('evaluates its members', () => {
-    const identifiersEvaluation =
-      new IdentifiersEvaluation(['a'], ['a', 'b'])
-        .plus(new IdentifiersEvaluation(['a', 'b'],['a', 'b', 'c', 'd']))
+    const aEvaluation = new IdentifiersEvaluation(['a'], ['a', 'b'])
+    const abEvaluation = new IdentifiersEvaluation(['a', 'b'],['a', 'b', 'c', 'd'])
+    const identifiersEvaluation = aEvaluation.plus(abEvaluation)
 
     expect(identifiersEvaluation.evaluate())
-      .toEqual(new NumericEvaluation(1, 2).plus(new NumericEvaluation(2, 4)))
+      .toEqual(new NumericEvaluation(1, 2, undefined, aEvaluation).plus(new NumericEvaluation(2, 4, undefined, abEvaluation)))
   })
 })
 
 describe('Evaluation constructor', () => {
   it('transfroms NumericEvaluation with identifiers to NumericEvaluation with numbers', () => {
-    expect(new IdentifiersEvaluation(['a', 'b'], ['c', 'cd', 'x']).evaluate()).toEqual(new NumericEvaluation(2, 3))
+    const rawEvaluation = new IdentifiersEvaluation(['a', 'b'], ['c', 'cd', 'x'])
+    expect(rawEvaluation.evaluate()).toEqual(new NumericEvaluation(2, 3, undefined, rawEvaluation))
   })
 })
 
