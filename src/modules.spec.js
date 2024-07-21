@@ -1,6 +1,6 @@
 import lighthouse from '../spec/fixtures/lighthouse.js'
 import NeedleAnt from './NeedleAnt.js'
-import { Evaluation, NullEvaluation } from './Evalution.js'
+import { NumericEvaluation, NullEvaluation } from './Evalution.js'
 import metricTraceEvents from '../spec/fixtures/metricTraceEvents.js'
 
 describe('Module entropy', () => {
@@ -10,7 +10,7 @@ describe('Module entropy', () => {
     const expected = lighthouse
       .expected
       .reduce(
-        (acc, e) =>acc.plus(new Evaluation(e.actual, e.possible, e.source)),
+        (acc, e) =>acc.plus(new NumericEvaluation(e.actual, e.possible, e.source)),
         new NullEvaluation()
       )
     expect(actual.evaluate()).toEvaluateTo(expected)
@@ -23,7 +23,7 @@ describe('Module entropy', () => {
     const expected = metricTraceEvents
       .expected
       .reduce(
-        (acc, e) =>acc.plus(new Evaluation(e.actual, e.possible, e.source)),
+        (acc, e) =>acc.plus(new NumericEvaluation(e.actual, e.possible, e.source)),
         new NullEvaluation()
       )
     expect(actual.evaluate()).toEvaluateTo(expected)
@@ -71,10 +71,10 @@ describe('Module entropy', () => {
     `
     const actual = new NeedleAnt(code).entropy()
 
-    const expected = new Evaluation(2, 3)
-      .plus(new Evaluation(2, 3))
-      .plus(new Evaluation(1, 3))
-      .plus(new Evaluation(1, 3))
+    const expected = new NumericEvaluation(2, 3)
+      .plus(new NumericEvaluation(2, 3))
+      .plus(new NumericEvaluation(1, 3))
+      .plus(new NumericEvaluation(1, 3))
     expect(actual.evaluate()).toEvaluateTo(expected)
   })
 })

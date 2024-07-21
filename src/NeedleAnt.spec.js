@@ -1,4 +1,4 @@
-import { Evaluation } from './Evalution.js'
+import { NumericEvaluation } from './Evalution.js'
 import NeedleAnt from './NeedleAnt.js'
 
 describe('Successive statements entropy', () => {
@@ -6,11 +6,11 @@ describe('Successive statements entropy', () => {
     const code = 'const f = (a) => { if (a > 0) { return true; } return a + 1; }'
     const actual = new NeedleAnt(code).entropy()
 
-    const expected = new Evaluation(1, 2)
-      .plus(new Evaluation(1, 3))
-      .plus(new Evaluation(1, 3))
-      .plus(new Evaluation(1, 2))
-      .plus(new Evaluation(1, 3))
+    const expected = new NumericEvaluation(1, 2)
+      .plus(new NumericEvaluation(1, 3))
+      .plus(new NumericEvaluation(1, 3))
+      .plus(new NumericEvaluation(1, 2))
+      .plus(new NumericEvaluation(1, 3))
     expect(actual.evaluate()).toEvaluateTo(expected)
   })
 })
@@ -28,12 +28,12 @@ describe('Nested expressions entropy', () => {
     }`
     const actual = new NeedleAnt(code).entropy()
 
-    const expected = new Evaluation(1, 2)
-      .plus(new Evaluation(1, 3))
-      .plus(new Evaluation(1, 2))
-      .plus(new Evaluation(1, 3))
-      .plus(new Evaluation(1, 3))
-      .plus(new Evaluation(1, 3))
+    const expected = new NumericEvaluation(1, 2)
+      .plus(new NumericEvaluation(1, 3))
+      .plus(new NumericEvaluation(1, 2))
+      .plus(new NumericEvaluation(1, 3))
+      .plus(new NumericEvaluation(1, 3))
+      .plus(new NumericEvaluation(1, 3))
     expect(actual.evaluate()).toEvaluateTo(expected)
   })
 
@@ -51,14 +51,14 @@ describe('Nested expressions entropy', () => {
     }`
     const actual = new NeedleAnt(code).entropy()
 
-    const expected = new Evaluation(1, 2)
-      .plus(new Evaluation(1, 3))
-      .plus(new Evaluation(1, 2))
-      .plus(new Evaluation(1, 3))
-      .plus(new Evaluation(1, 2))
-      .plus(new Evaluation(1, 3))
-      .plus(new Evaluation(1, 3))
-      .plus(new Evaluation(1, 3))
+    const expected = new NumericEvaluation(1, 2)
+      .plus(new NumericEvaluation(1, 3))
+      .plus(new NumericEvaluation(1, 2))
+      .plus(new NumericEvaluation(1, 3))
+      .plus(new NumericEvaluation(1, 2))
+      .plus(new NumericEvaluation(1, 3))
+      .plus(new NumericEvaluation(1, 3))
+      .plus(new NumericEvaluation(1, 3))
     expect(actual.evaluate()).toEvaluateTo(expected)
   })
 })
@@ -75,12 +75,12 @@ describe('Function', () => {
       }`
       const actual = new NeedleAnt(code).entropy()
 
-      const expected = new Evaluation(1, 2)
-        .plus(new Evaluation(1, 3))
-        .plus(new Evaluation(1, 2))
-        .plus(new Evaluation(1, 3))
-        .plus(new Evaluation(1, 2))
-        .plus(new Evaluation(1, 3))
+      const expected = new NumericEvaluation(1, 2)
+        .plus(new NumericEvaluation(1, 3))
+        .plus(new NumericEvaluation(1, 2))
+        .plus(new NumericEvaluation(1, 3))
+        .plus(new NumericEvaluation(1, 2))
+        .plus(new NumericEvaluation(1, 3))
       expect(actual.evaluate()).toEvaluateTo(expected)
     })
   })
@@ -89,19 +89,19 @@ describe('Function', () => {
     it('of function that returns a constant is null', () => {
       const actual = new NeedleAnt('() => 2').entropy()
 
-      expect(actual.evaluate()).toEvaluateTo(new Evaluation(1, 1))
+      expect(actual.evaluate()).toEvaluateTo(new NumericEvaluation(1, 1))
     })
 
     it('of function that takes an argument and returns a constant', () => {
       const actual = new NeedleAnt('2').entropy()
 
-      expect(actual.evaluate()).toEvaluateTo(new Evaluation(1, 1))
+      expect(actual.evaluate()).toEvaluateTo(new NumericEvaluation(1, 1))
     })
 
     it('of function that increments a number', () => {
       const actual = new NeedleAnt('a + 1').entropy()
 
-      const expected = new Evaluation(1, 0).plus(new Evaluation(1, 1))
+      const expected = new NumericEvaluation(1, 0).plus(new NumericEvaluation(1, 1))
       expect(actual.evaluate()).toEvaluateTo(expected)
     })
 
@@ -109,14 +109,14 @@ describe('Function', () => {
       const actual = new NeedleAnt('1 + a').entropy()
 
 
-      const expected = new Evaluation(1, 1).plus(new Evaluation(1, 0))
+      const expected = new NumericEvaluation(1, 1).plus(new NumericEvaluation(1, 0))
       expect(actual.evaluate()).toEvaluateTo(expected)
     })
 
     it('of function that sums all available variables', () => {
       const actual = new NeedleAnt('a + b').entropy()
 
-      const expected = new Evaluation(1, 0).plus(new Evaluation(1, 0))
+      const expected = new NumericEvaluation(1, 0).plus(new NumericEvaluation(1, 0))
       expect(actual.evaluate()).toEvaluateTo(expected)
     })
   })
@@ -191,9 +191,9 @@ describe('Entropy result', () => {
     const actual = new NeedleAnt(code, [otherJsCode]).entropy()
 
     const expected =
-      new Evaluation(3, 3, 'import{a,b,c}from\'./other.js\';')
-        .plus(new Evaluation(1, 4, 'b()'))
-        .plus(new Evaluation(3, 4, 'a(c,x)'))
+      new NumericEvaluation(3, 3, 'import{a,b,c}from\'./other.js\';')
+        .plus(new NumericEvaluation(1, 4, 'b()'))
+        .plus(new NumericEvaluation(3, 4, 'a(c,x)'))
 
     expect(actual.evaluate()).toEqual(expected)
   })
@@ -205,7 +205,7 @@ describe('Entropy result', () => {
 
   //   const actual = new NeedleAnt(code, [otherJsCode]).entropy()
 
-  //   const expected = new Evaluation(1, 1, 'import*as Other from\'./other.js\';')
+  //   const expected = new NumericEvaluation(1, 1, 'import*as Other from\'./other.js\';')
   //   expect(actual.evaluate()).toEqual(expected)
   // })
 })

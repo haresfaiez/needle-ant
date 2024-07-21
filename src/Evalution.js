@@ -1,24 +1,18 @@
 import * as escodegen from 'escodegen'
 
-export class Evaluation {
+class Evaluation {
+  constructor() {}
 
-  constructor(actual = 0, possible = 0, source) {
-    this.actual = actual
-    this.possible = possible
-    // TODO: Simplify this
-    this.source = source?.type
-      ? escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })
-      : source
-  }
+  plus(otherEvaluation) {
+    if (this.shouldIgnoreAdding(otherEvaluation)) {
+      return this
+    }
 
-  evaluate() {
-    return new Evaluation(this.actual.length, this.possible.length, this.source)
-  }
+    if (otherEvaluation.evaluations) {
+      return new Evaluations([this, ...otherEvaluation.evaluations])
+    }
 
-  // TODO: Ignore adding null Evaluation (actual == 0)
-  shouldIgnoreAdding(otherEvaluation) {
-    return !otherEvaluation.evaluations
-      && !otherEvaluation.actual
+    return new Evaluations([this, otherEvaluation])
   }
 
   times(multiplier) {
@@ -32,16 +26,43 @@ export class Evaluation {
     return this.plus(this)
   }
 
-  plus(otherEvaluation) {
-    if (this.shouldIgnoreAdding(otherEvaluation)) {
-      return this
-    }
+  // TODO: Ignore adding null NumericEvaluation (actual == 0)
+  shouldIgnoreAdding(otherEvaluation) {
+    return !otherEvaluation.evaluations
+      && !otherEvaluation.actual
+  }
+}
 
-    if (otherEvaluation.evaluations) {
-      return new Evaluations([this, ...otherEvaluation.evaluations])
-    }
+export class IdentifiersEvaluation extends Evaluation {
 
-    return new Evaluations([this, otherEvaluation])
+  constructor(actual = [], possible = [], source) {
+    super()
+    this.actual = actual
+    this.possible = possible
+    // TODO: Simplify this
+    this.source = source?.type
+      ? escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })
+      : source
+  }
+
+  // TODO: __> NEXT --> : FIND calls to `evaluate`
+  evaluate() {
+    return new NumericEvaluation(this.actual.length, this.possible.length, this.source)
+  }
+}
+
+export class NumericEvaluation extends Evaluation {
+
+  // TODO: Make this always take an array
+  // TODO: Keeop the actual/possible names inside test failures
+  constructor(actual = 0, possible = 0, source) {
+    super()
+    this.actual = actual
+    this.possible = possible
+    // TODO: Simplify this
+    this.source = source?.type
+      ? escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })
+      : source
   }
 
   possibilitiesCount(primitiveAndGlobalsCount = 0) {
@@ -133,7 +154,7 @@ export class Evaluations extends Evaluation {
   }
 }
 
-export class NullEvaluation extends Evaluation {
+export class NullEvaluation extends NumericEvaluation {
   plus(otherEvaluation) {
     return otherEvaluation
   }

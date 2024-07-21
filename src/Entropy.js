@@ -1,5 +1,5 @@
 import { Reflexion } from './Reflexion.js'
-import { Evaluation, NullEvaluation } from './Evalution.js'
+import { NullEvaluation, IdentifiersEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
 export class Entropy {
@@ -290,7 +290,7 @@ class ExpressionEntropy extends SingleEntropy  {
     const possibles = [...this.divisor.identifiers(), ...literalsWeight]
     const actuals = [...this.dividend.identifiers(), ...literalsWeight, ...thisExpression]
 
-    return new Evaluation(actuals, possibles, dividend)
+    return new IdentifiersEvaluation(actuals, possibles, dividend)
   }
 }
 
@@ -358,7 +358,7 @@ class DeclarationEntropy extends SingleEntropy  {
     // class A extends B
     if (declaration.type === 'ClassDeclaration' && declaration.superClass) {
       this.divisor.extend([declaration.superClass.name])
-      return new Evaluation([declaration.id.name], this.divisor.identifiers()).plus(declarationsEvaluation)
+      return new IdentifiersEvaluation([declaration.id.name], this.divisor.identifiers()).plus(declarationsEvaluation)
     }
 
     return declarationsEvaluation
@@ -377,7 +377,7 @@ class ClassEntropy extends SingleEntropy {
 
     this.divisor.extend(superClasses)
 
-    const superClassEvaluation = new Evaluation(superClasses, this.divisor.identifiers())
+    const superClassEvaluation = new IdentifiersEvaluation(superClasses, this.divisor.identifiers())
 
     const declarations = this.dividend.sources
     const bodyAsDividends = declarations.map(eachDeclaration => eachDeclaration.body)
