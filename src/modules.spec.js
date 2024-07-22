@@ -16,8 +16,7 @@ describe('Module entropy', () => {
     expect(actual.evaluate()).toEvaluateTo(expected)
   })
 
-  // TODO: turn-on and fix these
-  xit('calculates entropy of class definition', () => {
+  it('calculates entropy of class definition', () => {
     const actual = new NeedleAnt(metricTraceEvents.code).entropy()
 
     const expected = metricTraceEvents
