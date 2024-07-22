@@ -26,8 +26,8 @@ export default {
     {'actual':1, 'possible':3, 'source':'this'},
     {'actual':1, 'possible':3, 'source':'_auditResults'},
     {'actual':1, 'possible':3, 'source':'auditResults'},
-    {'actual':1, 'possible':7, 'source':'\'Time Origin\''},
-    {'actual':1, 'possible':7, 'source':'\'timeorigin\''},
+    {'actual':1, 'possible':2, 'source':'\'Time Origin\''},
+    {'actual':1, 'possible':2, 'source':'\'timeorigin\''},
     {'actual':1, 'possible':1, 'source':'MetricTraceEvents'},
   ]
 }

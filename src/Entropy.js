@@ -32,7 +32,7 @@ export class Entropy {
     }
 
     if (dividendType === 'ObjectExpression') {
-      return new ObjectAccessEntropy(dividend, divisor)
+      return new LiteralObjectEntropy(dividend, divisor)
     }
 
     if (dividendType === 'NewExpression') {
@@ -294,24 +294,30 @@ class ExpressionEntropy extends SingleEntropy  {
   }
 }
 
+// TODO: Search other-similar occurences and abstract
 class ObjectAccessEntropy extends ExpressionEntropy {
   // TODO: Simplify this
   evaluate() {
+    // TODO: Is this true?
     this.divisor.extendAccesses(this.dividend.identifiers())
     const nextDivisor = Divisor.fromAccesses(this.divisor)
+    return new Entropy(this.dividend, nextDivisor).evaluate()
+  }
+}
 
-    const dividendType = this.dividend.sources[0].type
+// TODO: Merge with DeclarationEntropy
+class LiteralObjectEntropy extends ExpressionEntropy {
+  // TODO: Simplify this
+  evaluate() {
+    const declarations = this.dividend.sources
+    const declaration = declarations[0]
 
-    if (dividendType === 'Identifier') {
-      return new Entropy(this.dividend, nextDivisor).evaluate()
-    }
-
-    nextDivisor.extend(this.divisor.identifiers())
+    this.divisor.extendAccesses(this.dividend.properties())
 
     return new Entropies(
-      this.dividend.sources[0]
+      declaration
         .properties
-        .map(eachSource => new Entropy(eachSource.value, nextDivisor))
+        .map(eachSource => new Entropy(eachSource.value, this.divisor))
     ).evaluate()
   }
 }

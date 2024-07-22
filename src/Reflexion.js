@@ -33,6 +33,16 @@ export class Reflexion {
     return result
   }
 
+  collectProperties(expression) {
+    const result = new Set()
+    AcornWalk.simple(expression, {
+      Property(node) {
+        result.add(node.key.name)
+      },
+    })
+    return result
+  }
+
   collectIdentifiers(expression) {
     const result = new Set()
     AcornWalk.simple(expression, {
@@ -61,6 +71,12 @@ export class Reflexion {
       },
     })
     return result
+  }
+
+  properties() {
+    const bag = new Bag(this.sources)
+    bag.collect(eachSource => this.collectProperties(eachSource))
+    return bag.toArray()
   }
 
   identifiers() {

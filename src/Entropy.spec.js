@@ -236,7 +236,9 @@ describe('Variable declaration entropy', () => {
     const code = 'const a = {x: 3, y: 0}; const tmp = a.x;'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected =  new NumericEvaluation(1, 4).times(2).plus(new NumericEvaluation(1, 2).times(2))
+    const expected =
+      new NumericEvaluation(1, 2).times(2)
+        .plus(new NumericEvaluation(1, 2).times(2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -288,7 +290,7 @@ describe('Variable declaration entropy', () => {
     const code = 'class User {}; const a = new User({ name: "Joe" });'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected =  new NumericEvaluation(1, 2).plus(new NumericEvaluation(1, 4))
+    const expected =  new NumericEvaluation(1, 2).plus(new NumericEvaluation(1, 3))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -296,7 +298,10 @@ describe('Variable declaration entropy', () => {
     const code = 'class User {}; const a = new User({ name: "Joe", lastName: "James" });'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected =  new NumericEvaluation(1, 2).plus(new NumericEvaluation(1, 5)).plus(new NumericEvaluation(1, 5))
+    const expected =
+      new NumericEvaluation(1, 2)
+        .plus(new NumericEvaluation(1, 3))
+        .plus(new NumericEvaluation(1, 3))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 })
@@ -315,7 +320,7 @@ describe('Class definition entropy', () => {
     `
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
-    const expected =  new NumericEvaluation(1, 5)
+    const expected =  new NumericEvaluation(1, 2)
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
@@ -357,6 +362,26 @@ describe('Class definition entropy', () => {
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
     const expected =  new NumericEvaluation(1, 2)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of literal object definition', () => {
+    const code = 'let a, b; const obj = { p: a }'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected =  new NumericEvaluation(1, 3)
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+
+  it('calculates entropy of literal object definition and usages', () => {
+    const code = 'let a, b; const obj = { p: a, q: 4 }; const result = obj.p;'
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected =
+      new NumericEvaluation(1, 3)
+        .plus(new NumericEvaluation(1, 4))
+        .plus(new NumericEvaluation(1, 4))
+        .plus(new NumericEvaluation(1, 2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 })
