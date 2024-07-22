@@ -322,6 +322,7 @@ class LiteralObjectEntropy extends ExpressionEntropy {
   }
 }
 
+// TODO: Extract into a composition of classes
 class DeclarationEntropy extends SingleEntropy  {
 
   // TODO: simplify this
