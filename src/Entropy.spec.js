@@ -814,3 +814,27 @@ describe('Export statement entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 })
+
+describe('Try/catch statement entropy', () => {
+  it('calculates entropy of try/catch/finally statement', () => {
+    const code = `
+    let a, b;
+    try {
+      let c, d, e;
+      let tryVar = b;
+    } catch (err) {
+      let tmp;
+      let catchVar = a;
+    } finally {
+      let finallyTmp;
+      let finallyVar = finallyTmp;
+    }
+    `
+    const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+    const expected = new NumericEvaluation(1, 6)
+      .plus(new NumericEvaluation(1, 5))
+      .plus(new NumericEvaluation(1, 4))
+    expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+})

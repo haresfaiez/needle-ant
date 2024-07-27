@@ -191,6 +191,14 @@ export class Entropy {
       return new BodyEntropy([], divisor)
     }
 
+    if (dividendType === 'TryStatement') {
+      return new Entropies([
+        new BodyEntropy(dividend.block.body, divisor),
+        new CatchEntropy(dividend.handler, divisor),
+        ...dividend.finalizer ? [new BodyEntropy(dividend.finalizer.body, divisor)] : []
+      ])
+    }
+
     throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
   }
 }
@@ -257,6 +265,7 @@ class DependencyEntropy extends SingleEntropy  {
   }
 }
 
+// TODO: Create a construct based on the params/body dual
 class ExpressionEntropy extends SingleEntropy  {
   // TODO: Simplify this
   evaluate() {
@@ -291,6 +300,16 @@ class ExpressionEntropy extends SingleEntropy  {
     const actuals = [...this.dividend.identifiers(), ...literalsWeight, ...thisExpression]
 
     return new IdentifiersEvaluation(actuals, possibles, dividend)
+  }
+}
+
+// TODO: Create a construct based on the params/body dual
+class CatchEntropy extends SingleEntropy {
+  evaluate() {
+    const dividend = this.dividend.sources[0]
+    const newDivisor = Divisor.clone(this.divisor)
+    newDivisor.extend([dividend.param.name])
+    return new BodyEntropy(dividend.body, newDivisor).evaluate()
   }
 }
 
