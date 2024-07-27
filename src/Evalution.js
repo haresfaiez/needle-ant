@@ -14,12 +14,8 @@ class Evaluation {
   }
 
   times(multiplier) {
-    if (multiplier !== 2 && multiplier !== 3)
-      // TODO: Implement this
-      throw new Error('times(n) not implemented for this multiplier')
-
-    if (multiplier === 3)
-      return this.times(2).plus(this)
+    if (multiplier > 2)
+      return this.times(multiplier - 1).plus(this)
 
     return this.plus(this)
   }

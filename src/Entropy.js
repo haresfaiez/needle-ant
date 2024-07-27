@@ -77,7 +77,6 @@ export class Entropy {
     }
 
     const expressionTypes = [
-      'CallExpression',
       'Identifier',
       'ImportNamespaceSpecifier',
       'ImportSpecifier',
@@ -91,6 +90,10 @@ export class Entropy {
     ]
     if (expressionTypes.includes(dividendType)) {
       return new ExpressionEntropy(dividend, divisor)
+    }
+
+    if (dividendType === 'CallExpression') {
+      return new CallEntropy(dividend, divisor)
     }
 
     if (dividendType === 'ArrayExpression') {
@@ -266,13 +269,12 @@ class DependencyEntropy extends SingleEntropy  {
 }
 
 // TODO: Create a construct based on the params/body dual
-class ExpressionEntropy extends SingleEntropy  {
+class CallEntropy extends SingleEntropy  {
   // TODO: Simplify this
   evaluate() {
     const dividend = this.dividend.sources[0]
 
     const isMethodInvocation = dividend?.callee?.type === 'MemberExpression'
-    const isMemberAccess = dividend?.left?.type === 'MemberExpression'
 
     if (isMethodInvocation) {
       return new Entropies([
@@ -281,6 +283,19 @@ class ExpressionEntropy extends SingleEntropy  {
         new BodyEntropy(dividend.arguments, this.divisor)
       ]).evaluate()
     }
+
+    return new Entropies([
+      new Entropy(dividend.callee, this.divisor),
+      new BodyEntropy(dividend.arguments, this.divisor)
+    ]).evaluate()
+  }
+}
+
+class ExpressionEntropy extends SingleEntropy  {
+  // TODO: Simplify this
+  evaluate() {
+    const dividend = this.dividend.sources[0]
+    const isMemberAccess = dividend?.left?.type === 'MemberExpression'
 
     if (isMemberAccess) {
       return new Entropies([
@@ -296,7 +311,7 @@ class ExpressionEntropy extends SingleEntropy  {
     const isImport = dividend.type.includes('mport')
     const literalsWeight = !isImport && (this.dividend.literals().length || isBitShiftingOperation) ? [1] : []
     const thisExpression = dividend.type === 'ThisExpression' ? ['this'] : []
-    const possibles = [...this.divisor.identifiers(), ...literalsWeight]
+    const possibles = [...this.divisor.identifiers(), ...literalsWeight, ...thisExpression]
     const actuals = [...this.dividend.identifiers(), ...literalsWeight, ...thisExpression]
 
     return new IdentifiersEvaluation(actuals, possibles, dividend)

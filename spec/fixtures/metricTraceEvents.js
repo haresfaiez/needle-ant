@@ -22,10 +22,10 @@ export default {
       export {MetricTraceEvents};
   `,
   expected: [
-    {'actual':1, 'possible':4, 'source':'this'},
+    {'actual':1, 'possible':5, 'source':'this'},
     {'actual':1, 'possible':2, 'source':'_traceEvents'},
     {'actual':1, 'possible':4, 'source':'traceEvents'},
-    {'actual':1, 'possible':4, 'source':'this'},
+    {'actual':1, 'possible':5, 'source':'this'},
     {'actual':1, 'possible':3, 'source':'_auditResults'},
     {'actual':1, 'possible':4, 'source':'auditResults'},
     {'actual':1, 'possible':3, 'source':'\'Time Origin\''},
