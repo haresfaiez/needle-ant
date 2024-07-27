@@ -26,7 +26,7 @@ describe('Module entropy', () => {
     expect(actual.evaluate()).toEvaluateTo(expected)
   })
 
-  xit('calculates entropy of class definition with two methods', () => {
+  it('calculates entropy of class definition with two methods', () => {
     const actual = new NeedleAnt(fullMetricTraceEvents.code).entropy()
 
     const expected = buildExpected(fullMetricTraceEvents.expected)
