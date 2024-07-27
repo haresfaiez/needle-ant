@@ -18,7 +18,7 @@ export default {
                 MetricTraceEvents.metricsDefinitions.forEach(metric => {
                     const ts = uberMetrics[metric.tsKey];
                     if (ts === undefined) {
-                    log.error('pwmetrics-events', ` + '`${metric.name} timestamp not found`' + `);
+                    log.error('pwmetrics-events', + metric.name + 'timestamp not found');
                     return;
                     }
 

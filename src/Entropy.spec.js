@@ -838,3 +838,14 @@ describe('Try/catch statement entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 })
+
+// TODO: Uncomment (next. release)
+// describe('String template literal entropy', () => {
+//   it('calculates entropy of string literal with one variable', () => {
+//     const code = 'let metric, timestamp; const msg = "pwmetrics-events" + ` -${timestamp} -`+ `${metric} timestamp not found`;'
+//     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
+
+//     const expected = new NumericEvaluation(2, 4)
+//     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+//   })
+// })
