@@ -309,10 +309,10 @@ class ExpressionEntropy extends SingleEntropy  {
 
     // TODO: Remove this check (next. release)
     const isImport = dividend.type.includes('mport')
-    const literalsWeight = !isImport && (this.dividend.literals().length || isBitShiftingOperation) ? [1] : []
+    const literals = !isImport ? [...this.dividend.literals(), ...(isBitShiftingOperation ? [1] : [])] : []
     const thisExpression = dividend.type === 'ThisExpression' ? ['this'] : []
-    const possibles = [...this.divisor.identifiers(), ...literalsWeight, ...thisExpression]
-    const actuals = [...this.dividend.identifiers(), ...literalsWeight, ...thisExpression]
+    const possibles = [...this.divisor.identifiers(), ...literals, ...thisExpression]
+    const actuals = [...this.dividend.identifiers(), ...literals, ...thisExpression]
 
     return new IdentifiersEvaluation(actuals, possibles, dividend)
   }
