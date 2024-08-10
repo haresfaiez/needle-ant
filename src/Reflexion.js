@@ -7,8 +7,7 @@ export class Reflexion {
       acornNodes.filter(eachSource => eachSource.type !== 'EmptyStatement')
   }
 
-  collectExports(expression) {
-    const result = new Set()
+  collectExports(expression, result) {
     AcornWalk.simple(expression, {
       ExportNamedDeclaration(node) {
         Reflexion.fromAcornNodes([node])
@@ -16,31 +15,25 @@ export class Reflexion {
           .forEach(name => result.add(name))
       }
     })
-    return result
   }
 
-  collectLiterals(expression) {
-    const result = new Set()
+  collectLiterals(expression, result) {
     AcornWalk.simple(expression, {
       Literal(node) {
         result.add(node.value)
       }
     })
-    return result
   }
 
-  collectProperties(expression) {
-    const result = new Set()
+  collectProperties(expression, result) {
     AcornWalk.simple(expression, {
       Property(node) {
         result.add(node.key.name)
       },
     })
-    return result
   }
 
-  collectIdentifiers(expression) {
-    const result = new Set()
+  collectIdentifiers(expression, result) {
     AcornWalk.simple(expression, {
       ObjectExpression(node) {
         node.properties
@@ -66,31 +59,30 @@ export class Reflexion {
         result.add(node.id.name)
       },
     })
-    return result
   }
 
   properties() {
     const bag = new Bag(this.sources)
-    bag.collect(eachSource => this.collectProperties(eachSource))
-    return bag.toArray()
+    bag.collect(this.collectProperties)
+    return bag.evaluate()
   }
 
   identifiers() {
     const bag = new Bag(this.sources)
-    bag.collect(eachSource => this.collectIdentifiers(eachSource))
-    return bag.toArray()
+    bag.collect(this.collectIdentifiers)
+    return bag.evaluate()
   }
 
   api() {
     const bag = new Bag(this.sources)
-    bag.collect(eachSource => this.collectExports(eachSource))
-    return bag.toArray()
+    bag.collect(this.collectExports)
+    return bag.evaluate()
   }
 
   literals() {
     const bag = new Bag(this.sources)
-    bag.collect(eachSource => this.collectLiterals(eachSource))
-    return bag.toArray()
+    bag.collect(this.collectLiterals)
+    return bag.evaluate()
   }
 
   // Factories
@@ -115,14 +107,11 @@ class Bag {
 
   collect(collector) {
     for (const eachSource of this.sources) {
-      const codeSlices = collector(eachSource)
-      for (const eachCodeSlice of codeSlices) {
-        this.elements.add(eachCodeSlice)
-      }
+      collector(eachSource, this.elements)
     }
   }
 
-  toArray() {
+  evaluate() {
     return [...this.elements]
   }
 }
