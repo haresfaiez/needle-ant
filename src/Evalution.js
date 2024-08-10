@@ -43,20 +43,16 @@ export class IdentifiersEvaluation extends Evaluation {
   }
 
   evaluate() {
-    return new NumericEvaluation(this.actual.length, this.possible.length, this.source, this)
+    return new NumericEvaluation(this.actual.length, this.possible.length, this)
   }
 }
 
 export class NumericEvaluation extends Evaluation {
-  constructor(actual = 0, possible = 0, source, rawEvaluation) {
+  constructor(actual = 0, possible = 0, rawEvaluation) {
     super()
     this.actual = actual
     this.possible = possible
     this.raw = rawEvaluation
-    // TODO: Simplify this (next. release)
-    this.source = source?.type
-      ? escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })
-      : source
   }
 
   possibilitiesCount(primitiveAndGlobalsCount = 0) {

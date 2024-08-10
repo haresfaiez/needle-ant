@@ -7,14 +7,14 @@ describe('Evaluations', () => {
     const identifiersEvaluation = aEvaluation.plus(abEvaluation)
 
     expect(identifiersEvaluation.evaluate())
-      .toEqual(new NumericEvaluation(1, 2, undefined, aEvaluation).plus(new NumericEvaluation(2, 4, undefined, abEvaluation)))
+      .toEqual(new NumericEvaluation(1, 2, aEvaluation).plus(new NumericEvaluation(2, 4, abEvaluation)))
   })
 })
 
 describe('Evaluation constructor', () => {
   it('transfroms NumericEvaluation with identifiers to NumericEvaluation with numbers', () => {
     const rawEvaluation = new IdentifiersEvaluation(['a', 'b'], ['c', 'cd', 'x'])
-    expect(rawEvaluation.evaluate()).toEqual(new NumericEvaluation(2, 3, undefined, rawEvaluation))
+    expect(rawEvaluation.evaluate()).toEqual(new NumericEvaluation(2, 3, rawEvaluation))
   })
 })
 
