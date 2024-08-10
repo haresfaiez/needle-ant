@@ -108,11 +108,12 @@ export class Reflexion {
 class Bag {
   constructor(sources) {
     this.sources = sources
-    this.elements = new Set()
+    this.elements = new Map()
   }
 
   put(codeSlice) {
-    this.elements.add(codeSlice)
+    const codeSlicesPerId = this.elements.get(codeSlice.raw)
+    this.elements.set(codeSlice.raw, [...(codeSlicesPerId || []), codeSlice])
   }
 
   collect(collector) {
@@ -122,6 +123,6 @@ class Bag {
   }
 
   evaluate() {
-    return [...this.elements].map(eachCodeSlice => eachCodeSlice.raw)
+    return [...this.elements.keys()]
   }
 }
