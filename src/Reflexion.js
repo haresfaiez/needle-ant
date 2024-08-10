@@ -2,6 +2,7 @@ import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
 
 import { CodeSlice } from './CodeSlice.js'
+import { CodeBag } from './CodeBag.js'
 
 export class Reflexion {
   constructor(acornNodes) {
@@ -68,25 +69,25 @@ export class Reflexion {
   }
 
   properties() {
-    const bag = new Bag(this.sources)
+    const bag = new CodeBag(this.sources)
     bag.collect(this.collectProperties)
     return bag.evaluate()
   }
 
   identifiers() {
-    const bag = new Bag(this.sources)
+    const bag = new CodeBag(this.sources)
     bag.collect(this.collectIdentifiers)
     return bag.evaluate()
   }
 
   api() {
-    const bag = new Bag(this.sources)
+    const bag = new CodeBag(this.sources)
     bag.collect(this.collectExports)
     return bag.evaluate()
   }
 
   literals() {
-    const bag = new Bag(this.sources)
+    const bag = new CodeBag(this.sources)
     bag.collect(this.collectLiterals)
     return bag.evaluate()
   }
@@ -105,24 +106,4 @@ export class Reflexion {
   }
 }
 
-class Bag {
-  constructor(sources) {
-    this.sources = sources
-    this.elements = new Map()
-  }
 
-  put(codeSlice) {
-    const codeSlicesPerId = this.elements.get(codeSlice.raw)
-    this.elements.set(codeSlice.raw, [...(codeSlicesPerId || []), codeSlice])
-  }
-
-  collect(collector) {
-    for (const eachSource of this.sources) {
-      collector(eachSource, this)
-    }
-  }
-
-  evaluate() {
-    return [...this.elements.keys()]
-  }
-}
