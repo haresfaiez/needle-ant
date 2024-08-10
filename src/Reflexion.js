@@ -3,7 +3,8 @@ import * as AcornWalk from 'acorn-walk'
 
 export class Reflexion {
   constructor(acornNodes) {
-    this.sources = acornNodes.filter(eachSource => eachSource.type !== 'EmptyStatement')
+    this.sources =
+      acornNodes.filter(eachSource => eachSource.type !== 'EmptyStatement')
   }
 
   collectExports(expression) {
@@ -100,7 +101,9 @@ export class Reflexion {
   static parse(sourceCode, transformer) {
     const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
     const astForReflexion = transformer ? transformer(ast) : ast
-    return Array.isArray(astForReflexion) ? Reflexion.fromAcornNodes(astForReflexion) : Reflexion.fromAcornNodes([astForReflexion])
+    return Array.isArray(astForReflexion)
+      ? Reflexion.fromAcornNodes(astForReflexion)
+      : Reflexion.fromAcornNodes([astForReflexion])
   }
 }
 
@@ -111,9 +114,12 @@ class Bag {
   }
 
   collect(collector) {
-    this.sources
-      .map(eachSource => collector(eachSource))
-      .forEach(ast => ast.forEach(this.elements.add.bind(this.elements)))
+    for (const eachSource of this.sources) {
+      const codeSlices = collector(eachSource)
+      for (const eachCodeSlice of codeSlices) {
+        this.elements.add(eachCodeSlice)
+      }
+    }
   }
 
   toArray() {
