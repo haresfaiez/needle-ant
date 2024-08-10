@@ -225,6 +225,7 @@ class Entropies {
   }
 }
 
+// TODO: rename or remove this
 class SingleEntropy {
   constructor(dividend, divisor = new Divisor([])) {
     // TODO: Create different factories for each condition
