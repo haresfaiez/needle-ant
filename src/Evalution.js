@@ -48,14 +48,11 @@ export class IdentifiersEvaluation extends Evaluation {
 }
 
 export class NumericEvaluation extends Evaluation {
-
-  // TODO: Make this always take an array
-  // TODO: Keep the actual/possible names inside test failures
-  constructor(actual = 0, possible = 0, source, raw) {
+  constructor(actual = 0, possible = 0, source, rawEvaluation) {
     super()
     this.actual = actual
     this.possible = possible
-    this.raw = raw
+    this.raw = rawEvaluation
     // TODO: Simplify this (next. release)
     this.source = source?.type
       ? escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })
