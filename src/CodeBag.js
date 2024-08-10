@@ -1,8 +1,18 @@
 
 export class CodeBag {
-  constructor(sources) {
-    this.sources = sources;
+  constructor() {
     this.elements = new Map();
+  }
+
+  insert(anotherCodeBag) {
+    [...anotherCodeBag.values()]
+      .forEach(eachCodeSlices => this.putAll(eachCodeSlices))
+  }
+
+  putAll(codeSlices = []) {
+    const id = codeSlices[0]?.raw
+    const codeSlicesPerId = this.elements.get(id);
+    this.elements.set(id, [...(codeSlicesPerId || []), ...codeSlices]);
   }
 
   put(codeSlice) {
@@ -10,8 +20,8 @@ export class CodeBag {
     this.elements.set(codeSlice.raw, [...(codeSlicesPerId || []), codeSlice]);
   }
 
-  collect(collector) {
-    for (const eachSource of this.sources) {
+  collect(sources, collector) {
+    for (const eachSource of sources) {
       collector(eachSource, this);
     }
   }

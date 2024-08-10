@@ -69,26 +69,26 @@ export class Reflexion {
   }
 
   properties() {
-    const bag = new CodeBag(this.sources)
-    bag.collect(this.collectProperties)
+    const bag = new CodeBag()
+    bag.collect(this.sources, this.collectProperties)
     return bag.evaluate()
   }
 
   identifiers() {
-    const bag = new CodeBag(this.sources)
-    bag.collect(this.collectIdentifiers)
+    const bag = new CodeBag()
+    bag.collect(this.sources, this.collectIdentifiers)
     return bag.evaluate()
   }
 
   api() {
-    const bag = new CodeBag(this.sources)
-    bag.collect(this.collectExports)
+    const bag = new CodeBag()
+    bag.collect(this.sources, this.collectExports)
     return bag.evaluate()
   }
 
   literals() {
-    const bag = new CodeBag(this.sources)
-    bag.collect(this.collectLiterals)
+    const bag = new CodeBag()
+    bag.collect(this.sources, this.collectLiterals)
     return bag.evaluate()
   }
 
