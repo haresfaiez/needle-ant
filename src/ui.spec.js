@@ -6,7 +6,8 @@ describe('Entropy evaluation', () => {
     const code = 'const a = 4;'
     const actual = new NeedleAnt(code).entropy()
  
-    const expected = new NumericEvaluation(1, 2, new IdentifiersEvaluation([4], ['a', 4], '4'))
+    const identifiersEvaluation = new IdentifiersEvaluation([4], ['a', 4], '4')
+    const expected = new NumericEvaluation(1, 2, identifiersEvaluation)
     expect(actual.evaluate()).toEqual(expected)
   })
 })
