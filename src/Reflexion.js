@@ -2,20 +2,15 @@ import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
 
 export class Reflexion {
-  constructor(reflexionOrSources) {
-    // TODO: Simplify this (next. release)
-    this.sources =
-      reflexionOrSources.sources
-        ? reflexionOrSources.sources
-        : Array.isArray(reflexionOrSources) ? reflexionOrSources : [reflexionOrSources]
-    this.sources = this.sources.filter(eachSource => eachSource.type !== 'EmptyStatement')
+  constructor(acornNodes) {
+    this.sources = acornNodes.filter(eachSource => eachSource.type !== 'EmptyStatement')
   }
 
   collectExports(expression) {
     const result = new Set()
     AcornWalk.simple(expression, {
       ExportNamedDeclaration(node) {
-        new Reflexion(node)
+        Reflexion.fromAcornNodes([node])
           .identifiers()
           .forEach(name => result.add(name))
       }
@@ -97,9 +92,15 @@ export class Reflexion {
     return bag.toArray()
   }
 
+  // Factories
+  static fromAcornNodes(nodes = []) {
+    return new Reflexion(nodes)
+  }
+
   static parse(sourceCode, transformer) {
     const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
-    return new Reflexion(transformer ? transformer(ast) : ast)
+    const astForReflexion = transformer ? transformer(ast) : ast
+    return Array.isArray(astForReflexion) ? Reflexion.fromAcornNodes(astForReflexion) : Reflexion.fromAcornNodes([astForReflexion])
   }
 }
 

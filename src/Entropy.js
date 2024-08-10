@@ -5,7 +5,12 @@ import { Divisor } from './Divisor.js'
 export class Entropy {
   constructor(dividend, divisor = new Divisor([])) {
     this.divisor = divisor
-    this.delegate = this.createDelegate(new Reflexion(dividend), divisor)
+
+    const reflexion = dividend.sources
+      ? dividend
+      : (Array.isArray(dividend) ? Reflexion.fromAcornNodes(dividend) : Reflexion.fromAcornNodes([dividend]))
+
+    this.delegate = this.createDelegate(reflexion, divisor)
   }
 
   evaluate() {
@@ -221,7 +226,11 @@ class Entropies {
 
 class SingleEntropy {
   constructor(dividend, divisor = new Divisor([])) {
-    this.dividend = new Reflexion(dividend)
+    const reflexion = dividend.sources
+    ? dividend
+    : (Array.isArray(dividend) ? Reflexion.fromAcornNodes(dividend) : Reflexion.fromAcornNodes([dividend]))
+
+    this.dividend = reflexion
     this.divisor = divisor
   }
 
@@ -245,14 +254,15 @@ class DependencyEntropy extends SingleEntropy  {
   evaluate() {
     const dividend = this.dividend.sources[0]
 
-    if (this.divisor.shouldCheckAdjacentModules()) {
-      const importParts = new Reflexion(dividend).api()
-      const importSpecifiers = importParts[0]
-      const importSource = importParts[1]
+    // TODO: Uncomment when handling inter-module depencies
+    // if (this.divisor.shouldCheckAdjacentModules()) {
+    //   const importParts = new Reflexion(dividend).api()
+    //   const importSpecifiers = importParts[0]
+    //   const importSource = importParts[1]
 
-      return new Entropy(importSpecifiers, new Divisor(this.divisor.importedModulesNames())).evaluate()
-        .plus(new Entropy(importSource, new Divisor(this.divisor.adjacentModules())).evaluate())
-    }
+    //   return new Entropy(importSpecifiers, new Divisor(this.divisor.importedModulesNames())).evaluate()
+    //     .plus(new Entropy(importSource, new Divisor(this.divisor.adjacentModules())).evaluate())
+    // }
 
     const isWildcardImport = (dividend.type === 'ImportDeclaration')
       && (dividend.specifiers[0].type === 'ImportNamespaceSpecifier')
@@ -374,7 +384,7 @@ class DeclarationEntropy extends SingleEntropy  {
       'FunctionDeclaration'
     ]
     if (functionsTypes.includes(declaration.type)) {
-      const paramsAsIdentifiers = new Reflexion(declaration.params || []).identifiers()
+      const paramsAsIdentifiers = Reflexion.fromAcornNodes(declaration.params).identifiers()
       const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
       return new BodyEntropy(declaration.body, declarationDivisor).evaluate()
     }
@@ -385,7 +395,7 @@ class DeclarationEntropy extends SingleEntropy  {
 
     if (isVariable) {
       const value = declaration.init
-      const paramsAsIdentifiers = new Reflexion(value.params || []).identifiers()
+      const paramsAsIdentifiers = Reflexion.fromAcornNodes(value.params).identifiers()
       const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
       return new Entropy(value, declarationDivisor).evaluate()
     }
@@ -446,7 +456,7 @@ class ClassMemberEntropy extends DeclarationEntropy {
     const declarations = this.dividend.sources
     const declaration = declarations[0]
 
-    const paramsAsIdentifiers = new Reflexion(declaration.value.params || []).identifiers()
+    const paramsAsIdentifiers = Reflexion.fromAcornNodes(declaration.value.params).identifiers()
     const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
     return new Entropy(declaration.value, declarationDivisor).evaluate()
   }
