@@ -3,7 +3,7 @@ import { Entropy } from './Entropy.js'
 import { NumericEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
-// TODO: Uncomment dependencies tests below
+// TODO: Uncomment dependencies tests below (next. release)
 
 describe('Dependency entropy', () => {
   // it('of wildecard import checks files available for import', () => {

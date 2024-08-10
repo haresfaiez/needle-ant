@@ -16,7 +16,7 @@ class NeedleAnt {
     const codeReflexion = Reflexion.parse(this.code, (ast) => ast.body)
     const jointEntropy = new BodyEntropy(codeReflexion, new Divisor(this.dependenciesApi))
 
-    // TODO: Use `new MultiModulesDivisor(new DependenciesReflexion(...`
+    // TODO: Use `new MultiModulesDivisor(new DependenciesReflexion(...` (next. release)
     return jointEntropy.evaluate()
   }
 }

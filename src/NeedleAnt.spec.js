@@ -181,7 +181,7 @@ describe('Function', () => {
 // })
 
 // describe('Entropy result', () => {
-// TODO: Uncomment and fix these
+// TODO: Uncomment and fix these (next. release)
 // it('calculates top level variable entropy', () => {
 //   const code = `import { a, b, c } from './other.js';
 //     const x = b();

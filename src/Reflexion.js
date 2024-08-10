@@ -3,7 +3,7 @@ import * as AcornWalk from 'acorn-walk'
 
 export class Reflexion {
   constructor(reflexionOrSources) {
-    // TODO: Simplify this
+    // TODO: Simplify this (next. release)
     this.sources =
       reflexionOrSources.sources
         ? reflexionOrSources.sources

@@ -43,7 +43,7 @@ export class Entropy {
     }
 
     if (dividendType === 'VariableDeclaration') {
-      // TODO: why are we ignoring "const"/"let"/"var"/...
+      // TODO: why are we ignoring "const"/"let"/"var"/... (next. release)
       return new DeclarationEntropy(dividend.declarations, divisor)
     }
 
@@ -84,7 +84,7 @@ export class Entropy {
       'ThisExpression',
       'UpdateExpression',
 
-      // TODO: Continue ignoring these?
+      // TODO: Continue ignoring these? (next. release)
       'BreakStatement',
       'ContinueStatement',
     ]
@@ -241,7 +241,7 @@ export class BodyEntropy extends SingleEntropy  {
 }
 
 class DependencyEntropy extends SingleEntropy  {
-  // TODO: improve this
+  // TODO: improve this (next. release)
   evaluate() {
     const dividend = this.dividend.sources[0]
 
@@ -268,9 +268,9 @@ class DependencyEntropy extends SingleEntropy  {
   }
 }
 
-// TODO: Create a construct based on the params/body dual
+// TODO: Create a construct based on the params/body dual (next. release)
 class CallEntropy extends SingleEntropy  {
-  // TODO: Simplify this
+  // TODO: Simplify this (next. release)
   evaluate() {
     const dividend = this.dividend.sources[0]
 
@@ -292,7 +292,7 @@ class CallEntropy extends SingleEntropy  {
 }
 
 class ExpressionEntropy extends SingleEntropy  {
-  // TODO: Simplify this
+  // TODO: Simplify this (next. release)
   evaluate() {
     const dividend = this.dividend.sources[0]
     const isMemberAccess = dividend?.left?.type === 'MemberExpression'
@@ -307,7 +307,7 @@ class ExpressionEntropy extends SingleEntropy  {
 
     const isBitShiftingOperation = ['++', '--'].includes(dividend.operator)
 
-    // TODO: Remove this check
+    // TODO: Remove this check (next. release)
     const isImport = dividend.type.includes('mport')
     const literalsWeight = !isImport && (this.dividend.literals().length || isBitShiftingOperation) ? [1] : []
     const thisExpression = dividend.type === 'ThisExpression' ? ['this'] : []
@@ -318,7 +318,7 @@ class ExpressionEntropy extends SingleEntropy  {
   }
 }
 
-// TODO: Create a construct based on the params/body dual
+// TODO: Create a construct based on the params/body dual (next. release)
 class CatchEntropy extends SingleEntropy {
   evaluate() {
     const dividend = this.dividend.sources[0]
@@ -328,9 +328,9 @@ class CatchEntropy extends SingleEntropy {
   }
 }
 
-// TODO: Search other-similar occurences and abstract
+// TODO: Search other-similar occurences and abstract (next. release)
 class ObjectAccessEntropy extends ExpressionEntropy {
-  // TODO: Simplify this
+  // TODO: Simplify this (next. release)
   evaluate() {
     // TODO: Is this true?
     this.divisor.extendAccesses(this.dividend.identifiers())
@@ -339,9 +339,9 @@ class ObjectAccessEntropy extends ExpressionEntropy {
   }
 }
 
-// TODO: Merge with DeclarationEntropy
+// TODO: Merge with DeclarationEntropy (next. release)
 class LiteralObjectEntropy extends ExpressionEntropy {
-  // TODO: Simplify this
+  // TODO: Simplify this (next. release)
   evaluate() {
     const declarations = this.dividend.sources
     const declaration = declarations[0]
@@ -356,10 +356,10 @@ class LiteralObjectEntropy extends ExpressionEntropy {
   }
 }
 
-// TODO: Extract into a composition of classes
+// TODO: Extract into a composition of classes (next. release)
 class DeclarationEntropy extends SingleEntropy  {
 
-  // TODO: simplify this
+  // TODO: simplify this (next. release)
   evaluate() {
     const declarations = this.dividend.sources
     const declaration = declarations[0]
@@ -409,7 +409,7 @@ class DeclarationEntropy extends SingleEntropy  {
 class ClassEntropy extends SingleEntropy {
   static IGNORED_IDENTIFIERS = ['constructor']
 
-  // TODO: simplify this
+  // TODO: simplify this (next. release)
   evaluate() {
     const superClasses = this.dividend.sources
       .filter(eachDeclaration => ['ClassDeclaration'].includes(eachDeclaration.type))
@@ -433,7 +433,7 @@ class ClassEntropy extends SingleEntropy {
 
     const mainEntropy = new BodyEntropy(bodyAsDividends, this.divisor).evaluate()
 
-    // TODO: Generalize this to one `return`
+    // TODO: Generalize this to one `return` (next. release)
     if (superClasses.length) {
       return mainEntropy.plus(superClassEvaluation)
     }
