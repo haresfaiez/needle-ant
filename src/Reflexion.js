@@ -105,8 +105,8 @@ export class Reflexion {
 }
 
 class Bag {
-  constructor(elements) {
-    this.sources = elements
+  constructor(sources) {
+    this.sources = sources
     this.elements = new Set()
   }
 

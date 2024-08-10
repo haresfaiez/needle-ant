@@ -6,6 +6,7 @@ export class Entropy {
   constructor(dividend, divisor = new Divisor([])) {
     this.divisor = divisor
 
+    // TODO: Create different factories for each condition
     const reflexion = dividend.sources
       ? dividend
       : (Array.isArray(dividend) ? Reflexion.fromAcornNodes(dividend) : Reflexion.fromAcornNodes([dividend]))
@@ -226,6 +227,7 @@ class Entropies {
 
 class SingleEntropy {
   constructor(dividend, divisor = new Divisor([])) {
+    // TODO: Create different factories for each condition
     const reflexion = dividend.sources
     ? dividend
     : (Array.isArray(dividend) ? Reflexion.fromAcornNodes(dividend) : Reflexion.fromAcornNodes([dividend]))
