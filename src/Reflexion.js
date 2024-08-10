@@ -1,6 +1,8 @@
 import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
 
+import { CodeSlice } from './CodeSlice.js'
+
 export class Reflexion {
   constructor(acornNodes) {
     this.sources =
@@ -12,7 +14,8 @@ export class Reflexion {
       ExportNamedDeclaration(node) {
         Reflexion.fromAcornNodes([node])
           .identifiers()
-          .forEach(name => codeSlices.add(name))
+          // TODO: Add start/end to CodeSlice constructor
+          .forEach(name => codeSlices.add(new CodeSlice(name)))
       }
     })
   }
@@ -20,7 +23,7 @@ export class Reflexion {
   collectLiterals(expression, codeSlices) {
     AcornWalk.simple(expression, {
       Literal(node) {
-        codeSlices.add(node.value)
+        codeSlices.add(new CodeSlice(node.value, node.start, node.end))
       }
     })
   }
@@ -28,36 +31,39 @@ export class Reflexion {
   collectProperties(expression, codeSlices) {
     AcornWalk.simple(expression, {
       Property(node) {
-        codeSlices.add(node.key.name)
+        codeSlices.add(new CodeSlice(node.key.name, node.start, node.end))
       },
     })
   }
 
   collectIdentifiers(expression, codeSlices) {
+    // TODO: find out why the following commented node names are so
     AcornWalk.simple(expression, {
-      ObjectExpression(node) {
-        node.properties
-          .map(e => e.key.name)
-          .forEach(eachPropertyIdentifier => codeSlices.add(eachPropertyIdentifier))
-      },
+      // ObjectExpression(node) {
+      //   console.log('ObjectExpr/', node)
+      //   node.properties
+      //     .map(e => e.key.name)
+      //      // TODO: this new CodeSlice(... start end)
+      //     .forEach(eachPropertyIdentifier => codeSlices.add(new CodeSlice(eachPropertyIdentifier)))
+      // },
       Identifier(node) {
-        codeSlices.add(node.name)
+        codeSlices.add(new CodeSlice(node.name, node.start, node.end))
       },
       ImportDefaultSpecifier(node) {
-        codeSlices.add(node.local.name)
+        codeSlices.add(new CodeSlice(node.local.name, node.start, node.end))
       },
       ImportNamespaceSpecifier(node) {
-        codeSlices.add(node.local.name)
+        codeSlices.add(new CodeSlice(node.local.name, node.start, node.end))
       },
       ImportSpecifier(node) {
-        codeSlices.add(node.imported.name)
+        codeSlices.add(new CodeSlice(node.imported.name, node.start, node.end))
       },
       FunctionDeclaration(node) {
-        codeSlices.add(node.id.name)
+        codeSlices.add(new CodeSlice(node.id.name, node.start, node.end))
       },
-      VariableDeclarator(node) {
-        codeSlices.add(node.id.name)
-      },
+      // VariableDeclarator(node) {
+      //   codeSlices.add(new CodeSlice(node.id.name, node.start, node.end))
+      // },
     })
   }
 
@@ -112,6 +118,6 @@ class Bag {
   }
 
   evaluate() {
-    return [...this.elements]
+    return [...this.elements].map(eachCodeSlice => eachCodeSlice.raw)
   }
 }
