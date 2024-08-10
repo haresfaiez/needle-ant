@@ -9,34 +9,34 @@ export class Reflexion {
       acornNodes.filter(eachSource => eachSource.type !== 'EmptyStatement')
   }
 
-  collectExports(expression, codeSlices) {
+  collectExports(expression, bag) {
     AcornWalk.simple(expression, {
       ExportNamedDeclaration(node) {
         Reflexion.fromAcornNodes([node])
           .identifiers()
           // TODO: Add start/end to CodeSlice constructor
-          .forEach(name => codeSlices.add(new CodeSlice(name)))
+          .forEach(name => bag.put(new CodeSlice(name)))
       }
     })
   }
 
-  collectLiterals(expression, codeSlices) {
+  collectLiterals(expression, bag) {
     AcornWalk.simple(expression, {
       Literal(node) {
-        codeSlices.add(new CodeSlice(node.value, node.start, node.end))
+        bag.put(new CodeSlice(node.value, node.start, node.end))
       }
     })
   }
 
-  collectProperties(expression, codeSlices) {
+  collectProperties(expression, bag) {
     AcornWalk.simple(expression, {
       Property(node) {
-        codeSlices.add(new CodeSlice(node.key.name, node.start, node.end))
+        bag.put(new CodeSlice(node.key.name, node.start, node.end))
       },
     })
   }
 
-  collectIdentifiers(expression, codeSlices) {
+  collectIdentifiers(expression, bag) {
     // TODO: find out why the following commented node names are so
     AcornWalk.simple(expression, {
       // ObjectExpression(node) {
@@ -44,25 +44,25 @@ export class Reflexion {
       //   node.properties
       //     .map(e => e.key.name)
       //      // TODO: this new CodeSlice(... start end)
-      //     .forEach(eachPropertyIdentifier => codeSlices.add(new CodeSlice(eachPropertyIdentifier)))
+      //     .forEach(eachPropertyIdentifier => bag.put(new CodeSlice(eachPropertyIdentifier)))
       // },
       Identifier(node) {
-        codeSlices.add(new CodeSlice(node.name, node.start, node.end))
+        bag.put(new CodeSlice(node.name, node.start, node.end))
       },
       ImportDefaultSpecifier(node) {
-        codeSlices.add(new CodeSlice(node.local.name, node.start, node.end))
+        bag.put(new CodeSlice(node.local.name, node.start, node.end))
       },
       ImportNamespaceSpecifier(node) {
-        codeSlices.add(new CodeSlice(node.local.name, node.start, node.end))
+        bag.put(new CodeSlice(node.local.name, node.start, node.end))
       },
       ImportSpecifier(node) {
-        codeSlices.add(new CodeSlice(node.imported.name, node.start, node.end))
+        bag.put(new CodeSlice(node.imported.name, node.start, node.end))
       },
       FunctionDeclaration(node) {
-        codeSlices.add(new CodeSlice(node.id.name, node.start, node.end))
+        bag.put(new CodeSlice(node.id.name, node.start, node.end))
       },
       // VariableDeclarator(node) {
-      //   codeSlices.add(new CodeSlice(node.id.name, node.start, node.end))
+      //   bag.put(new CodeSlice(node.id.name, node.start, node.end))
       // },
     })
   }
@@ -111,9 +111,13 @@ class Bag {
     this.elements = new Set()
   }
 
+  put(codeSlice) {
+    this.elements.add(codeSlice)
+  }
+
   collect(collector) {
     for (const eachSource of this.sources) {
-      collector(eachSource, this.elements)
+      collector(eachSource, this)
     }
   }
 
