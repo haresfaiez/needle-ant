@@ -322,6 +322,8 @@ class ExpressionEntropy extends SingleEntropy  {
 
     // TODO: Remove this check (next. release)
     const isImport = dividend.type.includes('mport')
+
+    // TODO: Use CodeBag instead of arrays to create Evaluation*
     const literals = !isImport ? [...this.dividend.literals(), ...(isBitShiftingOperation ? [1] : [])] : []
     const thisExpression = dividend.type === 'ThisExpression' ? ['this'] : []
     const possibles = [...this.divisor.identifiers(), ...literals, ...thisExpression]
@@ -412,6 +414,7 @@ class DeclarationEntropy extends SingleEntropy  {
     // class A extends B
     if (declaration.type === 'ClassDeclaration' && declaration.superClass) {
       this.divisor.extend([declaration.superClass.name])
+      // TODO: Use CodeBag here
       return new IdentifiersEvaluation([declaration.id.name], this.divisor.identifiers()).plus(declarationsEvaluation)
     }
 
@@ -431,6 +434,7 @@ class ClassEntropy extends SingleEntropy {
 
     this.divisor.extend(superClasses)
 
+    // TODO: Use CodeBag here
     const superClassEvaluation = new IdentifiersEvaluation(superClasses, this.divisor.identifiers())
 
     const declarations = this.dividend.sources

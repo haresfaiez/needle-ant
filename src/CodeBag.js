@@ -1,4 +1,5 @@
 
+// TODO: Move together with CodeSlice to a separate sub-folder
 export class CodeBag {
   constructor() {
     this.elements = new Map();
@@ -10,6 +11,7 @@ export class CodeBag {
   }
 
   putAll(codeSlices = []) {
+    // TODO: throw error here if codeSlices is empty, or if raw does not exists
     const id = codeSlices[0]?.raw
     const codeSlicesPerId = this.elements.get(id);
     this.elements.set(id, [...(codeSlicesPerId || []), ...codeSlices]);
@@ -26,6 +28,7 @@ export class CodeBag {
     }
   }
 
+  // TODO: Reomve this
   evaluate() {
     return [...this.elements.keys()];
   }

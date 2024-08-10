@@ -14,6 +14,7 @@ class Evaluation {
   }
 
   times(multiplier) {
+    // TODO: Implement multiplication properly
     if (multiplier > 2)
       return this.times(multiplier - 1).plus(this)
 
@@ -32,6 +33,7 @@ class Evaluation {
 }
 
 export class IdentifiersEvaluation extends Evaluation {
+  // TODO: Make this accept CodeBag instead of Array
   constructor(actual = [], possible = [], source) {
     super()
     this.actual = actual
@@ -43,6 +45,8 @@ export class IdentifiersEvaluation extends Evaluation {
   }
 
   evaluate() {
+    // TODO: Do not put the whole `this`, pick only a needed view
+    // TODO: Work with CodeBag intsead of Array
     return new NumericEvaluation(this.actual.length, this.possible.length, this)
   }
 }
