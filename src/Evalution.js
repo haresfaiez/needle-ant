@@ -32,7 +32,6 @@ class Evaluation {
 }
 
 export class IdentifiersEvaluation extends Evaluation {
-
   constructor(actual = [], possible = [], source) {
     super()
     this.actual = actual
@@ -139,12 +138,13 @@ export class Evaluations extends Evaluation {
       return this
     }
 
+    const sumEvaluations = [...this.evaluations]
     if (otherEvaluation.evaluations) {
-      this.evaluations.push(...otherEvaluation.evaluations)
+      sumEvaluations.push(...otherEvaluation.evaluations)
     } else {
-      this.evaluations.push(otherEvaluation)
+      sumEvaluations.push(otherEvaluation)
     }
-    return this
+    return new Evaluations(sumEvaluations)
   }
 
   calculate() {
