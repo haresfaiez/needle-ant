@@ -7,56 +7,56 @@ export class Reflexion {
       acornNodes.filter(eachSource => eachSource.type !== 'EmptyStatement')
   }
 
-  collectExports(expression, result) {
+  collectExports(expression, codeSlices) {
     AcornWalk.simple(expression, {
       ExportNamedDeclaration(node) {
         Reflexion.fromAcornNodes([node])
           .identifiers()
-          .forEach(name => result.add(name))
+          .forEach(name => codeSlices.add(name))
       }
     })
   }
 
-  collectLiterals(expression, result) {
+  collectLiterals(expression, codeSlices) {
     AcornWalk.simple(expression, {
       Literal(node) {
-        result.add(node.value)
+        codeSlices.add(node.value)
       }
     })
   }
 
-  collectProperties(expression, result) {
+  collectProperties(expression, codeSlices) {
     AcornWalk.simple(expression, {
       Property(node) {
-        result.add(node.key.name)
+        codeSlices.add(node.key.name)
       },
     })
   }
 
-  collectIdentifiers(expression, result) {
+  collectIdentifiers(expression, codeSlices) {
     AcornWalk.simple(expression, {
       ObjectExpression(node) {
         node.properties
           .map(e => e.key.name)
-          .forEach(eachPropertyIdentifier => result.add(eachPropertyIdentifier))
+          .forEach(eachPropertyIdentifier => codeSlices.add(eachPropertyIdentifier))
       },
       Identifier(node) {
-        result.add(node.name)
+        codeSlices.add(node.name)
       },
       ImportDefaultSpecifier(node) {
-        result.add(node.local.name)
+        codeSlices.add(node.local.name)
       },
       ImportNamespaceSpecifier(node) {
-        result.add(node.local.name)
+        codeSlices.add(node.local.name)
       },
       ImportSpecifier(node) {
-        result.add(node.imported.name)
+        codeSlices.add(node.imported.name)
       },
       FunctionDeclaration(node) {
-        result.add(node.id.name)
+        codeSlices.add(node.id.name)
       },
       VariableDeclarator(node) {
-        result.add(node.id.name)
+        codeSlices.add(node.id.name)
       },
     })
   }
