@@ -13,10 +13,7 @@ export class Reflexion {
   collectExports(expression, bag) {
     AcornWalk.simple(expression, {
       ExportNamedDeclaration(node) {
-        Reflexion.fromAcornNodes([node])
-          .identifiers()
-          // TODO: Add start/end to CodeSlice constructor
-          .forEach(name => bag.put(new CodeSlice(name)))
+        bag.insert(Reflexion.fromAcornNodes([node]).identifiers())
       }
     })
   }
@@ -71,25 +68,25 @@ export class Reflexion {
   properties() {
     const bag = new CodeBag()
     bag.collect(this.sources, this.collectProperties)
-    return this.keepBag ? bag : bag.evaluate()
+    return bag
   }
 
   identifiers() {
     const bag = new CodeBag()
     bag.collect(this.sources, this.collectIdentifiers)
-    return this.keepBag ? bag : bag.evaluate()
+    return bag
   }
 
   api() {
     const bag = new CodeBag()
     bag.collect(this.sources, this.collectExports)
-    return this.keepBag ? bag : bag.evaluate()
+    return bag
   }
 
   literals() {
     const bag = new CodeBag()
     bag.collect(this.sources, this.collectLiterals)
-    return this.keepBag ? bag : bag.evaluate()
+    return bag
   }
 
   // Factories

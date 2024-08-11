@@ -17,6 +17,11 @@ export class CodeBag {
     return result
   }
 
+  insert(anotherCodeBag) {
+    this.elements = new Map(this.elements);
+    [...anotherCodeBag.elements.values()].forEach(eachCodeSlices => this.putAll(eachCodeSlices))
+  }
+
   putAll(codeSlices = []) {
     // TODO: throw error here if codeSlices is empty, or if raw does not exists
     const id = codeSlices[0]?.raw

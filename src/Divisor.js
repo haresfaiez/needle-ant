@@ -9,7 +9,7 @@ export class Divisor {
     const isReflexion = rawDivisor.api
     if (isReflexion) {
       // TODO: Put the right coordinates
-      this._identifiers = this._identifiers.plus(CodeBag.withNullCoordinates(rawDivisor.api()))
+      this._identifiers = this._identifiers.plus(rawDivisor.api())
     } else {
       this._identifiers = this._identifiers.plus(rawDivisor)
     }
@@ -62,7 +62,6 @@ export class Divisor {
 
   static parse(sourceCode, transformer) {
     const ast = Reflexion.parse(sourceCode, transformer)
-    ast.keepBag = true
     return new Divisor(ast.identifiers())
   }
 }

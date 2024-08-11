@@ -245,9 +245,6 @@ class SingleEntropy {
 
 export class BodyEntropy extends SingleEntropy  {
   evaluate() {
-    // TODO: Remove these
-    this.dividend.keepBag = true
-
     const newDivisor = Divisor.clone(this.divisor)
     const entropies = this.dividend
       .sources
@@ -259,9 +256,6 @@ export class BodyEntropy extends SingleEntropy  {
 class DependencyEntropy extends SingleEntropy  {
   // TODO: improve this (next. release)
   evaluate() {
-    // TODO: Remove these
-    this.dividend.keepBag = true
-
     const dividend = this.dividend.sources[0]
 
     // TODO: Uncomment when handling inter-module depencies
@@ -292,9 +286,6 @@ class DependencyEntropy extends SingleEntropy  {
 class CallEntropy extends SingleEntropy  {
   // TODO: Simplify this (next. release)
   evaluate() {
-    // TODO: Remove these
-    this.dividend.keepBag = true
-
     const dividend = this.dividend.sources[0]
 
     const isMethodInvocation = dividend?.callee?.type === 'MemberExpression'
@@ -316,9 +307,6 @@ class CallEntropy extends SingleEntropy  {
 
 export class ExpressionEntropy extends SingleEntropy {
   evaluate() {
-    // TODO: Remove these
-    this.dividend.keepBag = true
-
     const dividend = this.dividend.sources[0]
     const isMemberAccess = dividend?.left?.type === 'MemberExpression'
 
@@ -354,9 +342,6 @@ export class ExpressionEntropy extends SingleEntropy {
 // TODO: Create a construct based on the params/body dual (next. release)
 class CatchEntropy extends SingleEntropy {
   evaluate() {
-    // TODO: Remove these
-    this.dividend.keepBag = true
-
     const dividend = this.dividend.sources[0]
     const newDivisor = Divisor.clone(this.divisor)
     newDivisor.extend(CodeBag.fromNodes([dividend.param]))
@@ -368,9 +353,6 @@ class CatchEntropy extends SingleEntropy {
 class ObjectAccessEntropy extends SingleEntropy {
   // TODO: Simplify this (next. release)
   evaluate() {
-    // TODO: Remove these
-    this.dividend.keepBag = true
-
     // TODO: Is this true?
     this.divisor.extendAccesses(this.dividend.identifiers())
     const nextDivisor = Divisor.fromAccesses(this.divisor)
@@ -382,9 +364,6 @@ class ObjectAccessEntropy extends SingleEntropy {
 class LiteralObjectEntropy extends SingleEntropy {
   // TODO: Simplify this (next. release)
   evaluate() {
-    // TODO: Remove these
-    this.dividend.keepBag = true
-
     const declarations = this.dividend.sources
     const declaration = declarations[0]
 
@@ -403,9 +382,6 @@ class DeclarationEntropy extends SingleEntropy  {
 
   // TODO: simplify this (next. release)
   evaluate() {
-    // TODO: Remove these
-    this.dividend.keepBag = true
-
     const declarations = this.dividend.sources
     const declaration = declarations[0]
 
@@ -419,9 +395,7 @@ class DeclarationEntropy extends SingleEntropy  {
       'FunctionDeclaration'
     ]
     if (functionsTypes.includes(declaration.type)) {
-      const reflexion = Reflexion.fromAcornNodes(declaration.params)
-      reflexion.keepBag = true
-      const paramsAsIdentifiers = reflexion.identifiers()
+      const paramsAsIdentifiers = Reflexion.fromAcornNodes(declaration.params).identifiers()
       const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
       return new BodyEntropy(declaration.body, declarationDivisor).evaluate()
     }
@@ -432,9 +406,7 @@ class DeclarationEntropy extends SingleEntropy  {
 
     if (isVariable) {
       const value = declaration.init
-      const reflexion = Reflexion.fromAcornNodes(value.params)
-      reflexion.keepBag = true
-      const paramsAsIdentifiers = reflexion.identifiers()
+      const paramsAsIdentifiers = Reflexion.fromAcornNodes(value.params).identifiers()
       const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
       return new Entropy(value, declarationDivisor).evaluate()
     }
@@ -462,9 +434,6 @@ class ClassEntropy extends SingleEntropy {
 
   // TODO: simplify this (next. release)
   evaluate() {
-    // TODO: Remove these
-    this.dividend.keepBag = true
-
     const superClassesNodes = this.dividend.sources
       .filter(eachDeclaration => ['ClassDeclaration'].includes(eachDeclaration.type))
       .filter(eachDeclaration => eachDeclaration.superClass)
@@ -500,14 +469,10 @@ class ClassEntropy extends SingleEntropy {
 
 class ClassMemberEntropy extends DeclarationEntropy {
   evaluate() {
-    // TODO: Remove these
-    this.dividend.keepBag = true
-
     const declarations = this.dividend.sources
     const declaration = declarations[0]
 
     const reflexion = Reflexion.fromAcornNodes(declaration.value.params)
-    reflexion.keepBag = true
     const paramsAsIdentifiers = reflexion.identifiers()
     const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
     return new Entropy(declaration.value, declarationDivisor).evaluate()
