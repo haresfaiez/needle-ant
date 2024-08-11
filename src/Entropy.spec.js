@@ -1,6 +1,7 @@
 import { Reflexion } from './Reflexion.js'
 import { Entropy, BodyEntropy, ExpressionEntropy } from './Entropy.js'
-import { NumericEvaluation, NullEvaluation } from './Evalution.js'
+import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
+import { NullEvaluation } from './evaluation/NullEvaluation.js'
 import { Divisor } from './Divisor.js'
 import { CodeBag } from './CodeBag.js'
 

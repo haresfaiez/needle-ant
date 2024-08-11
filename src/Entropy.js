@@ -1,5 +1,6 @@
 import { Reflexion } from './Reflexion.js'
-import { NullEvaluation, BagEvaluation } from './Evalution.js'
+import { BagEvaluation } from './evaluation/BagEvaluation.js'
+import { NullEvaluation } from './evaluation/NullEvaluation.js'
 import { Divisor } from './Divisor.js'
 import { CodeBag } from './CodeBag.js'
 

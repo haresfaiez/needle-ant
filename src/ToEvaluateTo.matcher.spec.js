@@ -1,4 +1,4 @@
-import { Evaluations } from './Evalution.js'
+import { Evaluations } from './evaluation/Evaluations.js'
 
 const evaluationToString = (evaluation) => {
   // If it's BagEvaluation

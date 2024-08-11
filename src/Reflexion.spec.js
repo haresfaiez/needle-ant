@@ -1,6 +1,6 @@
 import { Reflexion } from './Reflexion.js'
 import { Entropy } from './Entropy.js'
-import { NumericEvaluation } from './Evalution.js'
+import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import { Divisor } from './Divisor.js'
 
 // TODO: Uncomment dependencies tests below (next. release)

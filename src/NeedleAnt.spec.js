@@ -1,4 +1,4 @@
-import { NumericEvaluation } from './Evalution.js'
+import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
 describe('Successive statements entropy', () => {

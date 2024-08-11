@@ -1,5 +1,6 @@
 import { CodeBag } from './CodeBag.js'
-import { BagEvaluation, NumericEvaluation } from './Evalution.js'
+import { BagEvaluation } from './evaluation/BagEvaluation.js'
+import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
 describe('Entropy evaluation', () => {

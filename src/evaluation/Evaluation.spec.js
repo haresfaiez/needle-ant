@@ -1,5 +1,7 @@
-import { CodeBag } from './CodeBag.js'
-import { NumericEvaluation, NullEvaluation, BagEvaluation } from './Evalution.js'
+import { CodeBag } from '../CodeBag.js'
+import { BagEvaluation } from './BagEvaluation.js'
+import { NumericEvaluation } from './NumericEvaluation.js'
+import { NullEvaluation } from './NullEvaluation.js'
 
 describe('Evaluations', () => {
   it('evaluates its members', () => {

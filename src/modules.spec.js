@@ -1,6 +1,7 @@
 import lighthouse from '../spec/fixtures/lighthouse.js'
 import NeedleAnt from './NeedleAnt.js'
-import { NumericEvaluation, NullEvaluation } from './Evalution.js'
+import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
+import { NullEvaluation } from './evaluation/NullEvaluation.js'
 import metricTraceEvents from '../spec/fixtures/metricTraceEvents.js'
 import fullMetricTraceEvents from '../spec/fixtures/fullMetricTraceEvents.js'
 
