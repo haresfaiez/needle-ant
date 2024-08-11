@@ -10,9 +10,11 @@ export class CodeBag {
     return [...this.elements.keys()]
   }
 
-  insert(anotherCodeBag) {
-    [...anotherCodeBag.values()]
-      .forEach(eachCodeSlices => this.putAll(eachCodeSlices))
+  plus(anotherCodeBag) {
+    const result = new CodeBag()
+    result.elements = new Map(this.elements);
+    [...anotherCodeBag.elements.values()].forEach(eachCodeSlices => result.putAll(eachCodeSlices))
+    return result
   }
 
   putAll(codeSlices = []) {
@@ -43,5 +45,9 @@ export class CodeBag {
     const elements =
       identifiers.map(eachIdentifier => [eachIdentifier, [new CodeSlice(eachIdentifier, 0, 0)]])
     return new CodeBag(new Map(elements))
+  }
+
+  static empty() {
+    return new CodeBag()
   }
 }

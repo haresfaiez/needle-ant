@@ -1,6 +1,7 @@
 import { Reflexion } from './Reflexion.js'
-import { NullEvaluation, IdentifiersEvaluation } from './Evalution.js'
+import { NullEvaluation, IdentifiersEvaluation, BagEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
+import { CodeBag } from './CodeBag.js'
 
 export class Entropy {
   constructor(dividend, divisor = new Divisor([])) {
@@ -304,7 +305,7 @@ class CallEntropy extends SingleEntropy  {
   }
 }
 
-class ExpressionEntropy extends SingleEntropy  {
+export class ExpressionEntropy extends SingleEntropy  {
   // TODO: Simplify this (next. release)
   evaluate() {
     const dividend = this.dividend.sources[0]
@@ -323,7 +324,6 @@ class ExpressionEntropy extends SingleEntropy  {
     // TODO: Remove this check (next. release)
     const isImport = dividend.type.includes('mport')
 
-    // TODO: Use CodeBag instead of arrays to create Evaluation*
     const literals = !isImport ? [...this.dividend.literals(), ...(isBitShiftingOperation ? [1] : [])] : []
     const thisExpression = dividend.type === 'ThisExpression' ? ['this'] : []
     const possibles = [...this.divisor.identifiers(), ...literals, ...thisExpression]
@@ -332,6 +332,37 @@ class ExpressionEntropy extends SingleEntropy  {
     return new IdentifiersEvaluation(actuals, possibles, dividend)
   }
 }
+
+export class ExpressionEntropyBag extends ExpressionEntropy {
+  evaluate() {
+    this.dividend.keepBag = true
+
+    const dividend = this.dividend.sources[0]
+    const isMemberAccess = dividend?.left?.type === 'MemberExpression'
+
+    if (isMemberAccess) {
+      return super.evaluate()
+    }
+
+    const isBitShiftingOperation = ['++', '--'].includes(dividend.operator)
+
+    // TODO: Remove this check (next. release)
+    const isImport = dividend.type.includes('mport')
+
+    const literals = !isImport
+      ? this.dividend.literals().plus(isBitShiftingOperation ? CodeBag.withNullCoordinates(['1']) : CodeBag.empty())
+      : CodeBag.empty()
+
+    const thisExpression = dividend.type === 'ThisExpression'
+      ? CodeBag.withNullCoordinates(['this'])
+      : CodeBag.empty()
+
+    const actualsBag = literals.plus(thisExpression).plus(this.dividend.identifiers())
+    const possiblesBag = literals.plus(thisExpression)//.insert(this.divisor.identifiers())
+    return new BagEvaluation(actualsBag, possiblesBag, dividend)
+  }
+}
+
 
 // TODO: Create a construct based on the params/body dual (next. release)
 class CatchEntropy extends SingleEntropy {

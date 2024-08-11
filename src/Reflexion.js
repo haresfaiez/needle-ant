@@ -71,25 +71,25 @@ export class Reflexion {
   properties() {
     const bag = new CodeBag()
     bag.collect(this.sources, this.collectProperties)
-    return bag.evaluate()
+    return this.keepBag ? bag : bag.evaluate()
   }
 
   identifiers() {
     const bag = new CodeBag()
     bag.collect(this.sources, this.collectIdentifiers)
-    return bag.evaluate()
+    return this.keepBag ? bag : bag.evaluate()
   }
 
   api() {
     const bag = new CodeBag()
     bag.collect(this.sources, this.collectExports)
-    return bag.evaluate()
+    return this.keepBag ? bag : bag.evaluate()
   }
 
   literals() {
     const bag = new CodeBag()
     bag.collect(this.sources, this.collectLiterals)
-    return bag.evaluate()
+    return this.keepBag ? bag : bag.evaluate()
   }
 
   // Factories

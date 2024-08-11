@@ -1,5 +1,5 @@
 import { Reflexion } from './Reflexion.js'
-import { Entropy, BodyEntropy } from './Entropy.js'
+import { Entropy, BodyEntropy, ExpressionEntropyBag } from './Entropy.js'
 import { NumericEvaluation, NullEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 
@@ -849,6 +849,26 @@ describe('Try/catch statement entropy', () => {
       .plus(new NumericEvaluation(1, 5))
       .plus(new NumericEvaluation(1, 4))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
+  })
+})
+
+describe('Entropy with Bag identifiers', () => {
+  it('calculates declaration with literal value entropy', () => {
+    const code = '5'
+    const dividend = Reflexion.parse(code, (ast) => ast.body).sources[0]
+    const entropy = new ExpressionEntropyBag(dividend)
+    const actual = entropy.evaluate().evaluate()
+
+    expect(actual).toEvaluateTo(new NumericEvaluation(1, 1))
+  })
+
+  it('calculates declaration with variable reference value entropy', () => {
+    const code = 'a'
+    const dividend = Reflexion.parse(code, (ast) => ast.body).sources[0]
+    const entropy = new ExpressionEntropyBag(dividend)
+    const actual = entropy.evaluate().evaluate()
+
+    expect(actual).toEvaluateTo(new NumericEvaluation(1, 0))
   })
 })
 
