@@ -1,3 +1,4 @@
+import { CodeBag } from './CodeBag.js'
 import { Reflexion } from './Reflexion.js'
 
 export class Divisor {
@@ -34,6 +35,11 @@ export class Divisor {
   }
 
   extend(newIdentifiers) {
+    if (!Array.isArray(newIdentifiers)) {
+      newIdentifiers.raws().forEach(eachDivisor => this._identifiers.add(eachDivisor))
+      return
+    }
+
     newIdentifiers.forEach(eachDivisor => this._identifiers.add(eachDivisor))
   }
 
@@ -42,6 +48,9 @@ export class Divisor {
   }
 
   identifiers() {
+    if (this.keepBag) {
+      return CodeBag.withNullCoordinates([...this._identifiers])
+    }
     return Array.from(this._identifiers)
   }
 

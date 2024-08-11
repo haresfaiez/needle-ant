@@ -305,9 +305,12 @@ class CallEntropy extends SingleEntropy  {
   }
 }
 
-export class ExpressionEntropy extends SingleEntropy  {
-  // TODO: Simplify this (next. release)
+export class ExpressionEntropy extends SingleEntropy {
   evaluate() {
+    // TODO: Remove these
+    this.dividend.keepBag = true
+    this.divisor.keepBag = true
+
     const dividend = this.dividend.sources[0]
     const isMemberAccess = dividend?.left?.type === 'MemberExpression'
 
@@ -324,31 +327,7 @@ export class ExpressionEntropy extends SingleEntropy  {
     // TODO: Remove this check (next. release)
     const isImport = dividend.type.includes('mport')
 
-    const literals = !isImport ? [...this.dividend.literals(), ...(isBitShiftingOperation ? [1] : [])] : []
-    const thisExpression = dividend.type === 'ThisExpression' ? ['this'] : []
-    const possibles = [...this.divisor.identifiers(), ...literals, ...thisExpression]
-    const actuals = [...this.dividend.identifiers(), ...literals, ...thisExpression]
-
-    return new IdentifiersEvaluation(actuals, possibles, dividend)
-  }
-}
-
-export class ExpressionEntropyBag extends ExpressionEntropy {
-  evaluate() {
-    this.dividend.keepBag = true
-
-    const dividend = this.dividend.sources[0]
-    const isMemberAccess = dividend?.left?.type === 'MemberExpression'
-
-    if (isMemberAccess) {
-      return super.evaluate()
-    }
-
-    const isBitShiftingOperation = ['++', '--'].includes(dividend.operator)
-
-    // TODO: Remove this check (next. release)
-    const isImport = dividend.type.includes('mport')
-
+    // TODO: Simplify these
     const literals = !isImport
       ? this.dividend.literals().plus(isBitShiftingOperation ? CodeBag.withNullCoordinates(['1']) : CodeBag.empty())
       : CodeBag.empty()
@@ -358,7 +337,8 @@ export class ExpressionEntropyBag extends ExpressionEntropy {
       : CodeBag.empty()
 
     const actualsBag = literals.plus(thisExpression).plus(this.dividend.identifiers())
-    const possiblesBag = literals.plus(thisExpression)//.insert(this.divisor.identifiers())
+    const possiblesBag = literals.plus(thisExpression).plus(this.divisor.identifiers())
+    this.divisor.keepBag = false
     return new BagEvaluation(actualsBag, possiblesBag, dividend)
   }
 }
@@ -375,7 +355,7 @@ class CatchEntropy extends SingleEntropy {
 }
 
 // TODO: Search other-similar occurences and abstract (next. release)
-class ObjectAccessEntropy extends ExpressionEntropy {
+class ObjectAccessEntropy extends SingleEntropy {
   // TODO: Simplify this (next. release)
   evaluate() {
     // TODO: Is this true?
@@ -386,7 +366,7 @@ class ObjectAccessEntropy extends ExpressionEntropy {
 }
 
 // TODO: Merge with DeclarationEntropy (next. release)
-class LiteralObjectEntropy extends ExpressionEntropy {
+class LiteralObjectEntropy extends SingleEntropy {
   // TODO: Simplify this (next. release)
   evaluate() {
     const declarations = this.dividend.sources
