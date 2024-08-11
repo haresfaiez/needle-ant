@@ -1,15 +1,15 @@
 import { BodyEntropy } from './Entropy.js'
 import { Reflexion } from './Reflexion.js'
 import { Divisor } from './Divisor.js'
+import { CodeBag } from './CodeBag.js'
 
 class NeedleAnt {
   constructor(code, dependencies = []) {
     this.code = code
-    this.dependenciesApi = []
-
-    dependencies
+    const deps = dependencies
       .map(dependency => Reflexion.parse(dependency, ast => ast.body).api())
-      .forEach(dependencyApi => this.dependenciesApi.push(...dependencyApi))
+
+    this.dependenciesApi = CodeBag.withNullCoordinates(deps)
   }
 
   entropy() {

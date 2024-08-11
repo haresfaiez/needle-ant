@@ -2,14 +2,16 @@ import { CodeBag } from './CodeBag.js'
 import { Reflexion } from './Reflexion.js'
 
 export class Divisor {
-  constructor(rawDivisor = [], accesses = new Set()) {
-    this._identifiers = new Set()
+  constructor(rawDivisor = new CodeBag(), accesses = new CodeBag()) {
+    this._identifiers = new CodeBag()
 
+    // TODO: Simplify this
     const isReflexion = rawDivisor.api
     if (isReflexion) {
-      rawDivisor.api().forEach(e => this._identifiers.add(e))
+      // TODO: Put the right coordinates
+      this._identifiers = this._identifiers.plus(CodeBag.withNullCoordinates(rawDivisor.api()))
     } else {
-      rawDivisor.forEach(e => this._identifiers.add(e))
+      this._identifiers = this._identifiers.plus(rawDivisor)
     }
 
     this.importedModules = rawDivisor.importedModuleExports
@@ -18,8 +20,8 @@ export class Divisor {
     this.accesses = accesses
   }
 
-  static clone(aDivisor, newIdentifiers = []) {
-    const result = new Divisor([])
+  static clone(aDivisor, newIdentifiers = new CodeBag()) {
+    const result = new Divisor()
     result.accesses = aDivisor.accesses
     result.extend(aDivisor.identifiers())
     result.extend(newIdentifiers)
@@ -35,23 +37,15 @@ export class Divisor {
   }
 
   extend(newIdentifiers) {
-    if (!Array.isArray(newIdentifiers)) {
-      newIdentifiers.raws().forEach(eachDivisor => this._identifiers.add(eachDivisor))
-      return
-    }
-
-    newIdentifiers.forEach(eachDivisor => this._identifiers.add(eachDivisor))
+    this._identifiers = this._identifiers.plus(newIdentifiers)
   }
 
   extendAccesses(newAccesses) {
-    newAccesses.forEach(eachAccess => this.accesses.add(eachAccess))
+    this.accesses = this.accesses.plus(newAccesses)
   }
 
   identifiers() {
-    if (this.keepBag) {
-      return CodeBag.withNullCoordinates([...this._identifiers])
-    }
-    return Array.from(this._identifiers)
+    return this._identifiers
   }
 
   importedModulesNames() {
@@ -68,6 +62,7 @@ export class Divisor {
 
   static parse(sourceCode, transformer) {
     const ast = Reflexion.parse(sourceCode, transformer)
+    ast.keepBag = true
     return new Divisor(ast.identifiers())
   }
 }

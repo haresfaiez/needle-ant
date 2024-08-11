@@ -4,7 +4,7 @@ import { Divisor } from './Divisor.js'
 import { CodeBag } from './CodeBag.js'
 
 export class Entropy {
-  constructor(dividend, divisor = new Divisor([])) {
+  constructor(dividend, divisor = new Divisor()) {
     this.divisor = divisor
 
     // TODO: Create different factories for each condition
@@ -228,7 +228,7 @@ class Entropies {
 
 // TODO: rename or remove this
 class SingleEntropy {
-  constructor(dividend, divisor = new Divisor([])) {
+  constructor(dividend, divisor = new Divisor()) {
     // TODO: Create different factories for each condition
     const reflexion = dividend.sources
       ? dividend
@@ -364,7 +364,7 @@ class CatchEntropy extends SingleEntropy {
 
     const dividend = this.dividend.sources[0]
     const newDivisor = Divisor.clone(this.divisor)
-    newDivisor.extend([dividend.param.name])
+    newDivisor.extend(CodeBag.fromNodes([dividend.param]))
     return new BodyEntropy(dividend.body, newDivisor).evaluate()
   }
 }
@@ -420,14 +420,16 @@ class DeclarationEntropy extends SingleEntropy  {
     const isVariable = declarations.length === 1 && declaration.type === 'VariableDeclarator'
     declarations
       .filter(eachDeclaration => eachDeclaration.id)
-      .forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
+      .forEach(eachDeclaration => this.divisor.extend(CodeBag.fromNodes([eachDeclaration.id])))
 
     const functionsTypes = [
       'ArrowFunctionExpression',
       'FunctionDeclaration'
     ]
     if (functionsTypes.includes(declaration.type)) {
-      const paramsAsIdentifiers = Reflexion.fromAcornNodes(declaration.params).identifiers()
+      const reflexion = Reflexion.fromAcornNodes(declaration.params)
+      reflexion.keepBag = true
+      const paramsAsIdentifiers = reflexion.identifiers()
       const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
       return new BodyEntropy(declaration.body, declarationDivisor).evaluate()
     }
@@ -438,7 +440,9 @@ class DeclarationEntropy extends SingleEntropy  {
 
     if (isVariable) {
       const value = declaration.init
-      const paramsAsIdentifiers = Reflexion.fromAcornNodes(value.params).identifiers()
+      const reflexion = Reflexion.fromAcornNodes(value.params)
+      reflexion.keepBag = true
+      const paramsAsIdentifiers = reflexion.identifiers()
       const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
       return new Entropy(value, declarationDivisor).evaluate()
     }
@@ -483,14 +487,14 @@ class ClassEntropy extends SingleEntropy {
 
     const declarations = this.dividend.sources
     const bodyAsDividends = declarations.map(eachDeclaration => eachDeclaration.body)
-    declarations.forEach(eachDeclaration => this.divisor.extend([eachDeclaration.id.name]))
+    declarations.forEach(eachDeclaration => this.divisor.extend(CodeBag.fromNodes([eachDeclaration.id])))
 
     const members = bodyAsDividends[0].body
       .filter(eachDeclaration => ['MethodDefinition', 'PropertyDefinition'].includes(eachDeclaration.type))
       .filter(eachDeclaration => !ClassEntropy.IGNORED_IDENTIFIERS.includes(eachDeclaration.key.name))
-      .map(eachDeclaration => eachDeclaration.key.name)
+      .map(eachDeclaration => eachDeclaration.key)
 
-    this.divisor.extendAccesses(members)
+    this.divisor.extendAccesses(CodeBag.fromNodes(members))
 
     const mainEntropy = new BodyEntropy(bodyAsDividends, this.divisor).evaluate()
 
@@ -512,7 +516,9 @@ class ClassMemberEntropy extends DeclarationEntropy {
     const declarations = this.dividend.sources
     const declaration = declarations[0]
 
-    const paramsAsIdentifiers = Reflexion.fromAcornNodes(declaration.value.params).identifiers()
+    const reflexion = Reflexion.fromAcornNodes(declaration.value.params)
+    reflexion.keepBag = true
+    const paramsAsIdentifiers = reflexion.identifiers()
     const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
     return new Entropy(declaration.value, declarationDivisor).evaluate()
   }

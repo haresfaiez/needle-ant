@@ -47,6 +47,7 @@ export class CodeBag {
     return new CodeBag(new Map(elements))
   }
 
+  // TODO: Rename to fromAcronNodes like other factories
   static fromNodes(nodes) {
     const elements = nodes
       .map(eachNode => [eachNode.name, [new CodeSlice(eachNode.name, eachNode.start, eachNode.end)]])
