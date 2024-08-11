@@ -90,9 +90,9 @@ describe('Factorization', () => {
   // })
 
   describe('of an expression', () => {
-    xit('of "a + b + c" is "a, b, and c"', () => {
+    it('of "a + b + c" is "a, b, and c"', () => {
       const subject = Reflexion.parse('a + b + c')
-      expect(subject.identifiers()).toEqual(['a', 'b', 'c'])
+      expect(subject.identifiers().raws()).toEqual(['a', 'b', 'c'])
     })
   })
 })
