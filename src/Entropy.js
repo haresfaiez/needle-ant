@@ -1,5 +1,5 @@
 import { Reflexion } from './Reflexion.js'
-import { NullEvaluation, IdentifiersEvaluation, BagEvaluation } from './Evalution.js'
+import { NullEvaluation, BagEvaluation } from './Evalution.js'
 import { Divisor } from './Divisor.js'
 import { CodeBag } from './CodeBag.js'
 
@@ -422,12 +422,13 @@ class DeclarationEntropy extends SingleEntropy  {
 
     const declarationsEvaluation = new BodyEntropy(declarations, this.divisor).evaluate()
 
-    // class A extends B
-    if (declaration.type === 'ClassDeclaration' && declaration.superClass) {
-      this.divisor.extend([declaration.superClass.name])
-      // TODO: Use CodeBag here
-      return new IdentifiersEvaluation([declaration.id.name], this.divisor.identifiers()).plus(declarationsEvaluation)
-    }
+    // TODO: Remove this?
+    // // class A extends B
+    // if (declaration.type === 'ClassDeclaration' && declaration.superClass) {
+    //   this.divisor.extend([declaration.superClass.name])
+    //   // TODO: Use CodeBag here
+    //   return new BagEvaluation(CodeBag.withNullCoordinates([declaration.id.name]), this.divisor.identifiers()).plus(declarationsEvaluation)
+    // }
 
     return declarationsEvaluation
   }
@@ -446,7 +447,9 @@ class ClassEntropy extends SingleEntropy {
     this.divisor.extend(superClasses)
 
     // TODO: Use CodeBag here
-    const superClassEvaluation = new IdentifiersEvaluation(superClasses, this.divisor.identifiers())
+    this.divisor.keepBag = true
+    const superClassEvaluation = new BagEvaluation(CodeBag.withNullCoordinates(superClasses), this.divisor.identifiers())
+    this.divisor.keepBag = false
 
     const declarations = this.dividend.sources
     const bodyAsDividends = declarations.map(eachDeclaration => eachDeclaration.body)
