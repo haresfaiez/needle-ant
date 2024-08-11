@@ -1,13 +1,30 @@
 import { Evaluations } from './Evalution.js'
 
+const evaluationToString = (evaluation) => {
+  // If it's BagEvaluation
+  if (evaluation?.raw?.actual?.elements) {
+    return JSON.stringify({
+      actual: evaluation.actual,
+      possible: evaluation.possible,
+      raw: {
+        actual: Array.from(evaluation.raw.actual.elements.keys()),
+        possible: Array.from(evaluation.raw.possible.elements.keys()),
+        source: evaluation.raw.source
+      }
+    })
+  }
+
+  return JSON.stringify(evaluation)
+}
+
 const failedComparisonMessage = (actual, expected, failingComparisonIndex) => {
   return `Evaluations are not the same (Comparison failed at evaluation with index: ${failingComparisonIndex}).
 \n
   - expected:
-    ${(expected.evaluations || [expected]).map(JSON.stringify).join(',\n    ')}
+    ${(expected.evaluations || [expected]).map(evaluationToString).join(',\n    ')}
 \n
   - got:
-    ${(actual.evaluations || [actual] ).map(JSON.stringify).join(',\n    ')}`
+    ${(actual.evaluations || [actual] ).map(evaluationToString).join(',\n    ')}`
 }
 
 beforeAll(() => {
