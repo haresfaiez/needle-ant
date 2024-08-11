@@ -230,8 +230,8 @@ class SingleEntropy {
   constructor(dividend, divisor = new Divisor([])) {
     // TODO: Create different factories for each condition
     const reflexion = dividend.sources
-    ? dividend
-    : (Array.isArray(dividend) ? Reflexion.fromAcornNodes(dividend) : Reflexion.fromAcornNodes([dividend]))
+      ? dividend
+      : (Array.isArray(dividend) ? Reflexion.fromAcornNodes(dividend) : Reflexion.fromAcornNodes([dividend]))
 
     this.dividend = reflexion
     this.divisor = divisor

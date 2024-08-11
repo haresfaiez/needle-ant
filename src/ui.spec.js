@@ -43,17 +43,17 @@ describe('Entropy evaluation', () => {
 //     expect(actual).toEqual(expected)
 //   })
 
-  // it('', () => {
-  //   const code = 'const increment = (aNumber) => aNumber + 1; const result = increment(2);'
-  //   const actual = new NeedleAnt(code).entropy()
+// it('', () => {
+//   const code = 'const increment = (aNumber) => aNumber + 1; const result = increment(2);'
+//   const actual = new NeedleAnt(code).entropy()
 
-  //   const expected = new
+//   const expected = new
 
-  //   const expected = new NumericEvaluation(1, 2)
-  //     .plus(new NumericEvaluation(1, 3))
-  //     .plus(new NumericEvaluation(1, 3))
-  //     .plus(new NumericEvaluation(1, 2))
-  //     .plus(new NumericEvaluation(1, 3))
-  //   expect(actual.evaluate()).toEvaluateTo(expected)
-  // })
+//   const expected = new NumericEvaluation(1, 2)
+//     .plus(new NumericEvaluation(1, 3))
+//     .plus(new NumericEvaluation(1, 3))
+//     .plus(new NumericEvaluation(1, 2))
+//     .plus(new NumericEvaluation(1, 3))
+//   expect(actual.evaluate()).toEvaluateTo(expected)
+// })
 // })

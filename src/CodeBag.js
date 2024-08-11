@@ -13,12 +13,12 @@ export class CodeBag {
   putAll(codeSlices = []) {
     // TODO: throw error here if codeSlices is empty, or if raw does not exists
     const id = codeSlices[0]?.raw
-    const codeSlicesPerId = this.elements.get(id);
+    const codeSlicesPerId = this.elements.get(id)
     this.elements.set(id, [...(codeSlicesPerId || []), ...codeSlices])
   }
 
   put(codeSlice) {
-    const codeSlicesPerId = this.elements.get(codeSlice.raw);
+    const codeSlicesPerId = this.elements.get(codeSlice.raw)
     this.elements.set(codeSlice.raw, [...(codeSlicesPerId || []), codeSlice])
   }
 
