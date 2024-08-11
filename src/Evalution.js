@@ -33,24 +33,6 @@ class Evaluation {
   }
 }
 
-export class IdentifiersEvaluation extends Evaluation {
-  // TODO: Make this accept CodeBag instead of Array
-  constructor(actual = [], possible = [], source) {
-    super()
-    this.actual = actual
-    this.possible = possible
-    // TODO: Simplify this
-    this.source = source?.type
-      ? escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })
-      : source
-  }
-
-  evaluate() {
-    // TODO: Do not put the whole `this`, pick only a needed view
-    return new NumericEvaluation(this.actual.length, this.possible.length, this)
-  }
-}
-
 export class BagEvaluation extends Evaluation {
   constructor(actual = new CodeBag(), possible = new CodeBag(), source) {
     super()
