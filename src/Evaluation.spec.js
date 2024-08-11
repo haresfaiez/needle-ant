@@ -1,4 +1,5 @@
-import { NumericEvaluation, NullEvaluation, IdentifiersEvaluation } from './Evalution.js'
+import { CodeBag } from './CodeBag.js'
+import { NumericEvaluation, NullEvaluation, IdentifiersEvaluation, BagEvaluation } from './Evalution.js'
 
 describe('Evaluations', () => {
   it('evaluates its members', () => {
@@ -11,9 +12,18 @@ describe('Evaluations', () => {
   })
 })
 
-describe('Evaluation constructor', () => {
-  it('transfroms NumericEvaluation with identifiers to NumericEvaluation with numbers', () => {
+describe('IdentifiersEvaluation', () => {
+  it('transfroms IdentifiersEvaluation with identifiers to NumericEvaluation with numbers', () => {
     const rawEvaluation = new IdentifiersEvaluation(['a', 'b'], ['c', 'cd', 'x'])
+    expect(rawEvaluation.evaluate()).toEqual(new NumericEvaluation(2, 3, rawEvaluation))
+  })
+})
+
+describe('BagEvaluation', () => {
+  it('transfroms BagEvaluation with identifiers to NumericEvaluation with numbers', () => {
+    const actualsBag = CodeBag.withNullCoordinates(['a', 'b'])
+    const possiblesBag = CodeBag.withNullCoordinates(['c', 'd', 'x'])
+    const rawEvaluation = new BagEvaluation(actualsBag, possiblesBag)
     expect(rawEvaluation.evaluate()).toEqual(new NumericEvaluation(2, 3, rawEvaluation))
   })
 })

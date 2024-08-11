@@ -1,8 +1,13 @@
+import { CodeSlice } from './CodeSlice.js'
 
 // TODO: Move together with CodeSlice to a separate sub-folder
 export class CodeBag {
-  constructor() {
-    this.elements = new Map()
+  constructor(elements = new Map()) {
+    this.elements = elements
+  }
+
+  raws() {
+    return [...this.elements.keys()]
   }
 
   insert(anotherCodeBag) {
@@ -31,5 +36,12 @@ export class CodeBag {
   // TODO: Reomve this
   evaluate() {
     return [...this.elements.keys()]
+  }
+
+  // Factories
+  static withNullCoordinates(identifiers) {
+    const elements =
+      identifiers.map(eachIdentifier => [eachIdentifier, [new CodeSlice(eachIdentifier, 0, 0)]])
+    return new CodeBag(new Map(elements))
   }
 }

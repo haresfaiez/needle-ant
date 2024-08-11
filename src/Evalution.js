@@ -1,4 +1,5 @@
 import * as escodegen from 'escodegen'
+import { CodeBag } from './CodeBag.js'
 
 class Evaluation {
   plus(otherEvaluation) {
@@ -46,8 +47,26 @@ export class IdentifiersEvaluation extends Evaluation {
 
   evaluate() {
     // TODO: Do not put the whole `this`, pick only a needed view
-    // TODO: Work with CodeBag intsead of Array
     return new NumericEvaluation(this.actual.length, this.possible.length, this)
+  }
+}
+
+export class BagEvaluation extends Evaluation {
+  constructor(actual = new CodeBag(), possible = new CodeBag(), source) {
+    super()
+    this.actual = actual
+    this.possible = possible
+    // TODO: Simplify this
+    this.source = source?.type
+      ? escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })
+      : source
+  }
+
+  evaluate() {
+    const actuals = this.actual.raws()
+    const possibles = this.possible.raws()
+    // TODO: Do not put the whole `this`, pick only a needed view
+    return new NumericEvaluation(actuals.length, possibles.length, this)
   }
 }
 
