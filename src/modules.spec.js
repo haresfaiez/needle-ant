@@ -12,21 +12,21 @@ const buildExpected = (expected) =>
     )
 
 describe('Module entropy', () => {
-  xit('calculates entropy of one function defintion', () => {
+  it('calculates entropy of one function defintion', () => {
     const actual = new NeedleAnt(lighthouse.code).entropy()
 
     const expected = buildExpected(lighthouse.expected)
     expect(actual.evaluate()).toEvaluateTo(expected)
   })
 
-  xit('calculates entropy of class definition', () => {
+  it('calculates entropy of class definition', () => {
     const actual = new NeedleAnt(metricTraceEvents.code).entropy()
 
     const expected = buildExpected(metricTraceEvents.expected)
     expect(actual.evaluate()).toEvaluateTo(expected)
   })
 
-  xit('calculates entropy of class definition with two methods', () => {
+  it('calculates entropy of class definition with two methods', () => {
     const actual = new NeedleAnt(fullMetricTraceEvents.code).entropy()
 
     const expected = buildExpected(fullMetricTraceEvents.expected)

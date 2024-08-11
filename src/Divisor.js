@@ -2,7 +2,8 @@ import { CodeBag } from './CodeBag.js'
 import { Reflexion } from './Reflexion.js'
 
 export class Divisor {
-  constructor(rawDivisor = new CodeBag(), accesses = new CodeBag()) {
+  constructor(rawDivisor = new CodeBag(), accesses = new CodeBag(), cloned) {
+    this.cloned = cloned
     this._identifiers = new CodeBag()
 
     // TODO: Simplify this
@@ -25,6 +26,7 @@ export class Divisor {
     result.accesses = aDivisor.accesses
     result.extend(aDivisor.identifiers())
     result.extend(newIdentifiers)
+    result.cloned = aDivisor
     return result
   }
 
@@ -42,6 +44,7 @@ export class Divisor {
 
   extendAccesses(newAccesses) {
     this.accesses = this.accesses.plus(newAccesses)
+    this.cloned?.extendAccesses(newAccesses)
   }
 
   identifiers() {

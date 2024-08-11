@@ -246,7 +246,7 @@ describe('Function body entropy', () => {
 })
 
 describe('Variable declaration entropy', () => {
-  xit('calculates property entropy from accessed properties', () => {
+  it('calculates property entropy from accessed properties', () => {
     const code = 'const a = {x: 3, y: 0}; const tmp = a.x;'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
@@ -338,7 +338,7 @@ describe('Class definition entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  xit('calculates entropy of class definition, instanciation, and usage', () => {
+  it('calculates entropy of class definition, instanciation, and usage', () => {
     const code = `class A {
       constructor(argument) {
         this.a = argument;
@@ -387,7 +387,7 @@ describe('Class definition entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
-  xit('calculates entropy of literal object definition and usages', () => {
+  it('calculates entropy of literal object definition and usages', () => {
     const code = 'let a, b; const obj = { p: a, q: 4 }; const result = obj.p;'
     const entropy = new BodyEntropy(Reflexion.parse(code, (ast) => ast.body))
 
