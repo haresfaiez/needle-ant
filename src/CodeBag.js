@@ -47,6 +47,16 @@ export class CodeBag {
     return new CodeBag(new Map(elements))
   }
 
+  static fromNodes(nodes) {
+    const elements = nodes
+      .map(eachNode => [eachNode.name, [new CodeSlice(eachNode.name, eachNode.start, eachNode.end)]])
+    return new CodeBag(new Map(elements))
+  }
+
+  static fromNamedNode(node, name) {
+    return new CodeBag(new Map([[name, [new CodeSlice(name, node.start, node.end)]]]))
+  }
+
   static empty() {
     return new CodeBag()
   }

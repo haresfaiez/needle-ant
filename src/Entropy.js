@@ -245,6 +245,10 @@ class SingleEntropy {
 
 export class BodyEntropy extends SingleEntropy  {
   evaluate() {
+    // TODO: Remove these
+    this.dividend.keepBag = true
+    this.divisor.keepBag = true
+
     const newDivisor = Divisor.clone(this.divisor)
     const entropies = this.dividend
       .sources
@@ -256,6 +260,10 @@ export class BodyEntropy extends SingleEntropy  {
 class DependencyEntropy extends SingleEntropy  {
   // TODO: improve this (next. release)
   evaluate() {
+    // TODO: Remove these
+    this.dividend.keepBag = true
+    this.divisor.keepBag = true
+
     const dividend = this.dividend.sources[0]
 
     // TODO: Uncomment when handling inter-module depencies
@@ -286,6 +294,10 @@ class DependencyEntropy extends SingleEntropy  {
 class CallEntropy extends SingleEntropy  {
   // TODO: Simplify this (next. release)
   evaluate() {
+    // TODO: Remove these
+    this.dividend.keepBag = true
+    this.divisor.keepBag = true
+
     const dividend = this.dividend.sources[0]
 
     const isMethodInvocation = dividend?.callee?.type === 'MemberExpression'
@@ -329,16 +341,15 @@ export class ExpressionEntropy extends SingleEntropy {
 
     // TODO: Simplify these
     const literals = !isImport
-      ? this.dividend.literals().plus(isBitShiftingOperation ? CodeBag.withNullCoordinates(['1']) : CodeBag.empty())
+      ? this.dividend.literals().plus(isBitShiftingOperation ? CodeBag.fromNamedNode(dividend, '1') : CodeBag.empty())
       : CodeBag.empty()
 
     const thisExpression = dividend.type === 'ThisExpression'
-      ? CodeBag.withNullCoordinates(['this'])
+      ? CodeBag.fromNamedNode(dividend, 'this')
       : CodeBag.empty()
 
     const actualsBag = literals.plus(thisExpression).plus(this.dividend.identifiers())
     const possiblesBag = literals.plus(thisExpression).plus(this.divisor.identifiers())
-    this.divisor.keepBag = false
     return new BagEvaluation(actualsBag, possiblesBag, dividend)
   }
 }
@@ -347,6 +358,10 @@ export class ExpressionEntropy extends SingleEntropy {
 // TODO: Create a construct based on the params/body dual (next. release)
 class CatchEntropy extends SingleEntropy {
   evaluate() {
+    // TODO: Remove these
+    this.dividend.keepBag = true
+    this.divisor.keepBag = true
+
     const dividend = this.dividend.sources[0]
     const newDivisor = Divisor.clone(this.divisor)
     newDivisor.extend([dividend.param.name])
@@ -358,6 +373,10 @@ class CatchEntropy extends SingleEntropy {
 class ObjectAccessEntropy extends SingleEntropy {
   // TODO: Simplify this (next. release)
   evaluate() {
+    // TODO: Remove these
+    this.dividend.keepBag = true
+    this.divisor.keepBag = true
+
     // TODO: Is this true?
     this.divisor.extendAccesses(this.dividend.identifiers())
     const nextDivisor = Divisor.fromAccesses(this.divisor)
@@ -369,6 +388,10 @@ class ObjectAccessEntropy extends SingleEntropy {
 class LiteralObjectEntropy extends SingleEntropy {
   // TODO: Simplify this (next. release)
   evaluate() {
+    // TODO: Remove these
+    this.dividend.keepBag = true
+    this.divisor.keepBag = true
+
     const declarations = this.dividend.sources
     const declaration = declarations[0]
 
@@ -387,6 +410,10 @@ class DeclarationEntropy extends SingleEntropy  {
 
   // TODO: simplify this (next. release)
   evaluate() {
+    // TODO: Remove these
+    this.dividend.keepBag = true
+    this.divisor.keepBag = true
+
     const declarations = this.dividend.sources
     const declaration = declarations[0]
 
@@ -439,17 +466,20 @@ class ClassEntropy extends SingleEntropy {
 
   // TODO: simplify this (next. release)
   evaluate() {
-    const superClasses = this.dividend.sources
+    // TODO: Remove these
+    this.dividend.keepBag = true
+    this.divisor.keepBag = true
+
+    const superClassesNodes = this.dividend.sources
       .filter(eachDeclaration => ['ClassDeclaration'].includes(eachDeclaration.type))
       .filter(eachDeclaration => eachDeclaration.superClass)
-      .map(eachDeclaration => eachDeclaration.superClass.name)
+      .map(eachDeclaration => eachDeclaration.superClass)
+    const superClassesBag = CodeBag.fromNodes(superClassesNodes)
 
-    this.divisor.extend(superClasses)
+    this.divisor.extend(superClassesBag)
 
     // TODO: Use CodeBag here
-    this.divisor.keepBag = true
-    const superClassEvaluation = new BagEvaluation(CodeBag.withNullCoordinates(superClasses), this.divisor.identifiers())
-    this.divisor.keepBag = false
+    const superClassEvaluation = new BagEvaluation(superClassesBag, this.divisor.identifiers())
 
     const declarations = this.dividend.sources
     const bodyAsDividends = declarations.map(eachDeclaration => eachDeclaration.body)
@@ -465,7 +495,8 @@ class ClassEntropy extends SingleEntropy {
     const mainEntropy = new BodyEntropy(bodyAsDividends, this.divisor).evaluate()
 
     // TODO: Generalize this to one `return` (next. release)
-    if (superClasses.length) {
+    // TODO: Use CodeBag instead
+    if (superClassesNodes.length) {
       return mainEntropy.plus(superClassEvaluation)
     }
     return mainEntropy
@@ -474,6 +505,10 @@ class ClassEntropy extends SingleEntropy {
 
 class ClassMemberEntropy extends DeclarationEntropy {
   evaluate() {
+    // TODO: Remove these
+    this.dividend.keepBag = true
+    this.divisor.keepBag = true
+
     const declarations = this.dividend.sources
     const declaration = declarations[0]
 
