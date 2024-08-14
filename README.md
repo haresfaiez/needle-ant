@@ -1,8 +1,16 @@
 # Needle-ant
 
+Needle-ant is a source code static analyzer that calculates the entropy of code as message between developers.
+
+Read more about the motivation behind (here)[].
+
 ## Usage
 
-## Demo
+```javascript
+const code = 'const a = 4;'
+const analysis = new NeedleAnt(code).entropy()
+const entropyValue = analysis.calculate()
+```
 
 ## Roadmap
   * Handle undefined variable (`a`, `let b; b + 1; a;`)
@@ -11,6 +19,6 @@
   * Add available scope to divisor (instead of just already-defined variables): Fix `const f = x => x; class C {}`
   * Handle member access properly (instead of counting already-encountered accesses)
   * Handle inter-modules dependencies (tests are commented for now)
-  * check TODO s
+  * Check TODO s
   * Add weighted probabilities/entropies
   * Add property tests

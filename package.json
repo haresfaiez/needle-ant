@@ -1,16 +1,16 @@
 {
   "name": "needleant",
-  "version": "1.0.0",
+  "version": "0.0.0-alpha",
   "description": "",
   "type": "module",
   "main": "index.js",
+  "license": "MIT",
   "scripts": {
     "test": "jasmine",
     "test:watch": "nodemon -e js --exec 'npm test'",
     "lint": "eslint --fix src/**/*.js"
   },
   "author": "",
-  "license": "ISC",
   "devDependencies": {
     "acorn": "^8.11.3",
     "acorn-walk": "^8.3.2",
@@ -18,5 +18,9 @@
     "eslint": "^8.56.0",
     "jasmine": "^5.1.0",
     "nodemon": "^3.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/haresfaiez/needle-ant"
   }
 }
