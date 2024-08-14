@@ -1,11 +1,11 @@
-import { Reflexion } from '../Reflexion.js'
+import { Reflexion } from '../reflexion/Reflexion.js'
 import { BodyEntropy } from './BodyEntropy.js'
 import { Entropy } from './Entropy.js'
 import { NumericEvaluation } from '../evaluation/NumericEvaluation.js'
 import { ExpressionEntropy } from './ExpressionEntropy.js'
 import { NullEvaluation } from '../evaluation/NullEvaluation.js'
-import { Divisor } from '../Divisor.js'
-import { CodeBag } from '../CodeBag.js'
+import { Divisor } from '../reflexion/Divisor.js'
+import { CodeBag } from '../code/CodeBag.js'
 
 describe('Method invocation entropy', () => {
   it('sums objects entropy and method entropy', () => {

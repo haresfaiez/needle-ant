@@ -1,6 +1,6 @@
 import { SingleEntropy } from './SingleEntropy.js'
-import { Divisor } from '../Divisor.js'
-import { CodeBag } from '../CodeBag.js'
+import { Divisor } from '../reflexion/Divisor.js'
+import { CodeBag } from '../code/CodeBag.js'
 import { BodyEntropy } from './BodyEntropy.js'
 
 // TODO: Create a construct based on the params/body dual (next. release)

@@ -1,5 +1,5 @@
 import * as escodegen from 'escodegen'
-import { CodeBag } from '../CodeBag.js'
+import { CodeBag } from '../code/CodeBag.js'
 import { NumericEvaluation } from './NumericEvaluation.js'
 import { Evaluation } from './Evaluation.js'
 import { Evaluations } from './Evaluations.js'

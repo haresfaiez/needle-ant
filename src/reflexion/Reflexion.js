@@ -1,8 +1,8 @@
 import * as Acorn from 'acorn'
 import * as AcornWalk from 'acorn-walk'
 
-import { CodeSlice } from './CodeSlice.js'
-import { CodeBag } from './CodeBag.js'
+import { CodeSlice } from '../code/CodeSlice.js'
+import { CodeBag } from '../code/CodeBag.js'
 
 export class Reflexion {
   constructor(acornNodes) {

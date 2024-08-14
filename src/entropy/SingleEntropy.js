@@ -1,5 +1,5 @@
-import { Reflexion } from '../Reflexion.js'
-import { Divisor } from '../Divisor.js'
+import { Reflexion } from '../reflexion/Reflexion.js'
+import { Divisor } from '../reflexion/Divisor.js'
 
 // TODO: rename or remove this
 export class SingleEntropy {

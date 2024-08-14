@@ -1,5 +1,5 @@
 import { BagEvaluation } from '../evaluation/BagEvaluation.js'
-import { CodeBag } from '../CodeBag.js'
+import { CodeBag } from '../code/CodeBag.js'
 import { SingleEntropy } from './SingleEntropy.js'
 import { Entropies } from './Entropies.js'
 import { Entropy } from './Entropy.js'

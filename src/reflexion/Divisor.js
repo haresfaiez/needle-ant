@@ -1,4 +1,4 @@
-import { CodeBag } from './CodeBag.js'
+import { CodeBag } from '../code/CodeBag.js'
 import { Reflexion } from './Reflexion.js'
 
 export class Divisor {

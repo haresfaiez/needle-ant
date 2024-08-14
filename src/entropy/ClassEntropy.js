@@ -1,6 +1,6 @@
 import { SingleEntropy } from './SingleEntropy.js'
 import { BagEvaluation } from '../evaluation/BagEvaluation.js'
-import { CodeBag } from '../CodeBag.js'
+import { CodeBag } from '../code/CodeBag.js'
 import { BodyEntropy } from './BodyEntropy.js'
 
 export class ClassEntropy extends SingleEntropy {

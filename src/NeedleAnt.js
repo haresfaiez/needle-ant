@@ -1,7 +1,7 @@
 import { BodyEntropy } from './entropy/BodyEntropy.js'
-import { Reflexion } from './Reflexion.js'
-import { Divisor } from './Divisor.js'
-import { CodeBag } from './CodeBag.js'
+import { Reflexion } from './reflexion/Reflexion.js'
+import { Divisor } from './reflexion/Divisor.js'
+import { CodeBag } from './code/CodeBag.js'
 
 class NeedleAnt {
   constructor(code, dependencies = []) {

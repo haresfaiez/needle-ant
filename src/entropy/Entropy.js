@@ -1,5 +1,5 @@
-import { Reflexion } from '../Reflexion.js'
-import { Divisor } from '../Divisor.js'
+import { Reflexion } from '../reflexion/Reflexion.js'
+import { Divisor } from '../reflexion/Divisor.js'
 import { BodyEntropy } from './BodyEntropy.js'
 import { CallEntropy } from './CallEntropy.js'
 import { DependencyEntropy } from './DependencyEntropy.js'

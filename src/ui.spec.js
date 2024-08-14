@@ -1,4 +1,4 @@
-import { CodeBag } from './CodeBag.js'
+import { CodeBag } from './code/CodeBag.js'
 import { BagEvaluation } from './evaluation/BagEvaluation.js'
 import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'

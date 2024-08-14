@@ -1,5 +1,5 @@
 import { SingleEntropy } from './SingleEntropy.js'
-import { Divisor } from '../Divisor.js'
+import { Divisor } from '../reflexion/Divisor.js'
 import { Entropy } from './Entropy.js'
 
 // TODO: Search other-similar occurences and abstract (next. release)

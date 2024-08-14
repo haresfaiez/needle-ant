@@ -1,4 +1,4 @@
-import { Divisor } from '../Divisor.js'
+import { Divisor } from '../reflexion/Divisor.js'
 import { SingleEntropy } from './SingleEntropy.js'
 import { ExpressionEntropy } from './ExpressionEntropy.js'
 
