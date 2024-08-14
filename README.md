@@ -2,7 +2,7 @@
 
 Needle-ant is a source code static analyzer that calculates the entropy of code as message between developers.
 
-Read more about the motivation behind (here)[].
+Read more about the motivation behind [here](https://haresfaiez.github.io/2024/06/25/Code-entropy-in-action-needleant-alpha-release.html).
 
 ## Usage
 
