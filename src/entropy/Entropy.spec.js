@@ -1,9 +1,11 @@
-import { Reflexion } from './Reflexion.js'
-import { Entropy, BodyEntropy, ExpressionEntropy } from './Entropy.js'
-import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
-import { NullEvaluation } from './evaluation/NullEvaluation.js'
-import { Divisor } from './Divisor.js'
-import { CodeBag } from './CodeBag.js'
+import { Reflexion } from '../Reflexion.js'
+import { BodyEntropy } from './BodyEntropy.js'
+import { Entropy } from './Entropy.js'
+import { NumericEvaluation } from '../evaluation/NumericEvaluation.js'
+import { ExpressionEntropy } from './ExpressionEntropy.js'
+import { NullEvaluation } from '../evaluation/NullEvaluation.js'
+import { Divisor } from '../Divisor.js'
+import { CodeBag } from '../CodeBag.js'
 
 describe('Method invocation entropy', () => {
   it('sums objects entropy and method entropy', () => {

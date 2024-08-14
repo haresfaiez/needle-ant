@@ -1,4 +1,4 @@
-import { BodyEntropy } from './Entropy.js'
+import { BodyEntropy } from './entropy/BodyEntropy.js'
 import { Reflexion } from './Reflexion.js'
 import { Divisor } from './Divisor.js'
 import { CodeBag } from './CodeBag.js'

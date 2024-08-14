@@ -1,5 +1,5 @@
 import { Reflexion } from './Reflexion.js'
-import { Entropy } from './Entropy.js'
+import { Entropy } from './entropy/Entropy.js'
 import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import { Divisor } from './Divisor.js'
 
