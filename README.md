@@ -12,6 +12,11 @@ const analysis = new NeedleAnt(code).entropy()
 const entropyValue = analysis.calculate()
 ```
 
+## Release
+  * Increase version in package.json
+  * run `npm run build`
+  * run `cd dist/ && npm publish`
+
 ## Roadmap
   * Handle undefined variable (`a`, `let b; b + 1; a;`)
   * Handle undefined variable inside function (to which scope to add)

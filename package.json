@@ -1,6 +1,6 @@
 {
   "name": "needleant",
-  "version": "0.0.0-alpha",
+  "version": "0.0.0-alpha.1",
   "description": "",
   "type": "module",
   "main": "index.js",
@@ -8,12 +8,14 @@
   "scripts": {
     "test": "jasmine",
     "test:watch": "nodemon -e js --exec 'npm test'",
+    "build": "esbuild index.js --outfile=dist/index.js --bundle --format=cjs && cp ./package.json dist/ && cp ./.npmrc dist/",
     "lint": "eslint --fix src/**/*.js"
   },
   "author": "",
   "devDependencies": {
     "acorn": "^8.11.3",
     "acorn-walk": "^8.3.2",
+    "esbuild": "^0.23.0",
     "escodegen": "^2.1.0",
     "eslint": "^8.56.0",
     "jasmine": "^5.1.0",
