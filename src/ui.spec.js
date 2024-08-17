@@ -16,4 +16,11 @@ describe('Entropy evaluation', () => {
     const expected = new NumericEvaluation(1, 2, bagEvaluation)
     expect(actual.evaluate()).toEqual(expected)
   })
+
+  it('calculates entropy value', () => {
+    const actual = new NeedleAnt('const a = 4;').entropy()
+
+    const expected = 0.5
+    expect(actual.evaluate().calculate()).toEqual(expected)
+  })
 })
