@@ -1,6 +1,5 @@
 import { CodeSlice } from './CodeSlice.js'
 
-// TODO: Move together with CodeSlice to a separate sub-folder
 export class CodeBag {
   constructor(elements = new Map()) {
     this.elements = elements
@@ -12,37 +11,31 @@ export class CodeBag {
 
   plus(anotherCodeBag) {
     const result = new CodeBag()
-    result.elements = new Map(this.elements);
-    [...anotherCodeBag.elements.values()].forEach(eachCodeSlices => result.putAll(eachCodeSlices))
+    result.elements = new Map(this.elements)
+    result.merge(anotherCodeBag)
     return result
   }
 
-  insert(anotherCodeBag) {
+  merge(anotherCodeBag) {
     this.elements = new Map(this.elements);
     [...anotherCodeBag.elements.values()].forEach(eachCodeSlices => this.putAll(eachCodeSlices))
   }
 
-  putAll(codeSlices = []) {
-    // TODO: throw error here if codeSlices is empty, or if raw does not exists
-    const id = codeSlices[0]?.raw
-    const codeSlicesPerId = this.elements.get(id)
-    this.elements.set(id, [...(codeSlicesPerId || []), ...codeSlices])
+  put(codeSlice) {
+    this.putAll([codeSlice])
   }
 
-  put(codeSlice) {
-    const codeSlicesPerId = this.elements.get(codeSlice.raw)
-    this.elements.set(codeSlice.raw, [...(codeSlicesPerId || []), codeSlice])
+  putAll(codeSlices = []) {
+    codeSlices.forEach(eachCodeSlice => {
+      const codeSlicesPerId = this.elements.get(eachCodeSlice.raw)
+      this.elements.set(eachCodeSlice.raw, [...(codeSlicesPerId || []), eachCodeSlice])
+    })
   }
 
   collect(sources, collector) {
     for (const eachSource of sources) {
       collector(eachSource, this)
     }
-  }
-
-  // TODO: Reomve this
-  evaluate() {
-    return [...this.elements.keys()]
   }
 
   // Factories
@@ -52,8 +45,7 @@ export class CodeBag {
     return new CodeBag(new Map(elements))
   }
 
-  // TODO: Rename to fromAcronNodes like other factories
-  static fromNodes(nodes) {
+  static fromAcronNodes(nodes) {
     const elements = nodes
       .map(eachNode => [eachNode.name, [new CodeSlice(eachNode.name, eachNode.start, eachNode.end)]])
     return new CodeBag(new Map(elements))

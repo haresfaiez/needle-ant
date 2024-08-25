@@ -7,8 +7,8 @@ describe('Entropy evaluation', () => {
   it('uses the exact literal in the actual/possibilities identifiers array', () => {
     const actual = new NeedleAnt('const a = 4;').entropy()
 
-    const expectedActual = CodeBag.fromNodes([{ name: 4, start: 10, end: 11}])
-    const expectedPossible = CodeBag.fromNodes([
+    const expectedActual = CodeBag.fromAcronNodes([{ name: 4, start: 10, end: 11}])
+    const expectedPossible = CodeBag.fromAcronNodes([
       { name: 4, start: 10, end: 11},
       { name: 'a', start: 6, end: 7},
     ])

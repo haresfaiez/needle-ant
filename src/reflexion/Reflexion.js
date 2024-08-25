@@ -13,7 +13,7 @@ export class Reflexion {
   collectExports(expression, bag) {
     AcornWalk.simple(expression, {
       ExportNamedDeclaration(node) {
-        bag.insert(Reflexion.fromAcornNodes([node]).identifiers())
+        bag.merge(Reflexion.fromAcornNodes([node]).identifiers())
       }
     })
   }

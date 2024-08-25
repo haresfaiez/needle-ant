@@ -17,7 +17,7 @@ export class DeclarationEntropy extends SingleEntropy  {
     const isVariable = declarations.length === 1 && declaration.type === 'VariableDeclarator'
     declarations
       .filter(eachDeclaration => eachDeclaration.id)
-      .forEach(eachDeclaration => this.divisor.extend(CodeBag.fromNodes([eachDeclaration.id])))
+      .forEach(eachDeclaration => this.divisor.extend(CodeBag.fromAcronNodes([eachDeclaration.id])))
 
     const functionsTypes = [
       'ArrowFunctionExpression',

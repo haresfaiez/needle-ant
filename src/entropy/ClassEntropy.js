@@ -12,7 +12,7 @@ export class ClassEntropy extends SingleEntropy {
       .filter(eachDeclaration => ['ClassDeclaration'].includes(eachDeclaration.type))
       .filter(eachDeclaration => eachDeclaration.superClass)
       .map(eachDeclaration => eachDeclaration.superClass)
-    const superClassesBag = CodeBag.fromNodes(superClassesNodes)
+    const superClassesBag = CodeBag.fromAcronNodes(superClassesNodes)
 
     this.divisor.extend(superClassesBag)
 
@@ -21,14 +21,14 @@ export class ClassEntropy extends SingleEntropy {
 
     const declarations = this.dividend.sources
     const bodyAsDividends = declarations.map(eachDeclaration => eachDeclaration.body)
-    declarations.forEach(eachDeclaration => this.divisor.extend(CodeBag.fromNodes([eachDeclaration.id])))
+    declarations.forEach(eachDeclaration => this.divisor.extend(CodeBag.fromAcronNodes([eachDeclaration.id])))
 
     const members = bodyAsDividends[0].body
       .filter(eachDeclaration => ['MethodDefinition', 'PropertyDefinition'].includes(eachDeclaration.type))
       .filter(eachDeclaration => !ClassEntropy.IGNORED_IDENTIFIERS.includes(eachDeclaration.key.name))
       .map(eachDeclaration => eachDeclaration.key)
 
-    this.divisor.extendAccesses(CodeBag.fromNodes(members))
+    this.divisor.extendAccesses(CodeBag.fromAcronNodes(members))
 
     const mainEntropy = new BodyEntropy(bodyAsDividends, this.divisor).evaluate()
 
