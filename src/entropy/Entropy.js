@@ -1,5 +1,3 @@
-import { Reflexion } from '../reflexion/Reflexion.js'
-import { Divisor } from '../reflexion/Divisor.js'
 import { BodyEntropy } from './BodyEntropy.js'
 import { CallEntropy } from './CallEntropy.js'
 import { DependencyEntropy } from './DependencyEntropy.js'
@@ -11,17 +9,12 @@ import { ClassMemberEntropy } from './ClassMemberEntropy.js'
 import { ClassEntropy } from './ClassEntropy.js'
 import { ExpressionEntropy } from './ExpressionEntropy.js'
 import { CatchEntropy } from './CatchEntropy.js'
+import { SingleEntropy } from './SingleEntropy.js'
 
-export class Entropy {
-  constructor(dividend, divisor = new Divisor()) {
-    this.divisor = divisor
-
-    // TODO: Create different factories for each condition
-    const reflexion = dividend.sources
-      ? dividend
-      : (Array.isArray(dividend) ? Reflexion.fromAcornNodes(dividend) : Reflexion.fromAcornNodes([dividend]))
-
-    this.delegate = this.createDelegate(reflexion, divisor)
+export class Entropy extends SingleEntropy {
+  constructor(dividend, divisor) {
+    super(dividend, divisor)
+    this.delegate = this.createDelegate(this.dividend, this.divisor)
   }
 
   evaluate() {
