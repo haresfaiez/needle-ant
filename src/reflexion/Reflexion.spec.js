@@ -22,7 +22,7 @@ describe('Dependency entropy', () => {
     const dependencyCode = 'export function a() {}'
     const entropy = new Entropy(
       Reflexion.parse(code, (ast) => ast.body),
-      new Divisor(Reflexion.parse(dependencyCode))
+      new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
     )
 
     expect(entropy.evaluate().evaluate()).toEvaluateTo(new NumericEvaluation(1, 1))
@@ -34,7 +34,7 @@ describe('Dependency entropy', () => {
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new Entropy(
       Reflexion.parse(code, (ast) => ast.body),
-      new Divisor(Reflexion.parse(dependencyCode))
+      new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
     )
 
     expect(entropy.evaluate().evaluate()).toEvaluateTo(new NumericEvaluation(1, 3))
@@ -45,7 +45,7 @@ describe('Dependency entropy', () => {
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new Entropy(
       Reflexion.parse(code, (ast) => ast.body),
-      new Divisor(Reflexion.parse(dependencyCode))
+      new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
     )
 
     expect(entropy.evaluate().evaluate()).toEvaluateTo(new NumericEvaluation(2, 3))
@@ -69,7 +69,7 @@ describe('Dependency entropy', () => {
     const dependencyCode = 'export function a() {}; export function b() {};'
     const entropy = new Entropy(
       Reflexion.parse(code, (ast) => ast.body),
-      new Divisor(Reflexion.parse(dependencyCode))
+      new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
     )
 
     expect(entropy.evaluate().evaluate().calculate()).toEqual(0)
@@ -91,7 +91,7 @@ describe('Factorization', () => {
 
   describe('of an expression', () => {
     it('of "a + b + c" is "a, b, and c"', () => {
-      const subject = Reflexion.parse('a + b + c')
+      const subject = Reflexion.parse('a + b + c', (ast) => ast.body)
       expect(subject.identifiers().raws()).toEqual(['a', 'b', 'c'])
     })
   })

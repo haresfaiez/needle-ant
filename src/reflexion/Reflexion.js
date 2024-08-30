@@ -97,9 +97,7 @@ export class Reflexion {
   static parse(sourceCode, transformer) {
     const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
     const astForReflexion = transformer ? transformer(ast) : ast
-    return Array.isArray(astForReflexion)
-      ? Reflexion.fromAcornNodes(astForReflexion)
-      : Reflexion.fromAcornNodes([astForReflexion])
+    return Reflexion.fromAcornNodes(astForReflexion)
   }
 }
 
