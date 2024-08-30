@@ -4,14 +4,12 @@ export class Evaluation {
   }
 
   times(multiplier) {
-    // TODO: Implement multiplication properly
     if (multiplier > 2)
       return this.times(multiplier - 1).plus(this)
 
     return this.plus(this)
   }
 
-  // TODO: Ignore adding null NumericEvaluation (actual == 0)
   shouldIgnoreAdding(otherEvaluation) {
     return !otherEvaluation.evaluations
       && !otherEvaluation.actual
