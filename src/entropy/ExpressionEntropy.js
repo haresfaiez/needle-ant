@@ -34,6 +34,6 @@ export class ExpressionEntropy extends SingleEntropy {
 
     const actualsBag = literals.plus(thisExpression).plus(this.dividend.identifiers())
     const possiblesBag = literals.plus(thisExpression).plus(this.divisor.identifiers())
-    return new BagEvaluation(actualsBag, possiblesBag, dividend)
+    return BagEvaluation.fromAstNode(actualsBag, possiblesBag, dividend)
   }
 }

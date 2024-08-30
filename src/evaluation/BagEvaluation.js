@@ -9,10 +9,7 @@ export class BagEvaluation extends Evaluation {
     super()
     this.actual = actual
     this.possible = possible
-    // TODO: Simplify this
-    this.source = source?.type
-      ? escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })
-      : source
+    this.source = source
   }
 
   plus(otherEvaluation) {
@@ -32,5 +29,10 @@ export class BagEvaluation extends Evaluation {
     const possibles = this.possible.raws()
     // TODO: Do not put the whole `this`, pick only a needed view
     return new NumericEvaluation(actuals.length, possibles.length, this)
+  }
+
+  static fromAstNode(actual, possible, source) {
+    const nodeToSourceCode = escodegen.generate(source, { format: escodegen.FORMAT_MINIFY })
+    return new BagEvaluation(actual, possible, nodeToSourceCode)
   }
 }
