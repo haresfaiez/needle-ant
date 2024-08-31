@@ -12,6 +12,7 @@ export class DeclarationsEntropy extends PolyEntropy  {
   // TODO: simplify this (next. release)
   evaluate() {
     const declarations = this.dividend.sources
+    // TODO: Avoid extraction of only first sources element (check all files)
     const declaration = declarations[0]
 
     const isVariable = declarations.length === 1 && declaration.type === 'VariableDeclarator'
