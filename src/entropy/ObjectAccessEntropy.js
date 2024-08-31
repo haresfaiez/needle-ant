@@ -9,6 +9,6 @@ export class ObjectAccessEntropy extends MonoEntropy {
     // TODO: Is this true?
     this.divisor.extendAccesses(this.dividend.identifiers())
     const nextDivisor = Divisor.fromAccesses(this.divisor)
-    return new Entropy(this.dividend, nextDivisor).evaluate()
+    return new Entropy(this.dividend.sources, nextDivisor).evaluate()
   }
 }

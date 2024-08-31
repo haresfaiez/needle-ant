@@ -5,9 +5,9 @@ import { Divisor } from '../reflexion/Divisor.js'
 export class MonoEntropy {
   constructor(dividend, divisor = new Divisor()) {
     // TODO: Create different factories for each condition
-    const reflexion = dividend.sources
-      ? dividend
-      : (Array.isArray(dividend) ? Reflexion.fromAcornNodes(dividend) : Reflexion.fromAcornNodes([dividend]))
+    // dividend.sources && console.log('source/', dividend, new Error().stack)
+    // (!dividend.sources && Array.isArray(dividend) && dividend.length > 1) && console.log('dividend/', new Error().stack)
+    const reflexion = (Array.isArray(dividend) ? Reflexion.fromAcornNodes(dividend) : Reflexion.fromAcornNodes([dividend]))
 
     this.dividend = reflexion
     this.divisor = divisor

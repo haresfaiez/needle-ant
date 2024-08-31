@@ -24,7 +24,7 @@ export class DependencyEntropy extends MonoEntropy  {
 
     if (isWildcardImport || this.divisor.shouldFocusOnCurrentModule()) {
       const nextDivisor = new Divisor(this.divisor.identifiers())
-      return new ExpressionEntropy(this.dividend, nextDivisor).evaluate()
+      return new ExpressionEntropy(this.dividend.sources, nextDivisor).evaluate()
     }
 
     throw ('DepencyEntropy#evaluate does not handle this case yet')

@@ -2,6 +2,7 @@ import { Reflexion } from './Reflexion.js'
 import { Entropy } from '../entropy/Entropy.js'
 import { NumericEvaluation } from '../evaluation/NumericEvaluation.js'
 import { Divisor } from './Divisor.js'
+import { CodeSlice } from '../code/CodeSlice.js'
 
 // TODO: Uncomment dependencies tests below (next. release)
 
@@ -10,7 +11,7 @@ describe('Dependency entropy', () => {
   //   const code = 'import * as A from "./a"'
   //   const dependencyAst = Reflexion.parse('', (ast) => ast.body)
   //   const entropy = new Entropy(
-  //     Reflexion.parse(code, (ast) => ast.body),
+  //     CodeSlice.parse(code),
   //     new MultiModulesDivisor(new DependenciesReflexion(dependencyAst, [ './B.js', './C.js' ]))
   //   )
 
@@ -21,7 +22,7 @@ describe('Dependency entropy', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}'
     const entropy = new Entropy(
-      Reflexion.parse(code, (ast) => ast.body),
+      CodeSlice.parse(code),
       new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
     )
 
@@ -33,7 +34,7 @@ describe('Dependency entropy', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new Entropy(
-      Reflexion.parse(code, (ast) => ast.body),
+      CodeSlice.parse(code),
       new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
     )
 
@@ -44,7 +45,7 @@ describe('Dependency entropy', () => {
     const code = 'import { a, b } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new Entropy(
-      Reflexion.parse(code, (ast) => ast.body),
+      CodeSlice.parse(code),
       new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
     )
 
@@ -56,7 +57,7 @@ describe('Dependency entropy', () => {
   //   const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
   //   const dependencyAst = Reflexion.parse(dependencyCode, (ast) => ast.body)
   //   const entropy = new Entropy(
-  //     Reflexion.parse(code, (ast) => ast.body),
+  //     CodeSlice.parse(code),
   //     new MultiModulesDivisor(new DependenciesReflexion(dependencyAst, [ './b', './c', './e' ]))
   //   )
 
@@ -68,7 +69,7 @@ describe('Dependency entropy', () => {
     const code = 'import { a, b } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {};'
     const entropy = new Entropy(
-      Reflexion.parse(code, (ast) => ast.body),
+      CodeSlice.parse(code),
       new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
     )
 
