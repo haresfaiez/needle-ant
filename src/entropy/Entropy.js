@@ -79,10 +79,13 @@ export class Entropy extends SingleEntropy {
     const bodyTypes = [
       'BlockStatement',
       'ClassBody',
-      'FunctionExpression'
     ]
     if (bodyTypes.includes(dividendType)) {
       return new BodyEntropy(dividend.body, divisor)
+    }
+
+    if (dividendType === 'FunctionExpression') {
+      return new BodyEntropy([dividend.body], divisor)
     }
 
     const expressionTypes = [

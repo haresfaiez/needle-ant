@@ -9,6 +9,6 @@ export class CatchEntropy extends SingleEntropy {
     const dividend = this.dividend.sources[0]
     const newDivisor = Divisor.clone(this.divisor)
     newDivisor.extend(CodeBag.fromAcronNodes([dividend.param]))
-    return new BodyEntropy(dividend.body, newDivisor).evaluate()
+    return new BodyEntropy([dividend.body], newDivisor).evaluate()
   }
 }
