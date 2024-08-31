@@ -22,7 +22,7 @@ describe('Dependency entropy', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}'
     const entropy = new Entropy(
-      CodeSlice.parse(code),
+      CodeSlice.parse(code)[0],
       new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
     )
 
@@ -34,7 +34,7 @@ describe('Dependency entropy', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new Entropy(
-      CodeSlice.parse(code),
+      CodeSlice.parse(code)[0],
       new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
     )
 
@@ -45,7 +45,7 @@ describe('Dependency entropy', () => {
     const code = 'import { a, b } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
     const entropy = new Entropy(
-      CodeSlice.parse(code),
+      CodeSlice.parse(code)[0],
       new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
     )
 
@@ -69,7 +69,7 @@ describe('Dependency entropy', () => {
     const code = 'import { a, b } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {};'
     const entropy = new Entropy(
-      CodeSlice.parse(code),
+      CodeSlice.parse(code)[0],
       new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
     )
 

@@ -11,7 +11,7 @@ describe('Method invocation entropy', () => {
   it('sums objects entropy and method entropy', () => {
     const code = 'f.c()'
     const entropy = new Entropy(
-      CodeSlice.parse(code),
+      CodeSlice.parse(code)[0],
       new Divisor(CodeBag.withNullCoordinates(['f', 'z']))
     )
 
@@ -22,7 +22,7 @@ describe('Method invocation entropy', () => {
   it('sums all invocation when a method invocation argument is a function call', () => {
     const code = 'f.c(b())'
     const entropy = new Entropy(
-      CodeSlice.parse(code),
+      CodeSlice.parse(code)[0],
       new Divisor(CodeBag.withNullCoordinates(['f', 'z', 'b', 'c']))
     )
 
@@ -35,7 +35,7 @@ describe('Method invocation entropy', () => {
   it('sums all invocation when a arguments are functions calls', () => {
     const code = 'f.c(b(), c())'
     const entropy = new Entropy(
-      CodeSlice.parse(code),
+      CodeSlice.parse(code)[0],
       new Divisor(CodeBag.withNullCoordinates(['f', 'z', 'b', 'c']))
     )
 
@@ -63,7 +63,7 @@ describe('Call entropy', () => {
     it('calculates possible identifiers when calls are nested', () => {
       const code = 'a(b())'
       const entropy = new Entropy(
-        CodeSlice.parse(code),
+        CodeSlice.parse(code)[0],
         new Divisor(CodeBag.withNullCoordinates(['a', 'b', 'c']))
       )
       const expected = new NumericEvaluation(1, 3).times(2)
@@ -73,7 +73,7 @@ describe('Call entropy', () => {
     it('calculates possible identifiers when three calls are nested', () => {
       const code = 'a(b(c()))'
       const entropy = new Entropy(
-        CodeSlice.parse(code),
+        CodeSlice.parse(code)[0],
         new Divisor(CodeBag.withNullCoordinates(['a', 'b', 'c', 'd']))
       )
 
@@ -859,7 +859,7 @@ describe('Try/catch statement entropy', () => {
 describe('Entropy with Bag identifiers', () => {
   it('calculates declaration with literal value entropy', () => {
     const code = '5'
-    const dividend = CodeSlice.parse(code)
+    const dividend = CodeSlice.parse(code)[0]
     const entropy = new ExpressionEntropy(dividend)
     const actual = entropy.evaluate().evaluate()
 
@@ -868,7 +868,7 @@ describe('Entropy with Bag identifiers', () => {
 
   it('calculates declaration with variable reference value entropy', () => {
     const code = 'a'
-    const dividend = CodeSlice.parse(code)
+    const dividend = CodeSlice.parse(code)[0]
     const entropy = new ExpressionEntropy(dividend)
     const actual = entropy.evaluate().evaluate()
 

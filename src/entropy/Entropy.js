@@ -47,7 +47,7 @@ export class Entropy extends MonoEntropy {
     if (dividendType === 'NewExpression') {
       return new Entropies([
         new Entropy(dividend.callee, divisor),
-        ...(dividend.arguments.length ? [new Entropy(dividend.arguments, divisor)] : [])
+        ...(dividend.arguments.length ? [new BodyEntropy(dividend.arguments, divisor)] : [])
       ])
     }
 
