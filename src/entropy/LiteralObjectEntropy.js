@@ -2,7 +2,7 @@ import { Entropies } from './Entropies.js'
 import { MonoEntropy } from './MonoEntropy.js'
 import { Entropy } from './Entropy.js'
 
-// TODO: Merge with DeclarationEntropy (next. release)
+// TODO: Merge with DeclarationsEntropy (next. release)
 export class LiteralObjectEntropy extends MonoEntropy {
   // TODO: Simplify this (next. release)
   evaluate() {

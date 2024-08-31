@@ -4,7 +4,7 @@ import { DependencyEntropy } from './DependencyEntropy.js'
 import { ObjectAccessEntropy } from './ObjectAccessEntropy.js'
 import { Entropies } from './Entropies.js'
 import { LiteralObjectEntropy } from './LiteralObjectEntropy.js'
-import { DeclarationEntropy } from './DeclarationEntropy.js'
+import { DeclarationsEntropy } from './DeclarationsEntropy.js'
 import { ClassMemberEntropy } from './ClassMemberEntropy.js'
 import { ClassEntropy } from './ClassEntropy.js'
 import { ExpressionEntropy } from './ExpressionEntropy.js'
@@ -53,7 +53,7 @@ export class Entropy extends MonoEntropy {
 
     if (dividendType === 'VariableDeclaration') {
       // TODO: why are we ignoring "const"/"let"/"var"/... (next. release)
-      return new DeclarationEntropy(dividend.declarations, divisor)
+      return new DeclarationsEntropy(dividend.declarations, divisor)
     }
 
     const declarationTypes = [
@@ -61,7 +61,7 @@ export class Entropy extends MonoEntropy {
       'ArrowFunctionExpression',
     ]
     if (declarationTypes.includes(dividendType)) {
-      return new DeclarationEntropy([dividend], divisor)
+      return new DeclarationsEntropy([dividend], divisor)
     }
 
     const classMemberTypes = [
@@ -125,7 +125,7 @@ export class Entropy extends MonoEntropy {
     }
 
     if (dividendType === 'VariableDeclarator') {
-      return new DeclarationEntropy([dividend], this.divisor)
+      return new DeclarationsEntropy([dividend], this.divisor)
     }
 
     if (dividendType === 'ForStatement') {

@@ -7,7 +7,7 @@ import { CodeBag } from '../code/CodeBag.js'
 import { PolyEntropy } from './PolyEntropy.js'
 
 // TODO: Extract into a composition of classes (next. release)
-export class DeclarationEntropy extends PolyEntropy  {
+export class DeclarationsEntropy extends PolyEntropy  {
 
   // TODO: simplify this (next. release)
   evaluate() {

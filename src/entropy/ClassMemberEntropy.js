@@ -1,9 +1,9 @@
 import { Reflexion } from '../reflexion/Reflexion.js'
 import { Divisor } from '../reflexion/Divisor.js'
 import { Entropy } from './Entropy.js'
-import { DeclarationEntropy } from './DeclarationEntropy.js'
+import { DeclarationsEntropy } from './DeclarationsEntropy.js'
 
-export class ClassMemberEntropy extends DeclarationEntropy {
+export class ClassMemberEntropy extends DeclarationsEntropy {
   evaluate() {
     const declarations = this.dividend.sources
     const declaration = declarations[0]
