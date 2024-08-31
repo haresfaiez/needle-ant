@@ -8,6 +8,6 @@ export class PolyEntropy {
   }
 
   evaluate() {
-    throw new Error('`Entropy#evaluate` not implemented yet in `Entropy`!')
+    throw new Error('`PolyEntropy#evaluate` not implemented yet in `PolyEntropy`!')
   } 
 }
