@@ -9,9 +9,9 @@ import { ClassMemberEntropy } from './ClassMemberEntropy.js'
 import { ClassEntropy } from './ClassEntropy.js'
 import { ExpressionEntropy } from './ExpressionEntropy.js'
 import { CatchEntropy } from './CatchEntropy.js'
-import { SingleEntropy } from './SingleEntropy.js'
+import { MonoEntropy } from './MonoEntropy.js'
 
-export class Entropy extends SingleEntropy {
+export class Entropy extends MonoEntropy {
   constructor(dividend, divisor) {
     super(dividend, divisor)
     this.delegate = this.createDelegate(this.dividend, this.divisor)

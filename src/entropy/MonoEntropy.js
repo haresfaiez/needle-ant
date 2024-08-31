@@ -2,7 +2,7 @@ import { Reflexion } from '../reflexion/Reflexion.js'
 import { Divisor } from '../reflexion/Divisor.js'
 
 // TODO: rename or remove this
-export class SingleEntropy {
+export class MonoEntropy {
   constructor(dividend, divisor = new Divisor()) {
     // TODO: Create different factories for each condition
     const reflexion = dividend.sources

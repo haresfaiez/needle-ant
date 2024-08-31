@@ -1,8 +1,8 @@
 import { Divisor } from '../reflexion/Divisor.js'
-import { SingleEntropy } from './SingleEntropy.js'
+import { MonoEntropy } from './MonoEntropy.js'
 import { ExpressionEntropy } from './ExpressionEntropy.js'
 
-export class DependencyEntropy extends SingleEntropy  {
+export class DependencyEntropy extends MonoEntropy  {
   // TODO: improve this (next. release)
   evaluate() {
     const dividend = this.dividend.sources[0]

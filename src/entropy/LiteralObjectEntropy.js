@@ -1,9 +1,9 @@
 import { Entropies } from './Entropies.js'
-import { SingleEntropy } from './SingleEntropy.js'
+import { MonoEntropy } from './MonoEntropy.js'
 import { Entropy } from './Entropy.js'
 
 // TODO: Merge with DeclarationEntropy (next. release)
-export class LiteralObjectEntropy extends SingleEntropy {
+export class LiteralObjectEntropy extends MonoEntropy {
   // TODO: Simplify this (next. release)
   evaluate() {
     const declarations = this.dividend.sources

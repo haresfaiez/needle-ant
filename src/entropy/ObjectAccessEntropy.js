@@ -1,9 +1,9 @@
-import { SingleEntropy } from './SingleEntropy.js'
+import { MonoEntropy } from './MonoEntropy.js'
 import { Divisor } from '../reflexion/Divisor.js'
 import { Entropy } from './Entropy.js'
 
 // TODO: Search other-similar occurences and abstract (next. release)
-export class ObjectAccessEntropy extends SingleEntropy {
+export class ObjectAccessEntropy extends MonoEntropy {
   // TODO: Simplify this (next. release)
   evaluate() {
     // TODO: Is this true?

@@ -1,9 +1,9 @@
-import { SingleEntropy } from './SingleEntropy.js'
+import { MonoEntropy } from './MonoEntropy.js'
 import { BagEvaluation } from '../evaluation/BagEvaluation.js'
 import { CodeBag } from '../code/CodeBag.js'
 import { BodyEntropy } from './BodyEntropy.js'
 
-export class ClassEntropy extends SingleEntropy {
+export class ClassEntropy extends MonoEntropy {
   static IGNORED_IDENTIFIERS = ['constructor']
 
   // TODO: simplify this (next. release)

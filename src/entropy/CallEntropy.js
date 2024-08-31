@@ -1,11 +1,11 @@
-import { SingleEntropy } from './SingleEntropy.js'
+import { MonoEntropy } from './MonoEntropy.js'
 import { Entropy } from './Entropy.js'
 import { BodyEntropy } from './BodyEntropy.js'
 import { Entropies } from './Entropies.js'
 import { ObjectAccessEntropy } from './ObjectAccessEntropy.js'
 
 // TODO: Create a construct based on the params/body dual (next. release)
-export class CallEntropy extends SingleEntropy  {
+export class CallEntropy extends MonoEntropy  {
   // TODO: Simplify this (next. release)
   evaluate() {
     const dividend = this.dividend.sources[0]

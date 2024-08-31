@@ -1,11 +1,11 @@
 import { BagEvaluation } from '../evaluation/BagEvaluation.js'
 import { CodeBag } from '../code/CodeBag.js'
-import { SingleEntropy } from './SingleEntropy.js'
+import { MonoEntropy } from './MonoEntropy.js'
 import { Entropies } from './Entropies.js'
 import { Entropy } from './Entropy.js'
 import { ObjectAccessEntropy } from './ObjectAccessEntropy.js'
 
-export class ExpressionEntropy extends SingleEntropy {
+export class ExpressionEntropy extends MonoEntropy {
   evaluate() {
     const dividend = this.dividend.sources[0]
     const isMemberAccess = dividend?.left?.type === 'MemberExpression'
