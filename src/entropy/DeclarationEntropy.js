@@ -26,7 +26,7 @@ export class DeclarationEntropy extends SingleEntropy  {
     if (functionsTypes.includes(declaration.type)) {
       const paramsAsIdentifiers = Reflexion.fromAcornNodes(declaration.params).identifiers()
       const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
-      return new BodyEntropy(declaration.body, declarationDivisor).evaluate()
+      return new BodyEntropy([declaration.body], declarationDivisor).evaluate()
     }
 
     if (isVariable && !declaration.init) {

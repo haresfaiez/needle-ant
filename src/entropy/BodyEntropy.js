@@ -1,9 +1,9 @@
 import { Divisor } from '../reflexion/Divisor.js'
 import { Entropies } from './Entropies.js'
 import { Entropy } from './Entropy.js'
-import { SingleEntropy } from './SingleEntropy.js'
+import { PolyEntropy } from './PolyEntropy.js'
 
-export class BodyEntropy extends SingleEntropy  {
+export class BodyEntropy extends PolyEntropy  {
   evaluate() {
     const newDivisor = Divisor.clone(this.divisor)
     const entropies = this.dividend

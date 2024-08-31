@@ -2,6 +2,7 @@ import { BodyEntropy } from './entropy/BodyEntropy.js'
 import { Reflexion } from './reflexion/Reflexion.js'
 import { Divisor } from './reflexion/Divisor.js'
 import { CodeBag } from './code/CodeBag.js'
+import { CodeSlice } from './code/CodeSlice.js'
 
 class NeedleAnt {
   constructor(code, dependencies = []) {
@@ -13,8 +14,10 @@ class NeedleAnt {
   }
 
   entropy() {
-    const codeReflexion = Reflexion.parse(this.code, (ast) => ast.body)
-    const jointEntropy = new BodyEntropy(codeReflexion, new Divisor(this.dependenciesApi))
+    const jointEntropy = new BodyEntropy(
+      CodeSlice.parse(this.code),
+      new Divisor(this.dependenciesApi)
+    )
 
     // TODO: Use `new MultiModulesDivisor(new DependenciesReflexion(...` (next. release)
     return jointEntropy.evaluate()

@@ -116,8 +116,8 @@ export class Entropy extends SingleEntropy {
     if (dividendType === 'IfStatement') {
       return new Entropies([
         new Entropy(dividend.test, divisor),
-        new BodyEntropy(dividend.consequent, divisor),
-        ...dividend.alternate ? [new BodyEntropy(dividend.alternate, divisor)] : []
+        new BodyEntropy([dividend.consequent], divisor),
+        ...dividend.alternate ? [new BodyEntropy([dividend.alternate], divisor)] : []
       ])
     }
 
