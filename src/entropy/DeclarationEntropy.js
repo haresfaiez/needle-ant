@@ -1,13 +1,13 @@
-import { MonoEntropy } from './MonoEntropy.js'
 import { BodyEntropy } from './BodyEntropy.js'
 import { Entropy } from './Entropy.js'
 import { Reflexion } from '../reflexion/Reflexion.js'
 import { NullEvaluation } from '../evaluation/NullEvaluation.js'
 import { Divisor } from '../reflexion/Divisor.js'
 import { CodeBag } from '../code/CodeBag.js'
+import { PolyEntropy } from './PolyEntropy.js'
 
 // TODO: Extract into a composition of classes (next. release)
-export class DeclarationEntropy extends MonoEntropy  {
+export class DeclarationEntropy extends PolyEntropy  {
 
   // TODO: simplify this (next. release)
   evaluate() {

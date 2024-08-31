@@ -61,7 +61,7 @@ export class Entropy extends MonoEntropy {
       'ArrowFunctionExpression',
     ]
     if (declarationTypes.includes(dividendType)) {
-      return new DeclarationEntropy(dividend, divisor)
+      return new DeclarationEntropy([dividend], divisor)
     }
 
     const classMemberTypes = [
@@ -69,7 +69,7 @@ export class Entropy extends MonoEntropy {
       'PropertyDefinition',
     ]
     if (classMemberTypes.includes(dividendType)) {
-      return new ClassMemberEntropy(dividend, divisor)
+      return new ClassMemberEntropy([dividend], divisor)
     }
 
     if (dividendType === 'ClassDeclaration') {
@@ -125,7 +125,7 @@ export class Entropy extends MonoEntropy {
     }
 
     if (dividendType === 'VariableDeclarator') {
-      return new DeclarationEntropy(dividend, this.divisor)
+      return new DeclarationEntropy([dividend], this.divisor)
     }
 
     if (dividendType === 'ForStatement') {
