@@ -122,7 +122,7 @@ describe('Function', () => {
   })
 })
 
-// TODO: uncomment this (next. release)
+// TODO: uncomment these (next. release)
 // describe('Declarations entropy', () => {
 //   it('equals 0 if the string is empty both before and after', () => {
 //     const ant = new NeedleAnt('')
@@ -169,8 +169,6 @@ describe('Function', () => {
 //     expect(ant.coverEntropy(updatedCode)).toBe(4)
 //   })
 // })
-
-// TODO: Uncomment this (next. release)
 // describe('Api change entropy', () => {
 //   it('equals one declaration change unit when an argument is added to the Api', () => {
 //     const initialCode = 'class Country { setCode(codeName) {} }'
@@ -181,7 +179,6 @@ describe('Function', () => {
 // })
 
 // describe('Entropy result', () => {
-// TODO: Uncomment and fix these (next. release)
 // it('calculates top level variable entropy', () => {
 //   const code = `import { a, b, c } from './other.js';
 //     const x = b();
@@ -199,7 +196,6 @@ describe('Function', () => {
 //   expect(actual.evaluate()).toEvaluateTo(expected)
 // })
 
-// TODO: Uncomment and fix this (next. release)
 // it('calculates top level entropy of wildcard import', () => {
 //   const code = 'import * as Other from \'./other.js\';'
 //   const otherJsCode = 'export const a = 1;'
