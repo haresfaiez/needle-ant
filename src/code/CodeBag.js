@@ -55,6 +55,10 @@ export class CodeBag {
     return new CodeBag(new Map(elements))
   }
 
+  static fromAcronNode(node) {
+    return node ? this.fromAcronNodes([node]) : this.empty()
+  }
+
   static fromNamedNode(node, name) {
     return new CodeBag(new Map([[name, [new CodeSlice(name, node.start, node.end)]]]))
   }
