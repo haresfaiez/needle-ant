@@ -18,21 +18,26 @@ export class ExpressionEntropy extends MonoEntropy {
     }
 
     const isBitShiftingOperation = ['++', '--'].includes(this.astNode.operator)
-
-    // TODO: Remove this check (next. release)
-    const isImport = this.astNode.type.includes('mport')
-
-    // TODO: Simplify these
-    const literals = !isImport
-      ? this.dividend.literals().plus(isBitShiftingOperation ? CodeBag.fromNamedNode(this.astNode, '1') : CodeBag.empty())
+    const bitShifting = isBitShiftingOperation
+      ? CodeBag.fromNamedNode(this.astNode, '1')
       : CodeBag.empty()
 
     const thisExpression = this.astNode.type === 'ThisExpression'
       ? CodeBag.fromNamedNode(this.astNode, 'this')
       : CodeBag.empty()
 
-    const actualsBag = literals.plus(thisExpression).plus(this.dividend.identifiers())
-    const possiblesBag = literals.plus(thisExpression).plus(this.divisor.identifiers())
-    return BagEvaluation.fromAstNode(actualsBag, possiblesBag, this.astNode)
+    // TODO: Remove this check (next. release)
+    const isImport = this.astNode.type.includes('mport')
+    const literals = !isImport ? this.dividend.literals().plus(bitShifting) : CodeBag.empty()
+
+    const actuals = literals
+      .plus(thisExpression)
+      .plus(this.dividend.identifiers())
+
+    const possibles = literals
+      .plus(thisExpression)
+      .plus(this.divisor.identifiers())
+
+    return BagEvaluation.fromAstNode(actuals, possibles, this.astNode)
   }
 }
