@@ -16,6 +16,10 @@ export class CodeBag {
     return result
   }
 
+  clone() {
+    return new CodeBag(new Map(this.elements))
+  }
+
   merge(anotherCodeBag) {
     this.elements = new Map(this.elements);
     [...anotherCodeBag.elements.values()].forEach(eachCodeSlices => this.putAll(eachCodeSlices))

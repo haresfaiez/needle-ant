@@ -21,10 +21,8 @@ describe('Dependency entropy', () => {
   it('is null when a module imports the only exported function', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}'
-    const entropy = new Entropy(
-      CodeSlice.parse(code)[0],
-      new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
-    )
+    const apiCodeBag = new Reflexion(CodeSlice.parse(dependencyCode)).api()
+    const entropy = new Entropy(CodeSlice.parse(code)[0], new Divisor(apiCodeBag))
 
     expect(entropy.evaluate().evaluate()).toEvaluateTo(new NumericEvaluation(1, 1))
     expect(entropy.evaluate().evaluate().calculate()).toBe(0)
@@ -33,10 +31,8 @@ describe('Dependency entropy', () => {
   it('is 1/3 when a module imports of one of three exported functions', () => {
     const code = 'import { a } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
-    const entropy = new Entropy(
-      CodeSlice.parse(code)[0],
-      new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
-    )
+    const apiCodeBag = new Reflexion(CodeSlice.parse(dependencyCode)).api()
+    const entropy = new Entropy(CodeSlice.parse(code)[0], new Divisor(apiCodeBag))
 
     expect(entropy.evaluate().evaluate()).toEvaluateTo(new NumericEvaluation(1, 3))
   })
@@ -44,10 +40,8 @@ describe('Dependency entropy', () => {
   it('is 2/3 when a module imports of two of three exported functions', () => {
     const code = 'import { a, b } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {}; export function c() {};'
-    const entropy = new Entropy(
-      CodeSlice.parse(code)[0],
-      new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
-    )
+    const apiCodeBag = new Reflexion(CodeSlice.parse(dependencyCode)).api()
+    const entropy = new Entropy(CodeSlice.parse(code)[0], new Divisor(apiCodeBag))
 
     expect(entropy.evaluate().evaluate()).toEvaluateTo(new NumericEvaluation(2, 3))
   })
@@ -68,10 +62,8 @@ describe('Dependency entropy', () => {
   it('is null when a module imports all exported functions', () => {
     const code = 'import { a, b } from "./a"'
     const dependencyCode = 'export function a() {}; export function b() {};'
-    const entropy = new Entropy(
-      CodeSlice.parse(code)[0],
-      new Divisor(Reflexion.parse(dependencyCode, (ast) => ast.body))
-    )
+    const apiCodeBag = new Reflexion(CodeSlice.parse(dependencyCode)).api()
+    const entropy = new Entropy(CodeSlice.parse(code)[0], new Divisor(apiCodeBag))
 
     expect(entropy.evaluate().evaluate().calculate()).toEqual(0)
   })

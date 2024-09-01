@@ -2,18 +2,10 @@ import { CodeBag } from '../code/CodeBag.js'
 import { Reflexion } from './Reflexion.js'
 
 export class Divisor {
-  constructor(rawDivisor = new CodeBag(), accesses = new CodeBag(), cloned) {
-    this.cloned = cloned
-    this._identifiers = new CodeBag()
+  constructor(rawDivisor = new CodeBag(), accesses = new CodeBag(), clonedDivisorInstance) {
+    this.cloned = clonedDivisorInstance
 
-    // TODO: Simplify this
-    const isReflexion = rawDivisor.api
-    if (isReflexion) {
-      // TODO: Put the right coordinates
-      this._identifiers = this._identifiers.plus(rawDivisor.api())
-    } else {
-      this._identifiers = this._identifiers.plus(rawDivisor)
-    }
+    this._identifiers = rawDivisor.clone()
 
     this.importedModules = rawDivisor.importedModuleExports
     this.otherModules = rawDivisor.otherModules
