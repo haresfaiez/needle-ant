@@ -66,7 +66,7 @@ export class Entropy extends MonoEntropy {
       'PropertyDefinition',
     ]
     if (classMemberTypes.includes(this.astNode.type)) {
-      return new ClassMemberEntropy([this.astNode], this.divisor)
+      return new ClassMemberEntropy(this.astNode, this.divisor)
     }
 
     if (this.astNode.type === 'ClassDeclaration') {
