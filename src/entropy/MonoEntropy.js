@@ -4,6 +4,7 @@ import { Divisor } from '../reflexion/Divisor.js'
 export class MonoEntropy {
   constructor(dividend, divisor = new Divisor()) {
     this.dividend = Reflexion.fromAcornNodes([dividend])
+    this.astNode = this.dividend.sources[0]
     this.divisor = divisor
   }
 

@@ -3,11 +3,8 @@ import { MonoEntropy } from './MonoEntropy.js'
 import { ExpressionEntropy } from './ExpressionEntropy.js'
 
 export class DependencyEntropy extends MonoEntropy  {
-  // TODO: improve this (next. release)
+  // TODO: Uncomment & fix when handling inter-module depencies
   evaluate() {
-    const dividend = this.dividend.sources[0]
-
-    // TODO: Uncomment when handling inter-module depencies
     // if (this.divisor.shouldCheckAdjacentModules()) {
     //   const importParts = new Reflexion(dividend).api()
     //   const importSpecifiers = importParts[0]
@@ -17,14 +14,14 @@ export class DependencyEntropy extends MonoEntropy  {
     //     .plus(new Entropy(importSource, new Divisor(this.divisor.adjacentModules())).evaluate())
     // }
 
-    const isWildcardImport = (dividend.type === 'ImportDeclaration')
-      && (dividend.specifiers[0].type === 'ImportNamespaceSpecifier')
+    const isWildcardImport = (this.astNode.type === 'ImportDeclaration')
+      && (this.astNode.specifiers[0].type === 'ImportNamespaceSpecifier')
 
     this.divisor.extend(this.dividend.identifiers())
 
     if (isWildcardImport || this.divisor.shouldFocusOnCurrentModule()) {
       const nextDivisor = new Divisor(this.divisor.identifiers())
-      return new ExpressionEntropy(this.dividend.sources[0], nextDivisor).evaluate()
+      return new ExpressionEntropy(this.astNode, nextDivisor).evaluate()
     }
 
     throw ('DepencyEntropy#evaluate does not handle this case yet')

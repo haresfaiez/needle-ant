@@ -14,78 +14,75 @@ import { MonoEntropy } from './MonoEntropy.js'
 export class Entropy extends MonoEntropy {
   constructor(dividend, divisor) {
     super(dividend, divisor)
-    this.delegate = this.createDelegate(this.dividend, this.divisor)
+    this.delegate = this.createDelegate()
   }
 
   evaluate() {
     return this.delegate.evaluate()
   }
 
-  createDelegate(_dividend, divisor) {
-    const dividend = _dividend.sources[0]
-    const dividendType = dividend.type
-
-    if (dividendType === 'ImportDeclaration') {
-      return new DependencyEntropy(dividend, divisor)
+  createDelegate() {
+    if (this.astNode.type === 'ImportDeclaration') {
+      return new DependencyEntropy(this.astNode, this.divisor)
     }
 
-    if (dividendType === 'MemberExpression') {
-      const accessEntropy = dividend.computed
-        ? new Entropy(dividend.property, divisor)
-        : new ObjectAccessEntropy(dividend.property, divisor)
+    if (this.astNode.type === 'MemberExpression') {
+      const accessEntropy = this.astNode.computed
+        ? new Entropy(this.astNode.property, this.divisor)
+        : new ObjectAccessEntropy(this.astNode.property, this.divisor)
 
       return new Entropies([
-        new Entropy(dividend.object, divisor),
+        new Entropy(this.astNode.object, this.divisor),
         accessEntropy
       ])
     }
 
-    if (dividendType === 'ObjectExpression') {
-      return new LiteralObjectEntropy(dividend, divisor)
+    if (this.astNode.type === 'ObjectExpression') {
+      return new LiteralObjectEntropy(this.astNode, this.divisor)
     }
 
-    if (dividendType === 'NewExpression') {
+    if (this.astNode.type === 'NewExpression') {
       return new Entropies([
-        new Entropy(dividend.callee, divisor),
-        ...(dividend.arguments.length ? [new BodyEntropy(dividend.arguments, divisor)] : [])
+        new Entropy(this.astNode.callee, this.divisor),
+        ...(this.astNode.arguments.length ? [new BodyEntropy(this.astNode.arguments, this.divisor)] : [])
       ])
     }
 
-    if (dividendType === 'VariableDeclaration') {
+    if (this.astNode.type === 'VariableDeclaration') {
       // TODO: why are we ignoring "const"/"let"/"var"/... (next. release)
-      return new DeclarationsEntropy(dividend.declarations, divisor)
+      return new DeclarationsEntropy(this.astNode.declarations, this.divisor)
     }
 
     const declarationTypes = [
       'FunctionDeclaration',
       'ArrowFunctionExpression',
     ]
-    if (declarationTypes.includes(dividendType)) {
-      return new DeclarationsEntropy([dividend], divisor)
+    if (declarationTypes.includes(this.astNode.type)) {
+      return new DeclarationsEntropy([this.astNode], this.divisor)
     }
 
     const classMemberTypes = [
       'MethodDefinition',
       'PropertyDefinition',
     ]
-    if (classMemberTypes.includes(dividendType)) {
-      return new ClassMemberEntropy([dividend], divisor)
+    if (classMemberTypes.includes(this.astNode.type)) {
+      return new ClassMemberEntropy([this.astNode], this.divisor)
     }
 
-    if (dividendType === 'ClassDeclaration') {
-      return new ClassEntropy(dividend, divisor)
+    if (this.astNode.type === 'ClassDeclaration') {
+      return new ClassEntropy(this.astNode, this.divisor)
     }
 
     const bodyTypes = [
       'BlockStatement',
       'ClassBody',
     ]
-    if (bodyTypes.includes(dividendType)) {
-      return new BodyEntropy(dividend.body, divisor)
+    if (bodyTypes.includes(this.astNode.type)) {
+      return new BodyEntropy(this.astNode.body, this.divisor)
     }
 
-    if (dividendType === 'FunctionExpression') {
-      return new BodyEntropy([dividend.body], divisor)
+    if (this.astNode.type === 'FunctionExpression') {
+      return new BodyEntropy([this.astNode.body], this.divisor)
     }
 
     const expressionTypes = [
@@ -100,62 +97,62 @@ export class Entropy extends MonoEntropy {
       'BreakStatement',
       'ContinueStatement',
     ]
-    if (expressionTypes.includes(dividendType)) {
-      return new ExpressionEntropy(dividend, divisor)
+    if (expressionTypes.includes(this.astNode.type)) {
+      return new ExpressionEntropy(this.astNode, this.divisor)
     }
 
-    if (dividendType === 'CallExpression') {
-      return new CallEntropy(dividend, divisor)
+    if (this.astNode.type === 'CallExpression') {
+      return new CallEntropy(this.astNode, this.divisor)
     }
 
-    if (dividendType === 'ArrayExpression') {
-      return new BodyEntropy(dividend.elements, divisor)
+    if (this.astNode.type === 'ArrayExpression') {
+      return new BodyEntropy(this.astNode.elements, this.divisor)
     }
 
-    if (dividendType === 'ExpressionStatement') {
-      return new Entropy(dividend.expression, divisor)
+    if (this.astNode.type === 'ExpressionStatement') {
+      return new Entropy(this.astNode.expression, this.divisor)
     }
 
-    if (dividendType === 'IfStatement') {
+    if (this.astNode.type === 'IfStatement') {
       return new Entropies([
-        new Entropy(dividend.test, divisor),
-        new BodyEntropy([dividend.consequent], divisor),
-        ...dividend.alternate ? [new BodyEntropy([dividend.alternate], divisor)] : []
+        new Entropy(this.astNode.test, this.divisor),
+        new BodyEntropy([this.astNode.consequent], this.divisor),
+        ...this.astNode.alternate ? [new BodyEntropy([this.astNode.alternate], this.divisor)] : []
       ])
     }
 
-    if (dividendType === 'VariableDeclarator') {
-      return new DeclarationsEntropy([dividend], this.divisor)
+    if (this.astNode.type === 'VariableDeclarator') {
+      return new DeclarationsEntropy([this.astNode], this.divisor)
     }
 
-    if (dividendType === 'ForStatement') {
-      return new BodyEntropy([dividend.init, dividend.test, dividend.update, dividend.body], divisor)
+    if (this.astNode.type === 'ForStatement') {
+      return new BodyEntropy([this.astNode.init, this.astNode.test, this.astNode.update, this.astNode.body], this.divisor)
     }
 
     const loopTypes = [
       'WhileStatement',
       'DoWhileStatement',
     ]
-    if (loopTypes.includes(dividendType)) {
-      return new BodyEntropy([dividend.test, dividend.body], divisor)
+    if (loopTypes.includes(this.astNode.type)) {
+      return new BodyEntropy([this.astNode.test, this.astNode.body], this.divisor)
     }
 
     const structuredLoopTypes = [
       'ForInStatement',
       'ForOfStatement',
     ]
-    if (structuredLoopTypes.includes(dividendType)) {
-      return new BodyEntropy([dividend.left, dividend.right, dividend.body], divisor)
+    if (structuredLoopTypes.includes(this.astNode.type)) {
+      return new BodyEntropy([this.astNode.left, this.astNode.right, this.astNode.body], this.divisor)
     }
 
-    if (dividendType === 'SequenceExpression') {
-      return new BodyEntropy(dividend.expressions, divisor)
+    if (this.astNode.type === 'SequenceExpression') {
+      return new BodyEntropy(this.astNode.expressions, this.divisor)
     }
 
-    if (dividendType === 'AssignmentExpression' || dividendType === 'BinaryExpression') {
-      // TODO: Why ignored dividend.operator?
+    if (this.astNode.type === 'AssignmentExpression' || this.astNode.type === 'BinaryExpression') {
+      // TODO: Why ignored this.astNode.operator?
       // TODO: Why ignoring depth? `a + 2` vs `a + (a * 2)`
-      return new BodyEntropy([dividend.left, dividend.right], divisor)
+      return new BodyEntropy([this.astNode.left, this.astNode.right], this.divisor)
     }
 
     const argumentBasedTypes = [
@@ -163,57 +160,57 @@ export class Entropy extends MonoEntropy {
       'UnaryExpression',
       'ReturnStatement',
     ]
-    if (argumentBasedTypes.includes(dividendType)) {
-      return dividend.argument
-        ? new Entropy(dividend.argument, divisor)
-        : new BodyEntropy([], divisor)
+    if (argumentBasedTypes.includes(this.astNode.type)) {
+      return this.astNode.argument
+        ? new Entropy(this.astNode.argument, this.divisor)
+        : new BodyEntropy([], this.divisor)
     }
 
-    if (dividendType === 'SwitchStatement') {
-      return new BodyEntropy([dividend.discriminant, ...dividend.cases], divisor)
+    if (this.astNode.type === 'SwitchStatement') {
+      return new BodyEntropy([this.astNode.discriminant, ...this.astNode.cases], this.divisor)
     }
 
-    if (dividendType === 'SwitchCase') {
+    if (this.astNode.type === 'SwitchCase') {
       return new BodyEntropy([
-        ...dividend.test ? [dividend.test] : [],
-        ...dividend.consequent
-      ], divisor)
+        ...this.astNode.test ? [this.astNode.test] : [],
+        ...this.astNode.consequent
+      ], this.divisor)
     }
 
-    if (dividendType === 'LogicalExpression') {
-      return new BodyEntropy([dividend.left, dividend.right], divisor)
+    if (this.astNode.type === 'LogicalExpression') {
+      return new BodyEntropy([this.astNode.left, this.astNode.right], this.divisor)
     }
 
-    if (dividendType === 'ExportNamedDeclaration' && !dividend.source) {
+    if (this.astNode.type === 'ExportNamedDeclaration' && !this.astNode.source) {
       const elements = [
-        ...(dividend.declaration ? [dividend.declaration] : []),
-        ...dividend.specifiers
+        ...(this.astNode.declaration ? [this.astNode.declaration] : []),
+        ...this.astNode.specifiers
       ]
-      return new BodyEntropy(elements, divisor)
+      return new BodyEntropy(elements, this.divisor)
     }
 
-    if (dividendType === 'ExportDefaultDeclaration') {
-      return new Entropy(dividend.declaration, divisor)
+    if (this.astNode.type === 'ExportDefaultDeclaration') {
+      return new Entropy(this.astNode.declaration, this.divisor)
     }
 
-    if (dividendType === 'ExportSpecifier') {
-      return new Entropy(dividend.local, divisor)
+    if (this.astNode.type === 'ExportSpecifier') {
+      return new Entropy(this.astNode.local, this.divisor)
     }
 
     // TODO: Avoid duplication (ExportNamedDeclaration is handled twice)
-    if (dividendType === 'ExportAllDeclaration' || dividendType === 'ExportNamedDeclaration') {
+    if (this.astNode.type === 'ExportAllDeclaration' || this.astNode.type === 'ExportNamedDeclaration') {
       // TODO: Handle this export (currently, exports are ignored)
-      return new BodyEntropy([], divisor)
+      return new BodyEntropy([], this.divisor)
     }
 
-    if (dividendType === 'TryStatement') {
+    if (this.astNode.type === 'TryStatement') {
       return new Entropies([
-        new BodyEntropy(dividend.block.body, divisor),
-        new CatchEntropy(dividend.handler, divisor),
-        ...dividend.finalizer ? [new BodyEntropy(dividend.finalizer.body, divisor)] : []
+        new BodyEntropy(this.astNode.block.body, this.divisor),
+        new CatchEntropy(this.astNode.handler, this.divisor),
+        ...this.astNode.finalizer ? [new BodyEntropy(this.astNode.finalizer.body, this.divisor)] : []
       ])
     }
 
-    throw new Error(`Cannot create Delegate for dividend: ${JSON.stringify(dividend)}`)
+    throw new Error(`Cannot create Delegate for: ${JSON.stringify(this.astNode)}`)
   }
 }
