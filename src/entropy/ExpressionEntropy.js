@@ -26,7 +26,7 @@ export class ExpressionEntropy extends MonoEntropy {
       ? CodeBag.fromNamedNode(this.astNode, 'this')
       : CodeBag.empty()
 
-    // TODO: Remove this check (next. release)
+    // TODO: [DEPS] Remove this check (next. release)
     const isImport = this.astNode.type.includes('mport')
     const literals = !isImport ? this.dividend.literals().plus(bitShifting) : CodeBag.empty()
 

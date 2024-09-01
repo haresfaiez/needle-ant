@@ -4,7 +4,7 @@ import { BodyEntropy } from './BodyEntropy.js'
 import { Entropies } from './Entropies.js'
 import { ObjectAccessEntropy } from './ObjectAccessEntropy.js'
 
-// TODO: Create a construct based on the params/body dual (next. release)
+// TODO: Create a construct based on the params/body dual (all classes)
 export class CallEntropy extends MonoEntropy  {
   evaluate() {
     const isMethodInvocation = this.astNode?.callee?.type === 'MemberExpression'

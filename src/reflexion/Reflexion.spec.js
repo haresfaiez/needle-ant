@@ -4,7 +4,7 @@ import { NumericEvaluation } from '../evaluation/NumericEvaluation.js'
 import { Divisor } from './Divisor.js'
 import { CodeSlice } from '../code/CodeSlice.js'
 
-// TODO: Uncomment dependencies tests below (next. release)
+// TODO: [DEPS] Uncomment dependencies tests below (next. release)
 
 describe('Dependency entropy', () => {
   // it('of wildecard import checks files available for import', () => {

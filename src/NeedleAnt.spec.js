@@ -122,7 +122,7 @@ describe('Function', () => {
   })
 })
 
-// TODO: uncomment these (next. release)
+// TODO: [DEPS] uncomment these (next. release)
 // describe('Declarations entropy', () => {
 //   it('equals 0 if the string is empty both before and after', () => {
 //     const ant = new NeedleAnt('')

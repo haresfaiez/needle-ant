@@ -19,7 +19,7 @@ class NeedleAnt {
       new Divisor(this.dependenciesApi)
     )
 
-    // TODO: Use `new MultiModulesDivisor(new DependenciesReflexion(...` (next. release)
+    // TODO: [DEPS] Use `new MultiModulesDivisor(new DependenciesReflexion(...` (next. release)
     return jointEntropy.evaluate()
   }
 }

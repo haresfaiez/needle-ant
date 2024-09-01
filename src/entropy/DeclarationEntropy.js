@@ -6,7 +6,6 @@ import { Divisor } from '../reflexion/Divisor.js'
 import { CodeBag } from '../code/CodeBag.js'
 import { MonoEntropy } from './MonoEntropy.js'
 
-// TODO: Extract into a composition of classes (next. release)
 export class DeclarationEntropy extends MonoEntropy  {
   evaluate() {
     if (this.astNode.id) {

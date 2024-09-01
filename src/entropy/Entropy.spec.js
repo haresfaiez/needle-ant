@@ -134,7 +134,7 @@ describe('Import statement entropy', () => {
     expect(entropy.evaluate().evaluate()).toEvaluateTo(new NumericEvaluation(2, 3))
   })
 
-  // TODO: Uncomment and fix these 2 tests (next. release)
+  // TODO: [DEPS] Uncomment and fix these 2 tests (next. release)
   // it('calculates entropy of wildcard import specfier', () => {
   //   const code = 'import * as A from "./a"'
   //   const specifiers = CodeSlice.parse(code)

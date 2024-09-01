@@ -3,7 +3,7 @@ import { MonoEntropy } from './MonoEntropy.js'
 import { ExpressionEntropy } from './ExpressionEntropy.js'
 
 export class DependencyEntropy extends MonoEntropy  {
-  // TODO: Uncomment & fix when handling inter-module depencies
+  // TODO: [DEPS] Uncomment & fix when handling inter-module depencies
   evaluate() {
     // if (this.divisor.shouldCheckAdjacentModules()) {
     //   const importParts = new Reflexion(dividend).api()

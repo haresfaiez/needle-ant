@@ -3,7 +3,6 @@ import { CodeBag } from '../code/CodeBag.js'
 import { PolyEntropy } from './PolyEntropy.js'
 import { DeclarationEntropy } from './DeclarationEntropy.js'
 
-// TODO: Extract into a composition of classes (next. release)
 export class DeclarationsEntropy extends PolyEntropy  {
   evaluate() {
     if (this.astNodes.length === 1) {

@@ -2,7 +2,6 @@ import { MonoEntropy } from './MonoEntropy.js'
 import { Divisor } from '../reflexion/Divisor.js'
 import { Entropy } from './Entropy.js'
 
-// TODO: Search other-similar occurences and abstract (next. release)
 export class ObjectAccessEntropy extends MonoEntropy {
   evaluate() {
     // TODO: Is this true?
