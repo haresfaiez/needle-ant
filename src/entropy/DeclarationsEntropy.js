@@ -1,60 +1,23 @@
 import { BodyEntropy } from './BodyEntropy.js'
-import { Entropy } from './Entropy.js'
-import { Reflexion } from '../reflexion/Reflexion.js'
-import { NullEvaluation } from '../evaluation/NullEvaluation.js'
-import { Divisor } from '../reflexion/Divisor.js'
 import { CodeBag } from '../code/CodeBag.js'
 import { PolyEntropy } from './PolyEntropy.js'
+import { DeclarationEntropy } from './DeclarationEntropy.js'
 
 // TODO: Extract into a composition of classes (next. release)
 export class DeclarationsEntropy extends PolyEntropy  {
-
-  // TODO: simplify this (next. release)
   evaluate() {
-    const declarations = this.dividend.sources
-    // TODO: Avoid extraction of only first sources element (check all files)
-    const declaration = declarations[0]
+    if (this.astNodes.length === 1) {
+      return new DeclarationEntropy(this.astNodes[0], this.divisor).evaluate()
+    }
 
-    const isVariable = declarations.length === 1 && declaration.type === 'VariableDeclarator'
-    declarations
+    this.astNodes
       .filter(eachDeclaration => eachDeclaration.id)
-      .forEach(eachDeclaration => this.divisor.extend(CodeBag.fromAcronNodes([eachDeclaration.id])))
+      .forEach(eachDeclaration => this.divisor.extend(CodeBag.fromAcronNode(eachDeclaration.id)))
 
-    const functionsTypes = [
-      'ArrowFunctionExpression',
-      'FunctionDeclaration'
-    ]
-    if (functionsTypes.includes(declaration.type)) {
-      const paramsAsIdentifiers = Reflexion.fromAcornNodes(declaration.params).identifiers()
-      const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
-      return new BodyEntropy([declaration.body], declarationDivisor).evaluate()
-    }
-
-    if (isVariable && !declaration.init) {
-      return new NullEvaluation()
-    }
-
-    if (isVariable) {
-      const value = declaration.init
-      const paramsAsIdentifiers = Reflexion.fromAcornNodes(value.params).identifiers()
-      const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
-      return new Entropy(value, declarationDivisor).evaluate()
-    }
-
-    declarations
+    this.astNodes
       .filter(eachDeclaration => eachDeclaration.type === 'FunctionDeclaration')
-      .forEach((eachDeclaration, i) => declarations[i] = eachDeclaration.body)
+      .forEach((eachDeclaration, i) => this.astNodes[i] = eachDeclaration.body)
 
-    const declarationsEvaluation = new BodyEntropy(declarations, this.divisor).evaluate()
-
-    // TODO: Remove this?
-    // // class A extends B
-    // if (declaration.type === 'ClassDeclaration' && declaration.superClass) {
-    //   this.divisor.extend([declaration.superClass.name])
-    //   // TODO: Use CodeBag here
-    //   return new BagEvaluation(CodeBag.withNullCoordinates([declaration.id.name]), this.divisor.identifiers()).plus(declarationsEvaluation)
-    // }
-
-    return declarationsEvaluation
+    return new BodyEntropy(this.astNodes, this.divisor).evaluate()
   }
 }
