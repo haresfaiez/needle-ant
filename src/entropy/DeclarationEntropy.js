@@ -5,8 +5,19 @@ import { NullEvaluation } from '../evaluation/NullEvaluation.js'
 import { Divisor } from '../reflexion/Divisor.js'
 import { CodeBag } from '../code/CodeBag.js'
 import { MonoEntropy } from './MonoEntropy.js'
+import { NotFoundCodePath } from '../code/CodePath.js'
 
 export class DeclarationEntropy extends MonoEntropy  {
+  navigate(path) {
+    if (path.head() === this.astNode.id.name) {
+      return path.hasSubPath()
+        ? this.delegate.navigate(path.tail())
+        : this
+    }
+
+    return new NotFoundCodePath()
+  }
+
   evaluate() {
     if (this.astNode.id) {
       this.divisor.extend(CodeBag.fromAcronNodes([this.astNode.id]))
@@ -16,7 +27,8 @@ export class DeclarationEntropy extends MonoEntropy  {
     if (functionsTypes.includes(this.astNode.type)) {
       const paramsAsIdentifiers = Reflexion.fromAcornNodes(this.astNode.params).identifiers()
       const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
-      return new BodyEntropy([this.astNode.body], declarationDivisor).evaluate()
+      this.delegate = new BodyEntropy([this.astNode.body], declarationDivisor)
+      return this.delegate.evaluate()
     }
 
     if (!this.astNode.init) {
@@ -25,6 +37,7 @@ export class DeclarationEntropy extends MonoEntropy  {
 
     const paramsAsIdentifiers = Reflexion.fromAcornNodes(this.astNode.init.params).identifiers()
     const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
-    return new Entropy(this.astNode.init, declarationDivisor).evaluate()
+    this.delegate = new Entropy(this.astNode.init, declarationDivisor)
+    return this.delegate.evaluate()
   }
 }

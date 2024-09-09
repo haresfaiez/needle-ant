@@ -11,14 +11,25 @@ import { ExpressionEntropy } from './ExpressionEntropy.js'
 import { CatchEntropy } from './CatchEntropy.js'
 import { MonoEntropy } from './MonoEntropy.js'
 
+// TODO: check delegates for all Entropy classes
+// TODO: Add delegation fallback
 export class Entropy extends MonoEntropy {
   constructor(dividend, divisor) {
     super(dividend, divisor)
     this.delegate = this.createDelegate()
   }
 
+  navigate(path) {
+    if (path.isRoot())
+      return this
+
+    return this.delegate.navigate(path)
+  }
+
   evaluate() {
-    return this.delegate.evaluate()
+    return this.delegate
+      .evaluate()
+      .setSource(this)
   }
 
   createDelegate() {

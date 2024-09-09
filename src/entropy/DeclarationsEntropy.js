@@ -4,9 +4,13 @@ import { PolyEntropy } from './PolyEntropy.js'
 import { DeclarationEntropy } from './DeclarationEntropy.js'
 
 export class DeclarationsEntropy extends PolyEntropy  {
-  evaluate() {
+  navigate(path) {
+    return this.delegate.navigate(path)
+  }
+
+  createDelegate() {
     if (this.astNodes.length === 1) {
-      return new DeclarationEntropy(this.astNodes[0], this.divisor).evaluate()
+      return new DeclarationEntropy(this.astNodes[0], this.divisor)
     }
 
     this.astNodes
@@ -17,6 +21,11 @@ export class DeclarationsEntropy extends PolyEntropy  {
       .filter(eachDeclaration => eachDeclaration.type === 'FunctionDeclaration')
       .forEach((eachDeclaration, i) => this.astNodes[i] = eachDeclaration.body)
 
-    return new BodyEntropy(this.astNodes, this.divisor).evaluate()
+    return new BodyEntropy(this.astNodes, this.divisor)
+  }
+
+  evaluate() {
+    this.delegate = this.createDelegate()
+    return this.delegate.evaluate()
   }
 }

@@ -1,4 +1,13 @@
 export class Evaluation {
+  setSource(sourceEntropy) {
+    this.sourceEntropy = sourceEntropy
+    return this
+  }
+
+  navigate(path) {
+    return this.sourceEntropy.navigate(path)
+  }
+
   plus() {
     throw new Error('Cannot add this instance. Check Evalutaion sub-class used here.')
   }

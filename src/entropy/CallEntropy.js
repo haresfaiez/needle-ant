@@ -3,9 +3,14 @@ import { Entropy } from './Entropy.js'
 import { BodyEntropy } from './BodyEntropy.js'
 import { Entropies } from './Entropies.js'
 import { ObjectAccessEntropy } from './ObjectAccessEntropy.js'
+import { NotFoundCodePath } from '../code/CodePath.js'
 
 // TODO: Create a construct based on the params/body dual (all classes)
 export class CallEntropy extends MonoEntropy  {
+  navigate() {
+    return new NotFoundCodePath()
+  }
+
   evaluate() {
     const isMethodInvocation = this.astNode?.callee?.type === 'MemberExpression'
 

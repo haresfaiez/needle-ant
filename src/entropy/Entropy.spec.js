@@ -6,6 +6,38 @@ import { NullEvaluation } from '../evaluation/NullEvaluation.js'
 import { Divisor } from '../reflexion/Divisor.js'
 import { CodeBag } from '../code/CodeBag.js'
 import { CodeSlice } from '../code/CodeSlice.js'
+import { CodePath } from '../code/CodePath.js'
+
+describe('Entropy server', () => {
+  it('links inner function entropy to its path', () => {
+    const code = `function increment(x) {
+      function plusOne(y) {
+        return y + 1;
+      }
+      return plusOne(x);
+    }`
+    const dividend = CodeSlice.parse(code)[0]
+    const entropy = new Entropy(dividend)
+    const navigation = entropy
+      .evaluate()
+      .navigate(CodePath.parse('increment/plusOne'))
+
+    const actual = navigation.evaluate().evaluate()
+
+    const expected = new NumericEvaluation(1, 4)
+      .plus(new NumericEvaluation(1, 5))
+    expect(actual).toEvaluateTo(expected)
+  })
+
+  it('links entropy to root path', () => {
+    const code = 'const a = 5;'
+    const dividend = CodeSlice.parse(code)[0]
+    const entropy = new Entropy(dividend)
+    const actual = entropy.evaluate().navigate(new CodePath())
+
+    expect(actual).toBe(entropy)
+  })
+})
 
 describe('Method invocation entropy', () => {
   it('sums objects entropy and method entropy', () => {
@@ -15,7 +47,8 @@ describe('Method invocation entropy', () => {
       new Divisor(CodeBag.withNullCoordinates(['f', 'z']))
     )
 
-    const expected = new NumericEvaluation(1, 2).plus(new NumericEvaluation(1, 1))
+    const expected = new NumericEvaluation(1, 2)
+      .plus(new NumericEvaluation(1, 1))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 
