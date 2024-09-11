@@ -1,6 +1,36 @@
 import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
+// TODO: ...navigate() result:
+// [{ author: , columns: }]
+// expect(actual.lines()).toEqual()
+// Divisor instance of ALL references
+// expect(actual.closedScope()).toEqual()
+// Divisor instance of USED references
+// expect(actual.effectiveClosedScope()).toEqual()
+// expect(actual.astNode()).toEqual()
+// expect(actual.sourceCode()).toEqual()
+// conditionals ..?
+// TODO: Make boundaries dynamic (not functions but lines, conditions, ...)
+
+describe('Path navigation', () => {
+  xit('calculates inner-function entropy ', () => {
+    const code = `
+      const incerment = (a) => a++;
+      const plusTwo = (x) => {
+        const doItTwice = (f) => (y) => f(f(y));
+        return doItTwice(increment)(x);
+      };
+    `
+    const actual = new NeedleAnt(code)
+      .entropy()
+      .navigate('plusTwo/doItTwice')
+
+    const expectedEvaluation = new NumericEvaluation(1, 6).times(3)
+    expect(actual.evaluate()).toEvaluateTo(expectedEvaluation)
+  })
+})
+
 describe('Successive statements entropy', () => {
   it('is the sum of each statement entropy', () => {
     const code = 'const f = (a) => { if (a > 0) { return true; } return a + 1; }'

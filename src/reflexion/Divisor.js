@@ -1,6 +1,7 @@
 import { CodeBag } from '../code/CodeBag.js'
 import { Reflexion } from './Reflexion.js'
 
+// TODO: Rename this
 export class Divisor {
   constructor(rawDivisor = new CodeBag(), accesses = new CodeBag(), clonedDivisorInstance) {
     this.cloned = clonedDivisorInstance

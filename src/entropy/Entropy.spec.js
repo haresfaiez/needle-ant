@@ -37,6 +37,16 @@ describe('Entropy server', () => {
 
     expect(actual).toBe(entropy)
   })
+
+  // TODO: Here
+  xit('finds root scope references', () => {
+    const code = 'const a = 5;'
+    const dividend = CodeSlice.parse(code)[0]
+    const entropy = new Entropy(dividend)
+    const actual = entropy.evaluate().navigate(new CodePath())
+
+    expect(actual.scope()).toBe(CodeBag.fromAcronNodes())
+  })
 })
 
 describe('Method invocation entropy', () => {
