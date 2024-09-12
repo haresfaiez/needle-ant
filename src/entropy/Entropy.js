@@ -19,6 +19,10 @@ export class Entropy extends MonoEntropy {
     this.delegate = this.createDelegate()
   }
 
+  scope() {
+    return this.divisor.identifiers()
+  }
+
   navigate(path) {
     if (path.isRoot())
       return this

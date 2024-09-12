@@ -38,14 +38,14 @@ describe('Entropy server', () => {
     expect(actual).toBe(entropy)
   })
 
-  // TODO: Here
-  xit('finds root scope references', () => {
+  it('finds root scope', () => {
     const code = 'const a = 5;'
     const dividend = CodeSlice.parse(code)[0]
     const entropy = new Entropy(dividend)
     const actual = entropy.evaluate().navigate(new CodePath())
 
-    expect(actual.scope()).toBe(CodeBag.fromAcronNodes())
+    const expected = CodeBag.fromAcronNode(dividend.declarations[0].id)
+    expect(actual.scope()).toEqual(expected)
   })
 })
 
