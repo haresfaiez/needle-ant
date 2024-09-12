@@ -9,6 +9,10 @@ export class PolyEntropy {
     this.divisor = divisor
   }
 
+  scope() {
+    return this.divisor.identifiers()
+  }
+
   navigate() {
     return new NotFoundCodePath()
   }

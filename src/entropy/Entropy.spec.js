@@ -42,10 +42,35 @@ describe('Entropy server', () => {
     const code = 'const a = 5;'
     const dividend = CodeSlice.parse(code)[0]
     const entropy = new Entropy(dividend)
-    const actual = entropy.evaluate().navigate(new CodePath())
+    const actual = entropy
+      .evaluate()
+      .navigate(new CodePath())
+      .scope()
 
     const expected = CodeBag.fromAcronNode(dividend.declarations[0].id)
-    expect(actual.scope()).toEqual(expected)
+    expect(actual).toEqual(expected)
+  })
+
+  it('finds inner function scope', () => {
+    const code = `function increment(x) {
+      function plusOne(y) {
+        return y + 1;
+      }
+      return plusOne(x);
+    }`
+    const dividend = CodeSlice.parse(code)[0]
+    const entropy = new Entropy(dividend)
+    const actual = entropy
+      .evaluate()
+      .navigate(CodePath.parse('increment/plusOne'))
+      .scope()
+
+    const expected = CodeBag.fromAcronNodes([
+      dividend.id,
+      dividend.params[0],
+      dividend.body.body[0].id,
+    ])
+    expect(actual).toEqual(expected)
   })
 })
 
