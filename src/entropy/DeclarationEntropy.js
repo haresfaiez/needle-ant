@@ -5,18 +5,14 @@ import { NullEvaluation } from '../evaluation/NullEvaluation.js'
 import { Divisor } from '../reflexion/Divisor.js'
 import { CodeBag } from '../code/CodeBag.js'
 import { MonoEntropy } from './MonoEntropy.js'
-import { NotFoundCodePath, FoundCodePath } from '../code/CodePath.js'
+import { NotFoundCodePath } from '../code/CodePath.js'
 
 export class DeclarationEntropy extends MonoEntropy  {
   navigate(path) {
     if (path.head() === this.astNode.id.name) {
       return path.hasSubPath()
         ? this.delegate.navigate(path.tail())
-        : new FoundCodePath(
-          path,
-          this.evaluate(),
-          this.divisor.identifiers()
-        )
+        : this.createFoundCodePath(path)
     }
 
     return new NotFoundCodePath(path)

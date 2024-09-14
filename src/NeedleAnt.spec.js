@@ -1,7 +1,6 @@
 import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: return CodePath instance from navigate
 // TODO: test path with: const a = () => {}
 // TODO: Implement navigate() and scope() for all Entropy classes
 // TODO: Rename Divisor, Reflexion, and reflexion

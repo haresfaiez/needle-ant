@@ -1,6 +1,6 @@
 import { Reflexion } from '../reflexion/Reflexion.js'
 import { Divisor } from '../reflexion/Divisor.js'
-import { NotFoundCodePath } from '../code/CodePath.js'
+import { FoundCodePath, NotFoundCodePath } from '../code/CodePath.js'
 
 export class MonoEntropy {
   constructor(astNode, divisor = new Divisor()) {
@@ -9,8 +9,16 @@ export class MonoEntropy {
     this.divisor = divisor
   }
 
-  navigate() {
-    return new NotFoundCodePath()
+  createFoundCodePath(path) {
+    return new FoundCodePath(
+      path,
+      this.evaluate(),
+      this.divisor.identifiers()
+    )
+  }
+
+  navigate(path) {
+    return new NotFoundCodePath(path)
   }
 
   evaluate() {

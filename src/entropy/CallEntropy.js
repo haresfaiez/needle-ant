@@ -7,9 +7,8 @@ import { NotFoundCodePath } from '../code/CodePath.js'
 
 // TODO: Create a construct based on the params/body dual (all classes)
 export class CallEntropy extends MonoEntropy  {
-  navigate() {
-    // TODO: only if not root
-    return new NotFoundCodePath()
+  navigate(path) {
+    return new NotFoundCodePath(path)
   }
 
   evaluate() {

@@ -42,6 +42,14 @@ export class FoundCodePath extends CodePath {
     return this._scope
   }
 
+  plus(otherFoundCodePath) {
+    return new FoundCodePath(
+      this.path,
+      this.evaluate().plus(otherFoundCodePath.evaluate()),
+      this.scope()
+    )
+  }
+
   evaluate() {
     return this.evaluation
   }

@@ -10,7 +10,6 @@ import { ClassEntropy } from './ClassEntropy.js'
 import { ExpressionEntropy } from './ExpressionEntropy.js'
 import { CatchEntropy } from './CatchEntropy.js'
 import { MonoEntropy } from './MonoEntropy.js'
-import { FoundCodePath } from '../code/CodePath.js'
 
 // TODO: check delegates for all Entropy classes
 // TODO: Add delegation fallback
@@ -22,7 +21,7 @@ export class Entropy extends MonoEntropy {
 
   navigate(path) {
     if (path.isRoot())
-      return new FoundCodePath(path, this.evaluate(), this.divisor.identifiers())
+      return this.createFoundCodePath(path)
 
     return this.delegate.navigate(path)
   }

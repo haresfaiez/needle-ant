@@ -1,5 +1,4 @@
-import { FoundCodePath, NotFoundCodePath } from '../code/CodePath.js'
-import { NullEvaluation } from '../evaluation/NullEvaluation.js'
+import { NotFoundCodePath } from '../code/CodePath.js'
 import { Divisor } from '../reflexion/Divisor.js'
 import { Entropies } from './Entropies.js'
 import { Entropy } from './Entropy.js'
@@ -14,15 +13,10 @@ export class BodyEntropy extends PolyEntropy  {
         .filter(each => !(each instanceof NotFoundCodePath))
 
     if (!matchingDelagates.length) {
-      return new NotFoundCodePath()
+      return new NotFoundCodePath(path)
     }
 
-    return matchingDelagates.reduce(
-      (acc, each) => {
-        return new FoundCodePath(acc.path, acc.evaluate().plus(each.evaluate()), this.divisor.identifiers())
-      },
-      new FoundCodePath(path, new NullEvaluation(), this.divisor.identifiers())
-    )
+    return this.createFoundCodePath(path, matchingDelagates)
   }
 
   evaluate() {

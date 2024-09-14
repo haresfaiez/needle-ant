@@ -1,6 +1,7 @@
 import { Reflexion } from '../reflexion/Reflexion.js'
 import { Divisor } from '../reflexion/Divisor.js'
-import { NotFoundCodePath } from '../code/CodePath.js'
+import { FoundCodePath, NotFoundCodePath } from '../code/CodePath.js'
+import { NullEvaluation } from '../evaluation/NullEvaluation.js'
 
 export class PolyEntropy {
   constructor(astNodes, divisor = new Divisor()) {
@@ -9,8 +10,15 @@ export class PolyEntropy {
     this.divisor = divisor
   }
 
-  navigate() {
-    return new NotFoundCodePath()
+  createFoundCodePath(path, entropies) {
+    return entropies.reduce(
+      (resultCodePath, eachFoundCodePath) => resultCodePath.plus(eachFoundCodePath),
+      new FoundCodePath(path, new NullEvaluation(), this.divisor.identifiers())
+    )
+  }
+
+  navigate(path) {
+    return new NotFoundCodePath(path)
   }
 
   evaluate() {
