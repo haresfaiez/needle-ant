@@ -2,10 +2,10 @@ import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
 // TODO: test path with: const a = () => {}
-// TODO: Implement navigate() and captureScope() for all Entropy classes
 // TODO: Rename Divisor, Reflexion, and reflexion
 // TODO: Restore ignored tests
-// TODO: Implemnt a mechanism to study Vite code base
+// TODO: Add methods to get (conditionals, loops, ...) in FoundCodePath
+// TODO: Implement a mechanism to study Vite code base
 // TODO: weighted probability
 // TODO: check todos
 // TODO: [Next release]
