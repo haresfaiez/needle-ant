@@ -1,6 +1,3 @@
-import { NullEvaluation } from '../evaluation/NullEvaluation.js'
-import { CodeBag } from './CodeBag.js'
-
 export class CodePath {
   constructor(path = []) {
     this.path = path
@@ -31,22 +28,21 @@ export class CodePath {
 }
 
 export class FoundCodePath extends CodePath {
-  constructor(path = [], evaluation = new NullEvaluation(), scope = CodeBag.empty()) {
+  constructor(path = [], evaluation, scope) {
     super(path)
     this.evaluation = evaluation
-    this._scope = scope
+    this.scope = scope
   }
 
-  // TODO: Rename to verb and use "scope" for attribute
-  scope() {
-    return this._scope
+  captureScope() {
+    return this.scope
   }
 
   plus(otherFoundCodePath) {
     return new FoundCodePath(
       this.path,
       this.evaluate().plus(otherFoundCodePath.evaluate()),
-      this.scope()
+      this.captureScope()
     )
   }
 

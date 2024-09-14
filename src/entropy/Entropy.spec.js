@@ -48,7 +48,7 @@ describe('Entropy server', () => {
     const actual = entropy
       .evaluate()
       .navigate(new CodePath())
-      .scope()
+      .captureScope()
 
     const expected = CodeBag.fromAcronNode(dividend.declarations[0].id)
     expect(actual).toEqual(expected)
@@ -66,7 +66,7 @@ describe('Entropy server', () => {
     const actual = entropy
       .evaluate()
       .navigate(CodePath.parse('increment/plusOne'))
-      .scope()
+      .captureScope()
 
     const expected = CodeBag.fromAcronNodes([
       dividend.id,
