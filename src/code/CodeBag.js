@@ -29,10 +29,20 @@ export class CodeBag {
     this.putAll([codeSlice])
   }
 
-  putAll(codeSlices = []) {
-    codeSlices.forEach(eachCodeSlice => {
-      const codeSlicesPerId = this.elements.get(eachCodeSlice.raw)
-      this.elements.set(eachCodeSlice.raw, [...(codeSlicesPerId || []), eachCodeSlice])
+  otherCodeSlices(codeSlice) {
+    const existing = this.elements.get(codeSlice.raw) || []
+    return existing.filter(
+      each => each.start !== codeSlice.start && each.end !== codeSlice.end
+    )
+  }
+
+  putAll(codeSlicesToAdd = []) {
+    codeSlicesToAdd.forEach(eachCodeSliceToAdd => {
+      const newCodeSlices = [
+        ...this.otherCodeSlices(eachCodeSliceToAdd),
+        eachCodeSliceToAdd
+      ]
+      this.elements.set(eachCodeSliceToAdd.raw, newCodeSlices)
     })
   }
 

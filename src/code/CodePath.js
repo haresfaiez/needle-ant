@@ -1,3 +1,6 @@
+import { NullEvaluation } from '../evaluation/NullEvaluation.js'
+import { CodeBag } from './CodeBag.js'
+
 export class CodePath {
   constructor(path = []) {
     this.path = path
@@ -24,6 +27,23 @@ export class CodePath {
   static parse(pathString) {
     const path = pathString.split('/').filter(eachPart => !!eachPart)
     return new CodePath(path)
+  }
+}
+
+export class FoundCodePath extends CodePath {
+  constructor(path = [], evaluation = new NullEvaluation(), scope = CodeBag.empty()) {
+    super(path)
+    this.evaluation = evaluation
+    this._scope = scope
+  }
+
+  // TODO: Rename to verb and use "scope" for attribute
+  scope() {
+    return this._scope
+  }
+
+  evaluate() {
+    return this.evaluation
   }
 }
 
