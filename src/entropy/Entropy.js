@@ -71,6 +71,7 @@ export class Entropy extends MonoEntropy {
     const declarationTypes = [
       'FunctionDeclaration',
       'ArrowFunctionExpression',
+      'FunctionExpression',
     ]
     if (declarationTypes.includes(this.astNode.type)) {
       return new DeclarationsEntropy([this.astNode], this.divisor)
@@ -94,10 +95,6 @@ export class Entropy extends MonoEntropy {
     ]
     if (bodyTypes.includes(this.astNode.type)) {
       return new BodyEntropy(this.astNode.body, this.divisor)
-    }
-
-    if (this.astNode.type === 'FunctionExpression') {
-      return new BodyEntropy([this.astNode.body], this.divisor)
     }
 
     const expressionTypes = [

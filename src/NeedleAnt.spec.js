@@ -1,8 +1,8 @@
 import { CodePath } from './code/CodePath.js'
+import { NullEvaluation } from './evaluation/NullEvaluation.js'
 import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: handle classes, methods, and `const a = function...` in navigation
 // TODO: Add methods to get (conditionals, loops, ...) in FoundCodePath
 // TODO: Implement a mechanism to study Vite code base
 // TODO: weighted probability
@@ -46,7 +46,7 @@ describe('Path navigation', () => {
     expect(actual).toEvaluateTo(expectedEvaluation)
   })
 
-  it('calculates inner-function entropy ', () => {
+  it('calculates inner anonymous function entropy ', () => {
     const code = `
       const increment = (a) => a++;
       const plusTwo = (x) => {
@@ -62,6 +62,63 @@ describe('Path navigation', () => {
 
     const expectedEvaluation = new NumericEvaluation(1, 6).times(3)
     expect(actual).toEvaluateTo(expectedEvaluation)
+  })
+
+  it('calculates inner function entropy ', () => {
+    const code = `
+      const increment = (a) => a++;
+      const plusTwo = function(x) {
+        const doItTwice = function (f) {
+          return function(y) {
+            return f(f(y));
+          }
+        };
+        return doItTwice(increment)(x);
+      };
+    `
+    const actual = new NeedleAnt(code)
+      .entropy()
+      .navigate(CodePath.parse('plusTwo/doItTwice'))
+      .evaluate()
+      .evaluate()
+
+    const expectedEvaluation = new NumericEvaluation(1, 6).times(3)
+    expect(actual).toEvaluateTo(expectedEvaluation)
+  })
+
+  it('calculates inner empty function entropy ', () => {
+    const code = `
+      const increment = (a) => a++;
+      const plusTwo = function(x) {
+        const doItTwice = function (f) {
+        };
+        return doItTwice(increment)(x);
+      };
+    `
+    const actual = new NeedleAnt(code)
+      .entropy()
+      .navigate(CodePath.parse('plusTwo/doItTwice'))
+      .evaluate()
+
+    expect(actual).toEvaluateTo(new NullEvaluation())
+  })
+
+  it('calculates inner empty function scope ', () => {
+    const code = `
+      const increment = (a) => a++;
+      const plusTwo = function(x) {
+        const doItTwice = function (f) {
+        };
+        return doItTwice(increment)(x);
+      };
+    `
+    const actual = new NeedleAnt(code)
+      .entropy()
+      .navigate(CodePath.parse('plusTwo/doItTwice'))
+      .captureScope()
+      .raws()
+
+    expect(actual).toEqual(['increment', 'plusTwo', 'x', 'doItTwice'])
   })
 })
 

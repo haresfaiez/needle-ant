@@ -25,7 +25,11 @@ export class DeclarationEntropy extends MonoEntropy  {
       this.divisor.extend(CodeBag.fromAcronNodes([this.astNode.id]))
     }
 
-    const functionsTypes = ['ArrowFunctionExpression', 'FunctionDeclaration']
+    const functionsTypes = [
+      'ArrowFunctionExpression',
+      'FunctionDeclaration',
+      'FunctionExpression',
+    ]
     if (functionsTypes.includes(this.astNode.type)) {
       const paramsAsIdentifiers = Spectrum.fromAcornNodes(this.astNode.params).identifiers()
       const declarationSurface = Surface.clone(this.divisor, paramsAsIdentifiers)
@@ -37,7 +41,9 @@ export class DeclarationEntropy extends MonoEntropy  {
       return new NullEvaluation()
     }
 
-    const paramsAsIdentifiers = Spectrum.fromAcornNodes(this.astNode.init.params).identifiers()
+    const paramsAsIdentifiers = Spectrum
+      .fromAcornNodes(this.astNode.init.params)
+      .identifiers()
     const declarationSurface = Surface.clone(this.divisor, paramsAsIdentifiers)
     this.delegate = new Entropy(this.astNode.init, declarationSurface)
     return this.delegate.evaluate()
