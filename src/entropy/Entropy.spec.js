@@ -33,9 +33,12 @@ describe('Entropy server', () => {
     const code = 'const a = 5;'
     const dividend = CodeSlice.parse(code)[0]
     const entropy = new Entropy(dividend)
-    const actual = entropy.evaluate().navigate(new CodePath())
+    const actual = entropy
+      .evaluate()
+      .navigate(new CodePath())
+      .evaluate()
 
-    expect(actual).toBe(entropy)
+    expect(actual).toEqual(entropy.evaluate())
   })
 
   it('finds root scope', () => {
@@ -68,7 +71,6 @@ describe('Entropy server', () => {
     const expected = CodeBag.fromAcronNodes([
       dividend.id,
       dividend.params[0],
-      dividend.body.body[0].id,
     ])
     expect(actual).toEqual(expected)
   })
