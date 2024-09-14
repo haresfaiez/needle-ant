@@ -2,7 +2,6 @@ import { CodePath } from './code/CodePath.js'
 import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: Restore ignored tests
 // TODO: handle classes, methods, and `const a = function...` in navigation
 // TODO: Add methods to get (conditionals, loops, ...) in FoundCodePath
 // TODO: Implement a mechanism to study Vite code base

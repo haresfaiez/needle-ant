@@ -226,6 +226,11 @@ export class Entropy extends MonoEntropy {
       ])
     }
 
+    if (this.astNode.type === 'TemplateLiteral') {
+      // TODO: Why ignoring this.astNode.quasis
+      return new BodyEntropy(this.astNode.expressions, this.divisor)
+    }
+
     throw new Error(`Cannot create Delegate for: ${JSON.stringify(this.astNode)}`)
   }
 }

@@ -946,12 +946,13 @@ describe('Entropy with Bag identifiers', () => {
   })
 })
 
-xdescribe('String template literal entropy', () => {
+describe('String template literal entropy', () => {
   it('calculates entropy of string literal with one variable', () => {
-    const code = 'let metric, timestamp; const msg = "pwmetrics-events" + ` -${timestamp} -`+ `${metric} timestamp not found`;'
+    const code = 'let metric, timestamp; const msg = "pwmetrics-events" + ` -${timestamp}-+`+ `${metric} timestamp--not---found`;'
     const entropy = new BodyEntropy(CodeSlice.parse(code))
 
-    const expected = new NumericEvaluation(2, 4)
+    const expected = new NumericEvaluation(1, 4)
+      .plus(new NumericEvaluation(1, 3).times(2))
     expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
   })
 })
