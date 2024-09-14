@@ -4,12 +4,12 @@ import { Entropy } from './Entropy.js'
 
 export class LiteralObjectEntropy extends MonoEntropy {
   evaluate() {
-    this.divisor.extendAccesses(this.dividend.properties())
+    this.surface.extendAccesses(this.dividend.properties())
 
     return new Entropies(
       this.astNode
         .properties
-        .map(eachSource => new Entropy(eachSource.value, this.divisor))
+        .map(eachSource => new Entropy(eachSource.value, this.surface))
     ).evaluate()
   }
 }

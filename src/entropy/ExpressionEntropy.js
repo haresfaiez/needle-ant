@@ -11,9 +11,9 @@ export class ExpressionEntropy extends MonoEntropy {
 
     if (isMemberAccess) {
       return new Entropies([
-        new Entropy(this.astNode.left.object, this.divisor),
-        new ObjectAccessEntropy(this.astNode.left.property, this.divisor),
-        new Entropy(this.astNode.right, this.divisor)
+        new Entropy(this.astNode.left.object, this.surface),
+        new ObjectAccessEntropy(this.astNode.left.property, this.surface),
+        new Entropy(this.astNode.right, this.surface)
       ]).evaluate()
     }
 
@@ -36,7 +36,7 @@ export class ExpressionEntropy extends MonoEntropy {
 
     const possibles = literals
       .plus(thisExpression)
-      .plus(this.divisor.identifiers())
+      .plus(this.surface.identifiers())
 
     return BagEvaluation.fromAstNode(actuals, possibles, this.astNode)
   }

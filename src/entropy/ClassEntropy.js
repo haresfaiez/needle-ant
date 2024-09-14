@@ -9,20 +9,20 @@ export class ClassEntropy extends MonoEntropy {
   evaluate() {
     const superClassesBag = CodeBag.fromAcronNode(this.astNode.superClass)
 
-    this.divisor.extend(superClassesBag)
+    this.surface.extend(superClassesBag)
 
-    const superClassEvaluation = new BagEvaluation(superClassesBag, this.divisor.identifiers())
+    const superClassEvaluation = new BagEvaluation(superClassesBag, this.surface.identifiers())
 
-    this.divisor.extend(CodeBag.fromAcronNode(this.astNode.id))
+    this.surface.extend(CodeBag.fromAcronNode(this.astNode.id))
 
     const members = this.astNode.body.body
       .filter(eachDeclaration => ['MethodDefinition', 'PropertyDefinition'].includes(eachDeclaration.type))
       .filter(eachDeclaration => !ClassEntropy.IGNORED_IDENTIFIERS.includes(eachDeclaration.key.name))
       .map(eachDeclaration => eachDeclaration.key)
 
-    this.divisor.extendAccesses(CodeBag.fromAcronNodes(members))
+    this.surface.extendAccesses(CodeBag.fromAcronNodes(members))
 
-    const mainEntropy = new Entropy(this.astNode.body, this.divisor).evaluate()
+    const mainEntropy = new Entropy(this.astNode.body, this.surface).evaluate()
     return mainEntropy.plus(superClassEvaluation)
   }
 }

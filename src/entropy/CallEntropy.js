@@ -11,15 +11,15 @@ export class CallEntropy extends MonoEntropy  {
 
     if (isMethodInvocation) {
       return new Entropies([
-        new Entropy(this.astNode.callee.object, this.divisor),
-        new ObjectAccessEntropy(this.astNode.callee.property, this.divisor),
-        new BodyEntropy(this.astNode.arguments, this.divisor)
+        new Entropy(this.astNode.callee.object, this.surface),
+        new ObjectAccessEntropy(this.astNode.callee.property, this.surface),
+        new BodyEntropy(this.astNode.arguments, this.surface)
       ]).evaluate()
     }
 
     return new Entropies([
-      new Entropy(this.astNode.callee, this.divisor),
-      new BodyEntropy(this.astNode.arguments, this.divisor)
+      new Entropy(this.astNode.callee, this.surface),
+      new BodyEntropy(this.astNode.arguments, this.surface)
     ]).evaluate()
   }
 }

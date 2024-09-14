@@ -4,16 +4,16 @@ import { FoundCodePath, NotFoundCodePath } from '../code/CodePath.js'
 import { NullEvaluation } from '../evaluation/NullEvaluation.js'
 
 export class PolyEntropy {
-  constructor(astNodes, divisor = new Surface()) {
+  constructor(astNodes, surface = new Surface()) {
     this.astNodes = astNodes.filter(astNode => astNode.type !== 'EmptyStatement')
     this.dividend = Spectrum.fromAcornNodes(astNodes)
-    this.divisor = divisor
+    this.surface = surface
   }
 
   createFoundCodePath(path, entropies) {
     return entropies.reduce(
       (resultCodePath, eachFoundCodePath) => resultCodePath.plus(eachFoundCodePath),
-      new FoundCodePath(path, new NullEvaluation(), this.divisor.identifiers())
+      new FoundCodePath(path, new NullEvaluation(), this.surface.identifiers())
     )
   }
 

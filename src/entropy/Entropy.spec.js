@@ -118,10 +118,10 @@ describe('Method invocation entropy', () => {
 
   it('considers all methods invocation for each method invocation entropy', () => {
     const code = 'f.aMethod(); f.anOtherMethod();'
-    const divisor = Surface.parse(code, (ast) => ast.body)
+    const surface = Surface.parse(code, (ast) => ast.body)
     const entropy = new BodyEntropy(
       CodeSlice.parse(code),
-      divisor
+      surface
     )
 
     const expected = new NumericEvaluation(1, 1).times(3).plus(new NumericEvaluation(1, 2))

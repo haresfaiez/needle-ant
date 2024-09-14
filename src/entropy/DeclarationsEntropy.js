@@ -10,14 +10,14 @@ export class DeclarationsEntropy extends PolyEntropy  {
 
   createDelegate() {
     if (this.astNodes.length === 1) {
-      return new DeclarationEntropy(this.astNodes[0], this.divisor)
+      return new DeclarationEntropy(this.astNodes[0], this.surface)
     }
 
     this.astNodes
       .filter(eachDeclaration => eachDeclaration.id)
-      .forEach(eachDeclaration => this.divisor.extend(CodeBag.fromAcronNode(eachDeclaration.id)))
+      .forEach(eachDeclaration => this.surface.extend(CodeBag.fromAcronNode(eachDeclaration.id)))
 
-    return new BodyEntropy(this.astNodes, this.divisor)
+    return new BodyEntropy(this.astNodes, this.surface)
   }
 
   evaluate() {

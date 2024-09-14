@@ -21,7 +21,7 @@ export class BodyEntropy extends PolyEntropy  {
   }
 
   evaluate() {
-    const newSurface = Surface.clone(this.divisor)
+    const newSurface = Surface.clone(this.surface)
     const entropies = this.astNodes.map(eachSource => new Entropy(eachSource, newSurface))
     this.delegate = new Entropies(entropies)
     return this.delegate.evaluate()

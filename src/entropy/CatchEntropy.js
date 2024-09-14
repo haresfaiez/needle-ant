@@ -5,7 +5,7 @@ import { BodyEntropy } from './BodyEntropy.js'
 
 export class CatchEntropy extends MonoEntropy {
   evaluate() {
-    const newSurface = Surface.clone(this.divisor)
+    const newSurface = Surface.clone(this.surface)
     newSurface.extend(CodeBag.fromAcronNodes([this.astNode.param]))
     return new BodyEntropy([this.astNode.body], newSurface).evaluate()
   }

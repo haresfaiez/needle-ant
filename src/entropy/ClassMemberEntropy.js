@@ -5,9 +5,9 @@ import { MonoEntropy } from './MonoEntropy.js'
 
 export class ClassMemberEntropy extends MonoEntropy {
   evaluate() {
-    const reflexion = Spectrum.fromAcornNodes(this.astNode.value.params)
-    const paramsAsIdentifiers = reflexion.identifiers()
-    const declarationSurface = Surface.clone(this.divisor, paramsAsIdentifiers)
+    const spectrum = Spectrum.fromAcornNodes(this.astNode.value.params)
+    const paramsAsIdentifiers = spectrum.identifiers()
+    const declarationSurface = Surface.clone(this.surface, paramsAsIdentifiers)
     return new Entropy(this.astNode.value, declarationSurface).evaluate()
   }
 }
