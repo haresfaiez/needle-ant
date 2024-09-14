@@ -3,9 +3,11 @@ import { NullEvaluation } from './evaluation/NullEvaluation.js'
 import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: Add methods to get (conditionals, loops, ...) in FoundCodePath
+// TODO: Implement navigation for classes/methods
+// TODO: Implement extraction of all navigation paths
+// TODO: weighted probability, e.g. f(usages count)
 // TODO: Implement a mechanism to study Vite code base
-// TODO: weighted probability
+//       -> change = f(author, location, entropy change)
 // TODO: check todos
 // TODO: [Next release]
 
