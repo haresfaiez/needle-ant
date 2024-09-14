@@ -1,17 +1,15 @@
 import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: ...navigate() result:
-// [{ author: , columns: }]
-// expect(actual.lines()).toEqual()
-// Divisor instance of ALL references
-// expect(actual.closedScope()).toEqual()
-// Divisor instance of USED references
-// expect(actual.effectiveClosedScope()).toEqual()
-// expect(actual.astNode()).toEqual()
-// expect(actual.sourceCode()).toEqual()
-// conditionals ..?
-// TODO: Make boundaries dynamic (not functions but lines, conditions, ...)
+// TODO: return CodePath instance from navigate
+// TODO: test path with: const a = () => {}
+// TODO: Implement navigate() and scope() for all Entropy classes
+// TODO: Rename Divisor, Reflexion, and reflexion
+// TODO: Restore ignored tests
+// TODO: Implemnt a mechanism to study Vite code base
+// TODO: weighted probability
+// TODO: check todos
+// TODO: [Next release]
 
 describe('Path navigation', () => {
   xit('calculates inner-function entropy ', () => {
