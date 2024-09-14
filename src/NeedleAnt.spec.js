@@ -2,7 +2,6 @@ import { CodePath } from './code/CodePath.js'
 import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: test path with: const a = () => {}, b = () => {}
 // TODO: Rename Divisor, Reflexion, and reflexion
 // TODO: Restore ignored tests
 // TODO: Add methods to get (conditionals, loops, ...) in FoundCodePath
@@ -12,7 +11,7 @@ import NeedleAnt from './NeedleAnt.js'
 // TODO: [Next release]
 
 describe('Path navigation', () => {
-  it('calculates inner-function scope ', () => {
+  it('calculates inner-function scope', () => {
     const code = `
       const increment = (a) => a++;
       const plusTwo = (x) => {
@@ -28,6 +27,24 @@ describe('Path navigation', () => {
 
     const expected = ['increment', 'plusTwo', 'x', 'doItTwice']
     expect(actual).toEqual(expected)
+  })
+
+  it('calculates inner-function entropy in a definition block', () => {
+    const code = `
+      const increment = (a) => a++;
+      const identity = (n) => n, plusTwo = (x) => {
+        const doItTwice = (f) => (y) => f(f(y));
+        return doItTwice(increment)(x);
+      };
+    `
+    const actual = new NeedleAnt(code)
+      .entropy()
+      .navigate(CodePath.parse('plusTwo/doItTwice'))
+      .evaluate()
+      .evaluate()
+
+    const expectedEvaluation = new NumericEvaluation(1, 7).times(3)
+    expect(actual).toEvaluateTo(expectedEvaluation)
   })
 
   it('calculates inner-function entropy ', () => {
