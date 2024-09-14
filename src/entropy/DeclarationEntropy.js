@@ -12,10 +12,14 @@ export class DeclarationEntropy extends MonoEntropy  {
     if (path.head() === this.astNode.id.name) {
       return path.hasSubPath()
         ? this.delegate.navigate(path.tail())
-        : new FoundCodePath(path, this.evaluate(), this.divisor.identifiers())
+        : new FoundCodePath(
+          path,
+          this.evaluate(),
+          this.divisor.identifiers()
+        )
     }
 
-    return new NotFoundCodePath()
+    return new NotFoundCodePath(path)
   }
 
   evaluate() {

@@ -19,6 +19,7 @@ export class Entropy extends MonoEntropy {
     this.delegate = this.createDelegate()
   }
 
+  // TODO: Remove scope() everywhere
   scope() {
     return this.divisor.identifiers()
   }
