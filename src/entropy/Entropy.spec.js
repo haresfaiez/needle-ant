@@ -71,6 +71,7 @@ describe('Entropy server', () => {
     const expected = CodeBag.fromAcronNodes([
       dividend.id,
       dividend.params[0],
+      dividend.body.body[0].id,
     ])
     expect(actual).toEqual(expected)
   })

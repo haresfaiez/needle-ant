@@ -1,3 +1,4 @@
+import { Evaluation } from './evaluation/Evaluation.js'
 import { Evaluations } from './evaluation/Evaluations.js'
 
 const evaluationToString = (evaluation) => {
@@ -33,6 +34,12 @@ beforeAll(() => {
       return {
         compare: function(actual, expected) {
           const result = {}
+          if (!(actual instanceof Evaluation) || !(expected instanceof Evaluation)) {
+            result.pass = false
+            result.message = 'Either "actual" or "expected" is not an Evaluation'
+            return result
+          }
+
           const isEvaluations = actual instanceof Evaluations
           if(!isEvaluations) {
             if (!expected.source) {

@@ -1,3 +1,4 @@
+// TODO: Should we set sourceEntropy when creating new Evalution
 export class Evaluation {
   setSource(sourceEntropy) {
     this.sourceEntropy = sourceEntropy

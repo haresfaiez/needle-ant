@@ -42,7 +42,7 @@ export class FoundCodePath extends CodePath {
     return new FoundCodePath(
       this.path,
       this.evaluate().plus(otherFoundCodePath.evaluate()),
-      this.captureScope()
+      this.captureScope().plus(otherFoundCodePath.captureScope())
     )
   }
 

@@ -17,10 +17,6 @@ export class DeclarationsEntropy extends PolyEntropy  {
       .filter(eachDeclaration => eachDeclaration.id)
       .forEach(eachDeclaration => this.divisor.extend(CodeBag.fromAcronNode(eachDeclaration.id)))
 
-    this.astNodes
-      .filter(eachDeclaration => eachDeclaration.type === 'FunctionDeclaration')
-      .forEach((eachDeclaration, i) => this.astNodes[i] = eachDeclaration.body)
-
     return new BodyEntropy(this.astNodes, this.divisor)
   }
 

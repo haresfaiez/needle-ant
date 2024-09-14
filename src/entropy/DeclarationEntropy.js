@@ -9,13 +9,15 @@ import { NotFoundCodePath } from '../code/CodePath.js'
 
 export class DeclarationEntropy extends MonoEntropy  {
   navigate(path) {
-    if (path.head() === this.astNode.id.name) {
+    if (path.head() === this.astNode.id?.name) {
       return path.hasSubPath()
         ? this.delegate.navigate(path.tail())
         : this.createFoundCodePath(path)
     }
 
-    return new NotFoundCodePath(path)
+    return this.delegate
+      ? this.delegate.navigate(path)
+      : new NotFoundCodePath(path)
   }
 
   evaluate() {

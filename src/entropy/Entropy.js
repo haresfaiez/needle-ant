@@ -33,6 +33,10 @@ export class Entropy extends MonoEntropy {
   }
 
   createDelegate() {
+    if (Array.isArray(this.astNode)) {
+      return new BodyEntropy(this.astNode, this.divisor)
+    }
+
     if (this.astNode.type === 'ImportDeclaration') {
       return new DependencyEntropy(this.astNode, this.divisor)
     }
