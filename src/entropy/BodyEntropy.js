@@ -12,6 +12,7 @@ export class BodyEntropy extends PolyEntropy  {
         .map(each => each.navigate(path))
         .filter(each => !(each instanceof NotFoundCodePath))
 
+    // TODO: Should we add to this condition: !path.isRoot()
     if (!matchingDelagates.length) {
       return new NotFoundCodePath(path)
     }
