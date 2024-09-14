@@ -1,8 +1,8 @@
 import { BodyEntropy } from './BodyEntropy.js'
 import { Entropy } from './Entropy.js'
-import { Reflexion } from '../reflexion/Reflexion.js'
+import { Spectrum } from '../reflection/Spectrum.js'
 import { NullEvaluation } from '../evaluation/NullEvaluation.js'
-import { Divisor } from '../reflexion/Divisor.js'
+import { Surface } from '../reflection/Surface.js'
 import { CodeBag } from '../code/CodeBag.js'
 import { MonoEntropy } from './MonoEntropy.js'
 import { NotFoundCodePath } from '../code/CodePath.js'
@@ -27,9 +27,9 @@ export class DeclarationEntropy extends MonoEntropy  {
 
     const functionsTypes = ['ArrowFunctionExpression', 'FunctionDeclaration']
     if (functionsTypes.includes(this.astNode.type)) {
-      const paramsAsIdentifiers = Reflexion.fromAcornNodes(this.astNode.params).identifiers()
-      const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
-      this.delegate = new BodyEntropy([this.astNode.body], declarationDivisor)
+      const paramsAsIdentifiers = Spectrum.fromAcornNodes(this.astNode.params).identifiers()
+      const declarationSurface = Surface.clone(this.divisor, paramsAsIdentifiers)
+      this.delegate = new BodyEntropy([this.astNode.body], declarationSurface)
       return this.delegate.evaluate()
     }
 
@@ -37,9 +37,9 @@ export class DeclarationEntropy extends MonoEntropy  {
       return new NullEvaluation()
     }
 
-    const paramsAsIdentifiers = Reflexion.fromAcornNodes(this.astNode.init.params).identifiers()
-    const declarationDivisor = Divisor.clone(this.divisor, paramsAsIdentifiers)
-    this.delegate = new Entropy(this.astNode.init, declarationDivisor)
+    const paramsAsIdentifiers = Spectrum.fromAcornNodes(this.astNode.init.params).identifiers()
+    const declarationSurface = Surface.clone(this.divisor, paramsAsIdentifiers)
+    this.delegate = new Entropy(this.astNode.init, declarationSurface)
     return this.delegate.evaluate()
   }
 }

@@ -3,7 +3,7 @@ import { Entropy } from './Entropy.js'
 import { NumericEvaluation } from '../evaluation/NumericEvaluation.js'
 import { ExpressionEntropy } from './ExpressionEntropy.js'
 import { NullEvaluation } from '../evaluation/NullEvaluation.js'
-import { Divisor } from '../reflexion/Divisor.js'
+import { Surface } from '../reflection/Surface.js'
 import { CodeBag } from '../code/CodeBag.js'
 import { CodeSlice } from '../code/CodeSlice.js'
 import { CodePath } from '../code/CodePath.js'
@@ -82,7 +82,7 @@ describe('Method invocation entropy', () => {
     const code = 'f.c()'
     const entropy = new Entropy(
       CodeSlice.parse(code)[0],
-      new Divisor(CodeBag.withNullCoordinates(['f', 'z']))
+      new Surface(CodeBag.withNullCoordinates(['f', 'z']))
     )
 
     const expected = new NumericEvaluation(1, 2)
@@ -94,7 +94,7 @@ describe('Method invocation entropy', () => {
     const code = 'f.c(b())'
     const entropy = new Entropy(
       CodeSlice.parse(code)[0],
-      new Divisor(CodeBag.withNullCoordinates(['f', 'z', 'b', 'c']))
+      new Surface(CodeBag.withNullCoordinates(['f', 'z', 'b', 'c']))
     )
 
     const expected = new NumericEvaluation(1, 4)
@@ -107,7 +107,7 @@ describe('Method invocation entropy', () => {
     const code = 'f.c(b(), c())'
     const entropy = new Entropy(
       CodeSlice.parse(code)[0],
-      new Divisor(CodeBag.withNullCoordinates(['f', 'z', 'b', 'c']))
+      new Surface(CodeBag.withNullCoordinates(['f', 'z', 'b', 'c']))
     )
 
     const expected = new NumericEvaluation(1, 4)
@@ -118,7 +118,7 @@ describe('Method invocation entropy', () => {
 
   it('considers all methods invocation for each method invocation entropy', () => {
     const code = 'f.aMethod(); f.anOtherMethod();'
-    const divisor = Divisor.parse(code, (ast) => ast.body)
+    const divisor = Surface.parse(code, (ast) => ast.body)
     const entropy = new BodyEntropy(
       CodeSlice.parse(code),
       divisor
@@ -135,7 +135,7 @@ describe('Call entropy', () => {
       const code = 'a(b())'
       const entropy = new Entropy(
         CodeSlice.parse(code)[0],
-        new Divisor(CodeBag.withNullCoordinates(['a', 'b', 'c']))
+        new Surface(CodeBag.withNullCoordinates(['a', 'b', 'c']))
       )
       const expected = new NumericEvaluation(1, 3).times(2)
       expect(entropy.evaluate().evaluate()).toEvaluateTo(expected)
@@ -145,7 +145,7 @@ describe('Call entropy', () => {
       const code = 'a(b(c()))'
       const entropy = new Entropy(
         CodeSlice.parse(code)[0],
-        new Divisor(CodeBag.withNullCoordinates(['a', 'b', 'c', 'd']))
+        new Surface(CodeBag.withNullCoordinates(['a', 'b', 'c', 'd']))
       )
 
       const expected = new NumericEvaluation(1, 4).times(3)
@@ -156,7 +156,7 @@ describe('Call entropy', () => {
       const code = 'const x = b(); call(x)'
       const entropy = new BodyEntropy(
         CodeSlice.parse(code),
-        new Divisor(CodeBag.withNullCoordinates(['b', 'call']))
+        new Surface(CodeBag.withNullCoordinates(['b', 'call']))
       )
 
       const expected = new NumericEvaluation(1, 3).times(3)
@@ -167,7 +167,7 @@ describe('Call entropy', () => {
       const code = 'const x = b(); a(c, x, d())'
       const entropy = new BodyEntropy(
         CodeSlice.parse(code),
-        new Divisor(CodeBag.withNullCoordinates(['a', 'b', 'c', 'd']))
+        new Surface(CodeBag.withNullCoordinates(['a', 'b', 'c', 'd']))
       )
 
       const expected = new NumericEvaluation(1, 5).times(5)
@@ -191,7 +191,7 @@ describe('Import statement entropy', () => {
     const code = 'import { a } from "./a"'
     const specifiers = CodeSlice.parse(code)
 
-    const entropy = new BodyEntropy(specifiers, new Divisor(CodeBag.withNullCoordinates(['a', 'b'])))
+    const entropy = new BodyEntropy(specifiers, new Surface(CodeBag.withNullCoordinates(['a', 'b'])))
 
     expect(entropy.evaluate().evaluate()).toEvaluateTo(new NumericEvaluation(1, 2))
   })
@@ -200,7 +200,7 @@ describe('Import statement entropy', () => {
     const code = 'import { a, b } from "./a"'
     const specifiers = CodeSlice.parse(code)
 
-    const entropy = new BodyEntropy(specifiers, new Divisor(CodeBag.withNullCoordinates(['a', 'b', 'c'])))
+    const entropy = new BodyEntropy(specifiers, new Surface(CodeBag.withNullCoordinates(['a', 'b', 'c'])))
 
     expect(entropy.evaluate().evaluate()).toEvaluateTo(new NumericEvaluation(2, 3))
   })
@@ -210,7 +210,7 @@ describe('Import statement entropy', () => {
   //   const code = 'import * as A from "./a"'
   //   const specifiers = CodeSlice.parse(code)
 
-  //   const entropy = new BodyEntropy(specifiers, new Divisor(['a', 'b', 'c']))
+  //   const entropy = new BodyEntropy(specifiers, new Surface(['a', 'b', 'c']))
 
   //   expect(entropy.evaluate().evaluate()).toEvaluateTo(new NumericEvaluation(3, 3))
   // })
@@ -219,7 +219,7 @@ describe('Import statement entropy', () => {
   //   const code = 'import { a } from "./a"'
   //   const source = CodeSlice.parse(code)
 
-  //   const entropy = new BodyEntropy(source, new Divisor(['./a', './b', './c']))
+  //   const entropy = new BodyEntropy(source, new Surface(['./a', './b', './c']))
 
   //   expect(entropy.evaluate().evaluate()).toEvaluateTo(new NumericEvaluation(1, 3))
   // })
@@ -767,7 +767,7 @@ describe('Bit-shifting operator entropy', () => {
   })
 })
 
-describe('Divisor identifiers', () => {
+describe('Surface identifiers', () => {
   it('counts default import', () => {
     const code = 'import a from "./a"; let b; a + b;'
     const entropy = new BodyEntropy(CodeSlice.parse(code))

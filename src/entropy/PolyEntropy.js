@@ -1,12 +1,12 @@
-import { Reflexion } from '../reflexion/Reflexion.js'
-import { Divisor } from '../reflexion/Divisor.js'
+import { Spectrum } from '../reflection/Spectrum.js'
+import { Surface } from '../reflection/Surface.js'
 import { FoundCodePath, NotFoundCodePath } from '../code/CodePath.js'
 import { NullEvaluation } from '../evaluation/NullEvaluation.js'
 
 export class PolyEntropy {
-  constructor(astNodes, divisor = new Divisor()) {
+  constructor(astNodes, divisor = new Surface()) {
     this.astNodes = astNodes.filter(astNode => astNode.type !== 'EmptyStatement')
-    this.dividend = Reflexion.fromAcornNodes(astNodes)
+    this.dividend = Spectrum.fromAcornNodes(astNodes)
     this.divisor = divisor
   }
 

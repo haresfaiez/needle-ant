@@ -1,30 +1,30 @@
 import { CodeBag } from '../code/CodeBag.js'
-import { Reflexion } from './Reflexion.js'
+import { Spectrum } from './Spectrum.js'
 
 // TODO: Rename this
-export class Divisor {
-  constructor(rawDivisor = new CodeBag(), accesses = new CodeBag(), clonedDivisorInstance) {
-    this.cloned = clonedDivisorInstance
+export class Surface {
+  constructor(rawSurface = new CodeBag(), accesses = new CodeBag(), clonedSurfaceInstance) {
+    this.cloned = clonedSurfaceInstance
 
-    this._identifiers = rawDivisor.clone()
+    this._identifiers = rawSurface.clone()
 
-    this.importedModules = rawDivisor.importedModuleExports
-    this.otherModules = rawDivisor.otherModules
+    this.importedModules = rawSurface.importedModuleExports
+    this.otherModules = rawSurface.otherModules
 
     this.accesses = accesses
   }
 
-  static clone(aDivisor, newIdentifiers = new CodeBag()) {
-    const result = new Divisor()
-    result.accesses = aDivisor.accesses
-    result.extend(aDivisor.identifiers())
+  static clone(aSurface, newIdentifiers = new CodeBag()) {
+    const result = new Surface()
+    result.accesses = aSurface.accesses
+    result.extend(aSurface.identifiers())
     result.extend(newIdentifiers)
-    result.cloned = aDivisor
+    result.cloned = aSurface
     return result
   }
 
-  static fromAccesses(aDivisor) {
-    return new Divisor(aDivisor.accesses)
+  static fromAccesses(aSurface) {
+    return new Surface(aSurface.accesses)
   }
 
   shouldFocusOnCurrentModule() {
@@ -57,12 +57,12 @@ export class Divisor {
   }
 
   static parse(sourceCode, transformer) {
-    const ast = Reflexion.parse(sourceCode, transformer)
-    return new Divisor(ast.identifiers())
+    const ast = Spectrum.parse(sourceCode, transformer)
+    return new Surface(ast.identifiers())
   }
 }
 
-export class MultiModulesDivisor extends Divisor {
+export class MultiModulesSurface extends Surface {
   shouldFocusOnCurrentModule() {
     return false
   }

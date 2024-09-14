@@ -1,5 +1,5 @@
-import { Reflexion } from './reflexion/Reflexion.js'
-import { Divisor } from './reflexion/Divisor.js'
+import { Spectrum } from './reflection/Spectrum.js'
+import { Surface } from './reflection/Surface.js'
 import { CodeBag } from './code/CodeBag.js'
 import { CodeSlice } from './code/CodeSlice.js'
 import { Entropy } from './entropy/Entropy.js'
@@ -8,7 +8,7 @@ class NeedleAnt {
   constructor(code, dependencies = []) {
     this.code = code
     const deps = dependencies
-      .map(dependency => Reflexion.parse(dependency, ast => ast.body).api())
+      .map(dependency => Spectrum.parse(dependency, ast => ast.body).api())
 
     this.dependenciesApi = CodeBag.withNullCoordinates(deps)
   }
@@ -16,10 +16,10 @@ class NeedleAnt {
   entropy() {
     const jointEntropy = new Entropy(
       CodeSlice.parse(this.code),
-      new Divisor(this.dependenciesApi)
+      new Surface(this.dependenciesApi)
     )
 
-    // TODO: [DEPS] Use `new MultiModulesDivisor(new DependenciesReflexion(...` (next. release)
+    // TODO: [DEPS] Use `new MultiModulesSurface(new DependenciesSpectrum(...` (next. release)
     return jointEntropy.evaluate()
   }
 }

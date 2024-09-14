@@ -4,7 +4,7 @@ import * as AcornWalk from 'acorn-walk'
 import { CodeSlice } from '../code/CodeSlice.js'
 import { CodeBag } from '../code/CodeBag.js'
 
-export class Reflexion {
+export class Spectrum {
   constructor(acornNodes) {
     this.sources =
       acornNodes.filter(eachSource => eachSource.type !== 'EmptyStatement')
@@ -13,7 +13,7 @@ export class Reflexion {
   collectExports(expression, bag) {
     AcornWalk.simple(expression, {
       ExportNamedDeclaration(node) {
-        bag.merge(Reflexion.fromAcornNodes([node]).identifiers())
+        bag.merge(Spectrum.fromAcornNodes([node]).identifiers())
       }
     })
   }
@@ -91,13 +91,13 @@ export class Reflexion {
 
   // Factories
   static fromAcornNodes(nodes = []) {
-    return new Reflexion(nodes)
+    return new Spectrum(nodes)
   }
 
   static parse(sourceCode, transformer) {
     const ast = Acorn.parse(sourceCode, { ecmaVersion: 2023, sourceType: 'module' })
-    const astForReflexion = transformer ? transformer(ast) : ast
-    return Reflexion.fromAcornNodes(astForReflexion)
+    const astForSpectrum = transformer ? transformer(ast) : ast
+    return Spectrum.fromAcornNodes(astForSpectrum)
   }
 }
 

@@ -1,5 +1,5 @@
 import { NotFoundCodePath } from '../code/CodePath.js'
-import { Divisor } from '../reflexion/Divisor.js'
+import { Surface } from '../reflection/Surface.js'
 import { Entropies } from './Entropies.js'
 import { Entropy } from './Entropy.js'
 import { PolyEntropy } from './PolyEntropy.js'
@@ -20,8 +20,8 @@ export class BodyEntropy extends PolyEntropy  {
   }
 
   evaluate() {
-    const newDivisor = Divisor.clone(this.divisor)
-    const entropies = this.astNodes.map(eachSource => new Entropy(eachSource, newDivisor))
+    const newSurface = Surface.clone(this.divisor)
+    const entropies = this.astNodes.map(eachSource => new Entropy(eachSource, newSurface))
     this.delegate = new Entropies(entropies)
     return this.delegate.evaluate()
   }
