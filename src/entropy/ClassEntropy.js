@@ -2,9 +2,22 @@ import { MonoEntropy } from './MonoEntropy.js'
 import { BagEvaluation } from '../evaluation/BagEvaluation.js'
 import { CodeBag } from '../code/CodeBag.js'
 import { Entropy } from './Entropy.js'
+import { NotFoundCodePath } from '../code/CodePath.js'
 
 export class ClassEntropy extends MonoEntropy {
   static IGNORED_IDENTIFIERS = ['constructor']
+
+  navigate(path) {
+    if (path.head() === this.astNode.id?.name) {
+      return path.hasSubPath()
+        ? this.delegate.navigate(path.tail())
+        : this.createFoundCodePath(path)
+    }
+
+    return this.delegate
+      ? this.delegate.navigate(path)
+      : new NotFoundCodePath(path)
+  }
 
   evaluate() {
     const superClassesBag = CodeBag.fromAcronNode(this.astNode.superClass)
@@ -22,7 +35,8 @@ export class ClassEntropy extends MonoEntropy {
 
     this.surface.extendAccesses(CodeBag.fromAcronNodes(members))
 
-    const mainEntropy = new Entropy(this.astNode.body, this.surface).evaluate()
-    return mainEntropy.plus(superClassEvaluation)
+    const mainEntropy = new Entropy(this.astNode.body, this.surface)
+    this.delegate = mainEntropy
+    return mainEntropy.evaluate().plus(superClassEvaluation)
   }
 }

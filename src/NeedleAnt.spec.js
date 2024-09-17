@@ -3,8 +3,7 @@ import { NullEvaluation } from './evaluation/NullEvaluation.js'
 import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: Implement navigation for classes/methods
-// TODO: Implement extraction of all navigation paths
+// TODO: Implement extraction of all navigation paths in a file
 // TODO: weighted probability, e.g. f(usages count)
 // TODO: Implement a mechanism to study Vite code base
 //       -> change = f(author, location, entropy change)
@@ -121,6 +120,25 @@ describe('Path navigation', () => {
       .raws()
 
     expect(actual).toEqual(['increment', 'plusTwo', 'x', 'doItTwice'])
+  })
+
+  it('calculates method entropy ', () => {
+    const code = `
+      class Arithmetics {
+        plusTwo(x) {
+          return x+2;
+        }
+      }
+    `
+    const actual = new NeedleAnt(code)
+      .entropy()
+      .navigate(CodePath.parse('Arithmetics/plusTwo'))
+      .evaluate()
+      .evaluate()
+
+    const expectedEvaluation = new NumericEvaluation(1, 2)
+      .plus(new NumericEvaluation(1, 3))
+    expect(actual).toEvaluateTo(expectedEvaluation)
   })
 })
 
