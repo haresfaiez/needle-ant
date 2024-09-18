@@ -8,6 +8,64 @@ import { CodePath } from '../code/CodePath.js'
 // TODO: [DEPS] Uncomment dependencies tests below (next. release)
 
 describe('Paths collection', () => {
+  it('finds anonymous inner-function definition', () => {
+    const code = `
+      const increment = (a) => a++;
+      const plusTwo = (x) => {
+        const doItTwice = (f) => (y) => f(f(y));
+        return doItTwice(increment)(x);
+      };
+    `
+    const spectrum = new Spectrum(CodeSlice.parse(code))
+
+    const expected = [
+      CodePath.parse('increment'),
+      CodePath.parse('plusTwo/doItTwice'),
+      CodePath.parse('plusTwo')
+    ]
+    expect(spectrum.paths()).toEqual(expected)
+  })
+
+  it('finds variable-declared inner-function definition', () => {
+    const code = `
+      const increment = function (a) { a++; }
+      const plusTwo = function (x) {
+        const doItTwice = function (f) {
+          return (y) => f(f(y));
+        }
+        return doItTwice(increment)(x);
+      };
+    `
+    const spectrum = new Spectrum(CodeSlice.parse(code))
+
+    const expected = [
+      CodePath.parse('increment'),
+      CodePath.parse('plusTwo/doItTwice'),
+      CodePath.parse('plusTwo')
+    ]
+    expect(spectrum.paths()).toEqual(expected)
+  })
+
+  it('finds inner-function definition', () => {
+    const code = `
+      function increment(a) { a++; }
+      function plusTwo(x) {
+        function doItTwice(f) {
+          return (y) => f(f(y));
+        }
+        return doItTwice(increment)(x);
+      };
+    `
+    const spectrum = new Spectrum(CodeSlice.parse(code))
+
+    const expected = [
+      CodePath.parse('increment'),
+      CodePath.parse('plusTwo/doItTwice'),
+      CodePath.parse('plusTwo')
+    ]
+    expect(spectrum.paths()).toEqual(expected)
+  })
+
   it('finds function definition', () => {
     const code = 'function myFunction(){}'
     const spectrum = new Spectrum(CodeSlice.parse(code))

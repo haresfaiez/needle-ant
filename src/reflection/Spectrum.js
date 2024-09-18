@@ -13,8 +13,27 @@ export class Spectrum {
 
   collectPaths(expression, collector) {
     AcornWalk.ancestor(expression, {
-      FunctionDeclaration(node) {
-        collector.push(new CodePath([node.id.name]))
+      VariableDeclarator(node, _state, ancestors) {
+        const functionsTypes = [
+          'ArrowFunctionExpression',
+          'FunctionExpression',
+        ]
+        if (functionsTypes.includes(node.init.type)) {
+          const pathComponents =
+            ancestors
+              .filter(e => e.type === 'VariableDeclarator')
+              .map(e => e.id.name)
+
+          collector.push(new CodePath(pathComponents))
+          return
+        }
+      },
+      FunctionDeclaration(node, _state, ancestors) {
+        const pathComponents =
+          ancestors
+            .filter(e => e.type === 'FunctionDeclaration')
+            .map(e => e.id.name)
+        collector.push(new CodePath([...pathComponents]))
       }
     })
   }
