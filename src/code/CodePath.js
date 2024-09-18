@@ -21,6 +21,27 @@ export class CodePath {
     return !this.path.length
   }
 
+  static isBoundary(astNode) {
+    const functionsTypes = [
+      'ArrowFunctionExpression',
+      'FunctionExpression',
+    ]
+    return functionsTypes.includes(astNode.init.type)
+  }
+
+  static fromAncestors(ancestorAstNodes) {
+    const ancestorTypes = [
+      'FunctionDeclaration',
+      'VariableDeclarator',
+    ]
+    const pathComponents =
+      ancestorAstNodes
+        .filter(eachNode => ancestorTypes.includes(eachNode.type))
+        .map(eachNode => eachNode.id.name)
+
+    return new CodePath(pathComponents)
+  }
+
   static parse(pathString) {
     const path = pathString.split('/').filter(eachPart => !!eachPart)
     return new CodePath(path)
