@@ -3,8 +3,19 @@ import { Entropy } from '../entropy/Entropy.js'
 import { NumericEvaluation } from '../evaluation/NumericEvaluation.js'
 import { Surface } from './Surface.js'
 import { CodeSlice } from '../code/CodeSlice.js'
+import { CodePath } from '../code/CodePath.js'
 
 // TODO: [DEPS] Uncomment dependencies tests below (next. release)
+
+describe('Paths collection', () => {
+  it('finds function definition', () => {
+    const code = 'function myFunction(){}'
+    const spectrum = new Spectrum(CodeSlice.parse(code))
+
+    const expected = [new CodePath(['myFunction'])]
+    expect(spectrum.paths()).toEqual(expected)
+  })
+})
 
 describe('Dependency entropy', () => {
   // it('of wildecard import checks files available for import', () => {

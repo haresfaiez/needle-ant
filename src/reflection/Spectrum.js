@@ -3,11 +3,20 @@ import * as AcornWalk from 'acorn-walk'
 
 import { CodeSlice } from '../code/CodeSlice.js'
 import { CodeBag } from '../code/CodeBag.js'
+import { CodePath } from '../code/CodePath.js'
 
 export class Spectrum {
   constructor(acornNodes) {
     this.sources =
       acornNodes.filter(eachSource => eachSource.type !== 'EmptyStatement')
+  }
+
+  collectPaths(expression, collector) {
+    AcornWalk.ancestor(expression, {
+      FunctionDeclaration(node) {
+        collector.push(new CodePath([node.id.name]))
+      }
+    })
   }
 
   collectExports(expression, bag) {
@@ -63,6 +72,14 @@ export class Spectrum {
       //   bag.put(new CodeSlice(node.id.name, node.start, node.end))
       // },
     })
+  }
+
+  paths() {
+    const result = []
+    for (const eachSource of this.sources) {
+      this.collectPaths(eachSource, result)
+    }
+    return result
   }
 
   properties() {
