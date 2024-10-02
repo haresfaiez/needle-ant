@@ -32,24 +32,6 @@ export class CodePath {
       : functionsTypes.includes(astNode.value.type)
   }
 
-  // TODO: Inline this and merge it with traversals
-  static fromAncestors(ancestorAstNodes) {
-    const ancestorTypes = {
-      'FunctionDeclaration': 'id',
-      'VariableDeclarator': 'id',
-      'ClassDeclaration': 'id',
-      'MethodDefinition': 'key',
-      'PropertyDefinition': 'key',
-    }
-
-    const pathComponents =
-      ancestorAstNodes
-        .filter(eachNode => !!ancestorTypes[eachNode.type])
-        .map(eachNode => eachNode[ancestorTypes[eachNode.type]].name)
-
-    return new CodePath(pathComponents)
-  }
-
   static parse(pathString) {
     const path = pathString.split('/').filter(eachPart => !!eachPart)
     return new CodePath(path)

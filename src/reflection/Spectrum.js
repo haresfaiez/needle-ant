@@ -12,25 +12,50 @@ export class Spectrum {
   }
 
   collectPaths(expression, collector) {
+    const fromAncestors = (ancestorAstNodes) => {
+      const pathComponents = []
+
+      ancestorAstNodes
+        .forEach(eachNode => ({
+          PropertyDefinition(node) {
+            pathComponents.push(node.key.name)
+          },
+          ClassDeclaration(node) {
+            pathComponents.push(node.id.name)
+          },
+          MethodDefinition(node) {
+            pathComponents.push(node.key.name)
+          },
+          VariableDeclarator(node) {
+            pathComponents.push(node.id.name)
+          },
+          FunctionDeclaration(node) {
+            pathComponents.push(node.id.name)
+          }
+        })[eachNode.type]?.(eachNode))
+
+      return new CodePath(pathComponents)
+    }
+
     AcornWalk.ancestor(expression, {
       PropertyDefinition(node, _state, ancestors) {
         if (CodePath.isBoundary(node)) {
-          collector.push(CodePath.fromAncestors(ancestors))
+          collector.push(fromAncestors(ancestors))
         }
       },
       ClassDeclaration(_node, _state, ancestors) {
-        collector.push(CodePath.fromAncestors(ancestors))
+        collector.push(fromAncestors(ancestors))
       },
       MethodDefinition(_node, _state, ancestors) {
-        collector.push(CodePath.fromAncestors(ancestors))
+        collector.push(fromAncestors(ancestors))
       },
       VariableDeclarator(node, _state, ancestors) {
         if (CodePath.isBoundary(node)) {
-          collector.push(CodePath.fromAncestors(ancestors))
+          collector.push(fromAncestors(ancestors))
         }
       },
       FunctionDeclaration(_node, _state, ancestors) {
-        collector.push(CodePath.fromAncestors(ancestors))
+        collector.push(fromAncestors(ancestors))
       }
     })
   }
