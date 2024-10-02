@@ -26,18 +26,26 @@ export class CodePath {
       'ArrowFunctionExpression',
       'FunctionExpression',
     ]
-    return functionsTypes.includes(astNode.init.type)
+
+    return astNode.type === 'VariableDeclarator'
+      ? functionsTypes.includes(astNode.init.type)
+      : functionsTypes.includes(astNode.value.type)
   }
 
+  // TODO: Inline this and merge it with traversals
   static fromAncestors(ancestorAstNodes) {
-    const ancestorTypes = [
-      'FunctionDeclaration',
-      'VariableDeclarator',
-    ]
+    const ancestorTypes = {
+      'FunctionDeclaration': 'id',
+      'VariableDeclarator': 'id',
+      'ClassDeclaration': 'id',
+      'MethodDefinition': 'key',
+      'PropertyDefinition': 'key',
+    }
+
     const pathComponents =
       ancestorAstNodes
-        .filter(eachNode => ancestorTypes.includes(eachNode.type))
-        .map(eachNode => eachNode.id.name)
+        .filter(eachNode => !!ancestorTypes[eachNode.type])
+        .map(eachNode => eachNode[ancestorTypes[eachNode.type]].name)
 
     return new CodePath(pathComponents)
   }

@@ -8,6 +8,28 @@ import { CodePath } from '../code/CodePath.js'
 // TODO: [DEPS] Uncomment dependencies tests below (next. release)
 
 describe('Paths collection', () => {
+  it('finds class definition', () => {
+    const code = `
+      class Arithmetics {
+        identity = (x) => x;
+
+        plus(a, b) {
+          const add = (x, y) => x + y;
+          return add(a, b);
+        }
+      }
+    `
+    const spectrum = new Spectrum(CodeSlice.parse(code))
+
+    const expected = [
+      CodePath.parse('Arithmetics/identity'),
+      CodePath.parse('Arithmetics/plus/add'),
+      CodePath.parse('Arithmetics/plus'),
+      CodePath.parse('Arithmetics'),
+    ]
+    expect(spectrum.paths()).toEqual(expected)
+  })
+
   it('finds anonymous inner-function definition', () => {
     const code = `
       const increment = (a) => a++;

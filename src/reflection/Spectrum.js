@@ -13,6 +13,17 @@ export class Spectrum {
 
   collectPaths(expression, collector) {
     AcornWalk.ancestor(expression, {
+      PropertyDefinition(node, _state, ancestors) {
+        if (CodePath.isBoundary(node)) {
+          collector.push(CodePath.fromAncestors(ancestors))
+        }
+      },
+      ClassDeclaration(_node, _state, ancestors) {
+        collector.push(CodePath.fromAncestors(ancestors))
+      },
+      MethodDefinition(_node, _state, ancestors) {
+        collector.push(CodePath.fromAncestors(ancestors))
+      },
       VariableDeclarator(node, _state, ancestors) {
         if (CodePath.isBoundary(node)) {
           collector.push(CodePath.fromAncestors(ancestors))
