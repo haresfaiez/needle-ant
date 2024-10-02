@@ -3,9 +3,14 @@ import { NullEvaluation } from './evaluation/NullEvaluation.js'
 import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: weighted probability, e.g. f(usages count)
-// TODO: Implement a mechanism to study Vite code base
-//       -> change = f(author, location, entropy change)
+// TODO: weighted probability: f(real-world-usage-scenario)
+//   |-> impact of referenc name (length, changed chars, ...)
+//   |-> more vars => more entropy
+//   |-> distance between definition and usage
+//   |-> frequency/number of usage
+//   |-> adding indirection levels => ??
+//   |-> bulk entropy (not always 1/n)
+//   |-> size of module (fn, class, files, ...): number of lines, ...
 // TODO: check todos
 // TODO: [Next release]
 
