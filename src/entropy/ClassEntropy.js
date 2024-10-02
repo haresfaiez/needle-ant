@@ -7,6 +7,7 @@ import { NotFoundCodePath } from '../code/CodePath.js'
 export class ClassEntropy extends MonoEntropy {
   static IGNORED_IDENTIFIERS = ['constructor']
 
+  // TODO: do something to avoid copy/pasting this everywhere
   navigate(path) {
     if (path.head() === this.astNode.id?.name) {
       return path.hasSubPath()

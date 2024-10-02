@@ -3,12 +3,14 @@ import { NullEvaluation } from './evaluation/NullEvaluation.js'
 import { NumericEvaluation } from './evaluation/NumericEvaluation.js'
 import NeedleAnt from './NeedleAnt.js'
 
-// TODO: Implement extraction of all navigation paths in a file
 // TODO: weighted probability, e.g. f(usages count)
 // TODO: Implement a mechanism to study Vite code base
 //       -> change = f(author, location, entropy change)
 // TODO: check todos
 // TODO: [Next release]
+
+// TODO: Add path collection for object literals
+// TODO: Non-obvious paths (object literals, class as array elements, class as init var value, ...)
 
 describe('Path navigation', () => {
   it('calculates inner-function scope', () => {
